@@ -3,13 +3,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.example.jinjinz.concertprev.SearchActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tbSearch"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/white"
+        android:background="?attr/colorPrimary">
+    </android.support.v7.widget.Toolbar>
+
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/concertContainer"
-        android:layout_above="@+id/concertBtn"></FrameLayout>
+        android:layout_above="@+id/concertBtn"
+        android:layout_below="@+id/tbSearch"></FrameLayout>
 
     <Button
         android:layout_width="wrap_content"
@@ -27,5 +39,13 @@
         android:layout_alignTop="@+id/concertBtn"
         android:layout_toRightOf="@+id/concertBtn"
         android:layout_toEndOf="@+id/concertBtn" />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/playerBtn"
+        android:layout_alignTop="@id/playerBtn"
+        android:text="latlong"
+        android:id="@+id/tvLocationTest"/>
 
 </RelativeLayout>
