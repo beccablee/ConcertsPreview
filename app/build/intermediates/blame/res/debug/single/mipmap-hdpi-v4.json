@@ -4,6 +4,10 @@
         "source": "/Users/beccalee/AndroidStudioProjects/ConcertsPreview/app/src/main/res/mipmap-hdpi/ic_launcher.png"
     },
     {
+        "merged": "/Users/jinjinz/AndroidStudioProjects/ConcertsPreview/app/build/intermediates/res/merged/debug/mipmap-hdpi-v4/ic_launcher.png",
+        "source": "/Users/jinjinz/AndroidStudioProjects/ConcertsPreview/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+    },
+    {
         "merged": "/Users/noradiegwu/AndroidStudioProjects/ConcertPrev/app/build/intermediates/res/merged/debug/mipmap-hdpi-v4/ic_launcher.png",
         "source": "/Users/noradiegwu/AndroidStudioProjects/ConcertPrev/app/src/main/res/mipmap-hdpi/ic_launcher.png"
     }
