@@ -72,7 +72,7 @@
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/player"
+                    android:text="Player"
                     android:id="@+id/playerBtn2"
                     android:layout_alignParentLeft="true"
                     android:layout_gravity="left|top" />

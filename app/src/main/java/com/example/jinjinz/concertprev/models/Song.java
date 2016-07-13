@@ -11,6 +11,26 @@ import java.util.ArrayList;
  */
 public class Song {
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setArtists(ArrayList<String> artists) {
+        this.artists = artists;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public void setAlbumArtUrl(String albumArtUrl) {
+        this.albumArtUrl = albumArtUrl;
+    }
+
     public String name;
     public String id;
     public ArrayList<String> artists; //names
