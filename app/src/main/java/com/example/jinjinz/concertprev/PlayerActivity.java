@@ -1,5 +1,6 @@
 package com.example.jinjinz.concertprev;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -82,7 +83,8 @@ public class PlayerActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                Intent i = new Intent(PlayerActivity.this, SearchActivity.class);
+                startActivity(i);
             }
         });
 
@@ -164,7 +166,83 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //previous skip
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+                if (songNum >= 2) {
+                    songNum = songNum - 2;
+                }
+                else if (songNum == 1) {
+                    songNum = songs.size() - 1;
+                }
+                try {
+                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //forward skip
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mediaPlayer.stop();
+                mediaPlayer.reset();
+                try {
+                    if(songNum == songs.size()) {
+                        songNum = 0;
+                    }
+                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        //create dummy songs and concerts
+        Concert dummy_c = new Concert();
+        Song dummy_ss = new Song();
+        dummy_c.setEventName("TESTING");
+        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
+        ArrayList<String> artist = new ArrayList<>();
+        artist.add("Elvis Presley");
+        dummy_ss.setArtists(artist);
+        dummy_ss.setName("Suspicious Minds");
+        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
+        ArrayList<Song> dummy_s = new ArrayList<>();
+        dummy_s.add(dummy_ss);
+        if (concert == null) {
+            onCreate(null);
+        }
+        else if(!concert.getEventName().equals(dummy_c.getEventName())) {
+            //initialize
+            songNum = 0;
+            play = true;
+            concert = dummy_c;
+            songs = dummy_s;
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            //start with first song
+            try {
+                mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     //update interface
     private void UpdateInterface(Song song) {
         //Picasso.with(this).load(song.getAlbumArtUrl()).fit().into(albumImg);
@@ -212,45 +290,6 @@ public class PlayerActivity extends AppCompatActivity {
         // Instruct Picasso to load the bitmap into the target defined above
         Picasso.with(this).load(song.getAlbumArtUrl()).into(target);
 
-        //previous skip
-        prevBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-                if (songNum >= 2) {
-                    songNum = songNum - 2;
-                }
-                else if (songNum == 1) {
-                    songNum = songs.size() - 1;
-                }
-                try {
-                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        //forward skip
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mediaPlayer.stop();
-                mediaPlayer.reset();
-                try {
-                    if(songNum == songs.size()) {
-                        songNum = 0;
-                    }
-                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
-
 
 }
