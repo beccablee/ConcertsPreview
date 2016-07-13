@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.fragments.SongsFragment;
+import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -24,6 +25,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -44,14 +46,12 @@ public class ConcertActivity extends AppCompatActivity {
     public String backdropImage;
     public ArrayList<String> artistList;
     public String venue; // may be null (tba)
-    public String eventName = "Drake in Dallas";
     public String eventTime; // may be null (tba)
-    public String eventDate = "March 12, 2016"; // may be null (tba)
     public String city;
     public String stateCode; // may be null (international events)
     public String countryCode;
 
-    public String artists = "Drake & Future";
+    public String artists;
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -60,6 +60,8 @@ public class ConcertActivity extends AppCompatActivity {
     public TextView tvDate;
     public TextView tvArtists;
 
+    Concert concert;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,33 +69,15 @@ public class ConcertActivity extends AppCompatActivity {
 
         setUpArtistSearch();
 
+        concert = Parcels.unwrap(getIntent().getParcelableExtra("concert"));
         songs = new ArrayList<>();
 
-        appBar = (AppBarLayout) findViewById(R.id.appbar);
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        ivHeader = (ImageView) findViewById(R.id.ivHeader);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        tvDate = (TextView) findViewById(R.id.tvDate);
-        tvArtists = (TextView) findViewById(R.id.tvArtists);
+        setUpViews();
 
         setSupportActionBar(toolbar);
-        if (eventName != null && getSupportActionBar() != null){
-            getSupportActionBar().setTitle(eventName);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(concert.getEventName());
         }
-
-        tvDate.setText(eventDate);
-        tvArtists.setText(artists);
-        Picasso.with(this).load(R.mipmap.ic_launcher).into(ivHeader);
-
-
-        player = (Button) findViewById(R.id.playerBtn2);
-        player.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(ConcertActivity.this, PlayerActivity.class);
-                startActivity(i);
-            }
-        });
 
         if (savedInstanceState == null) {
             sFragment = SongsFragment.newInstance("params1", "params2");
@@ -118,15 +102,11 @@ public class ConcertActivity extends AppCompatActivity {
                 String artistJSONResult;
                 try {
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
-                    //songs.addAll(Song.fromJSONArray(artistJSONResults));
-                    //adapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), artistJSONResult, Toast.LENGTH_SHORT).show();
                     searchArtistPlaylist(artistJSONResult);
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
@@ -139,7 +119,6 @@ public class ConcertActivity extends AppCompatActivity {
         String ISOCountryCode = "US";
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
-
         RequestParams params = new RequestParams();
         params.put("country", ISOCountryCode);
 
@@ -157,13 +136,47 @@ public class ConcertActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.d("DEBUG", "" + statusCode);
             }
         });
+    }
 
+    public void setUpViews(){
+        appBar = (AppBarLayout) findViewById(R.id.appbar);
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        ivHeader = (ImageView) findViewById(R.id.ivHeader);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tvDate = (TextView) findViewById(R.id.tvDate);
+        tvArtists = (TextView) findViewById(R.id.tvArtists);
+
+        artists = artistsToString(concert.getArtists());
+
+
+        tvDate.setText(concert.getEventDate());
+        tvArtists.setText(artists);
+        Picasso.with(this).load(concert.backdropImage).into(ivHeader);
+
+        player = (Button) findViewById(R.id.playerBtn2);
+        player.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ConcertActivity.this, PlayerActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
+    public String artistsToString(ArrayList<String> artist_list) {
+        String artistNames = "";
+        for (int i = 0; i < artist_list.size(); i++){
+            if (i == 0) {
+                artistNames += artist_list.get(i);
+            } else {
+                artistNames += ", " + artist_list.get(i);
+            }
+        }
+        return artistNames;
     }
 }

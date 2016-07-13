@@ -48,34 +48,32 @@
                     android:textSize="16sp"
                     android:paddingRight="8dp"
                     android:paddingEnd="8dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="32dp"
                     android:paddingLeft="8dp"
                     android:paddingStart="8dp"
+                    android:textColor="#FFFFFF"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
                     android:text="Date"/>
                 <TextView
                     android:id="@+id/tvArtists"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:paddingRight="8dp"
                     android:paddingEnd="8dp"
-                    android:paddingLeft="12dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="32dp"
                     android:paddingStart="12dp"
                     android:text="Artists"
+                    android:textColor="#FFFFFF"
                     android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentLeft="true" />
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Player"
                     android:id="@+id/playerBtn2"
                     android:layout_alignParentLeft="true"
-                    android:layout_gravity="left|top" />
+                    android:layout_gravity="start|top" />
             </RelativeLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
 
