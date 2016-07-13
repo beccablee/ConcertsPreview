@@ -1,7 +1,6 @@
 package com.example.jinjinz.concertprev.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.jinjinz.concertprev.ConcertActivity;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.squareup.picasso.Picasso;
-
-import org.parceler.Parcels;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -24,11 +19,18 @@ import java.util.ArrayList;
 /**
  * Created by noradiegwu on 7/12/16.
  */
-public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.ViewHolder> {
+public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.ViewHolder> implements View.OnClickListener {
+    @Override
+    public void onClick(View view) {
+        ImageView ivBackgroundImage = (ImageView) view.findViewById(R.id.ivBackgroundImage);
+        Concert concert = (Concert) ivBackgroundImage.getTag();
+        mSearchRecyclerAdapterListener.onConcertTap(concert);
 
+    }
 
+// interface
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final Context context;
         public TextView tvEventName;
@@ -46,23 +48,16 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
             tvEventLocation = (TextView) itemView.findViewById(R.id.tvEventLocation);
             rlConcert = (RelativeLayout) itemView.findViewById(R.id.rlConcert);
             ivBackgroundImage = (ImageView) itemView.findViewById(R.id.ivBackgroundImage);
-            itemView.setOnClickListener(this);
-
         }
 
+    }
 
-        @Override
-        public void onClick(View view) {
-            // package up the concert
-            //Concert concert = new Concert();
-            Intent intent = new Intent(context, ConcertActivity.class);
-            Concert concert = (Concert) ivBackgroundImage.getTag();
-            intent.putExtra("concert", Parcels.wrap(concert));
-            Toast.makeText(context, concert.getVenue(), Toast.LENGTH_SHORT).show();
-            context.startActivity(intent);
+    SearchRecyclerAdapterListener mSearchRecyclerAdapterListener;
 
-            // pass it to the concert activity
-        }
+    public interface SearchRecyclerAdapterListener {
+        void onConcertTap(Concert concert);
+        // pass to fragment
+        // open concert details(concert)
     }
 
     // Store a member variable for the contacts
@@ -71,9 +66,10 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     private Context mContext;
 
     // Pass in the contact array into the constructor
-    public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts) {
+    public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts, SearchRecyclerAdapterListener searchRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
+        mSearchRecyclerAdapterListener = searchRecyclerAdapterListener;
     }
 
     // Easy access to the context object in the recyclerview
@@ -94,6 +90,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
         //Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(concertView);
+        concertView.setOnClickListener(this);
         return viewHolder;
     }
 
@@ -112,14 +109,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         viewHolder.tvEventLocation.setTag(concert);
         // set background
         RelativeLayout myRL = viewHolder.rlConcert;
-        viewHolder.rlConcert.setTag(concert);
-        //TODO: set background programatically with image
         //myRL.setBackground();
-        // fill image view
+        // set background programatically with image
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
-        //Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
+        Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
         viewHolder.ivBackgroundImage.setTag(concert);
-        Picasso.with(getContext()).load(concert.getBackdropImage()).into(backgroundImg);
+        //Picasso.with(getContext()).load(concert.getBackdropImage()).into(backgroundImg);
 
         // everywhere may not have a state code
         //TODO: consider adding logic to decide to use state or country code

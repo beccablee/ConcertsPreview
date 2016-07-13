@@ -1,11 +1,11 @@
 package com.example.jinjinz.concertprev.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +14,24 @@ import com.example.jinjinz.concertprev.Adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import cz.msebera.android.httpclient.Header;
+
+public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener {
+
+    @Override
+    public void onConcertTap(Concert concert) {
+        concertsFragmentListener.onConcertTap(concert);
+    }
+
+    public interface ConcertsFragmentListener {
+        void populateConcertsNearYou(ConcertsFragment fragment);
+        void onConcertTap(Concert concert);
+    }
 
 
-public class ConcertsFragment extends Fragment {
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -41,6 +46,7 @@ public class ConcertsFragment extends Fragment {
     AsyncHttpClient client;
     ArrayList<Concert> concerts;
     SearchRecyclerAdapter searchAdapter;
+    ConcertsFragmentListener concertsFragmentListener;
 
    // private OnFragmentInteractionListener mListener;
 
@@ -67,6 +73,16 @@ public class ConcertsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            concertsFragmentListener = (ConcertsFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnArticleSelectedListener");
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 /*
@@ -78,9 +94,9 @@ public class ConcertsFragment extends Fragment {
 
         concerts = new ArrayList<>();
         // Create adapter passing in activity context and concerts list
-        searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts);
+        searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
-        populateConcertsNearYou();
+        concertsFragmentListener.populateConcertsNearYou(this);
     }
 
     @Override
@@ -103,43 +119,43 @@ public class ConcertsFragment extends Fragment {
     }
 
 
+//
+//    protected void populateConcertsNearYou() {
+//        // url: includes api key and music classification
+//        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+//        // the parameter(s)
+//        RequestParams params = new RequestParams();
+//        //params.put("latlong", dummyLatlong);
+//        params.put("latlong", "29.563034,-95.262090"); // must be N, E (in the us the last should def be -) that num + is W
+//        params.put("radius", "50");
+//        params.put("size", "200");
+//
+//        // call client
+//        client = new AsyncHttpClient();
+//        client.get(eventsURL, params, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
+//                // DESERIALIZE JSON
+//                // CREATE MODELS AND ADD TO ADAPTER
+//                // LOAD MODEL INTO LIST VIEW
+//                JSONArray eventsArray = null;
+//                try {
+//                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events"); // size = 0 rn
+//                    Log.d("populateFragment", String.valueOf(eventsArray.length()));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                Log.d("populateFragment", "failure");
+//            }
+//        });
+//    }
 
-    protected void populateConcertsNearYou() {
-        // url: includes api key and music classification
-        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
-        // the parameter(s)
-        RequestParams params = new RequestParams();
-        //params.put("latlong", dummyLatlong);
-        params.put("latlong", "29.563034,-95.262090"); // must be N, E (in the us the last should def be -) that num + is W
-        params.put("radius", "50");
-        params.put("size", "200");
-
-        // call client
-        client = new AsyncHttpClient();
-        client.get(eventsURL, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
-                // DESERIALIZE JSON
-                // CREATE MODELS AND ADD TO ADAPTER
-                // LOAD MODEL INTO LIST VIEW
-                JSONArray eventsArray = null;
-                try {
-                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events"); // size = 0 rn
-                    Log.d("populateFragment", String.valueOf(eventsArray.length()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("populateFragment", "failure");
-            }
-        });
-    }
-
-    private void addConcerts(ArrayList<Concert> concertArrayList) {
+    public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
