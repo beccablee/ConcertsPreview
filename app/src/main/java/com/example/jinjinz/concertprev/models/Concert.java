@@ -103,7 +103,7 @@ public class Concert {
             if (!artistObj.has("attractions")) { // if the event object does not have an artist array, continue
             } else { // if it contains the attractions array (it is a concert and has at least one artist)
                 concert.add(Concert.fromJsonObject(eventObj)); // else, add the object
-            Log.d("populateFragment", "concertarray");
+                Log.d("populateFragment", "concertarray");
             }
         }
 

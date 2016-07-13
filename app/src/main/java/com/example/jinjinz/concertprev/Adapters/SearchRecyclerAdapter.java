@@ -117,9 +117,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         //myRL.setBackground();
         // fill image view
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
-        Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
+        //Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
         viewHolder.ivBackgroundImage.setTag(concert);
-        //Picasso.with(getContext()).load(concert.getBackdropImage()).into(backgroundImg);
+        Picasso.with(getContext()).load(concert.getBackdropImage()).into(backgroundImg);
 
         // everywhere may not have a state code
         //TODO: consider adding logic to decide to use state or country code
