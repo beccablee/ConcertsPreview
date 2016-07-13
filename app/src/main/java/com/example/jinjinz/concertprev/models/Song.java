@@ -18,6 +18,31 @@ public class Song {
     public String albumArtUrl;
     public ArrayList<Song> tracks;
 
+
+    public void setPreviewUrl(String previewUrl) {
+        this.previewUrl = previewUrl;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setArtists(ArrayList<String> artists) {
+        this.artists = artists;
+    }
+
+    public void setAlbumArtUrl(String albumArtUrl) {
+        this.albumArtUrl = albumArtUrl;
+    }
+
+    public void setTracks(ArrayList<Song> tracks) {
+        this.tracks = tracks;
+    }
+
     public String getName() {
         return name;
     }

@@ -19,16 +19,53 @@ public class Concert {
     //root url: https://app.ticketmaster.com/discovery/v2/
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
-    private String backdropImage;
+    public String backdropImage;
     //private final String headliner;
-    private ArrayList<String> artists;
-    private String venue; // may be null (tba)
-    private String eventName;
-    private String eventTime; // may be null (tba)
-    private String eventDate; // may be null (tba)
-    private String city;
-    private String stateCode; // may be null (international events)
-    private String countryCode;
+    public ArrayList<String> artists;
+    public String venue; // may be null (tba)
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public void setBackdropImage(String backdropImage) {
+        this.backdropImage = backdropImage;
+    }
+
+    public void setArtists(ArrayList<String> artists) {
+        this.artists = artists;
+    }
+
+    public void setVenue(String venue) {
+        this.venue = venue;
+    }
+
+    public void setEventTime(String eventTime) {
+        this.eventTime = eventTime;
+    }
+
+    public void setEventDate(String eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String eventName;
+    public String eventTime; // may be null (tba)
+    public String eventDate; // may be null (tba)
+    public String city;
+    public String stateCode; // may be null (international events)
+    public String countryCode;
 
     public String getCountryCode() {
         return countryCode;
