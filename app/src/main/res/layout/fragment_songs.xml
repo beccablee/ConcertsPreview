@@ -3,12 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jinjinz.concertprev.fragments.SongsFragment"
-    android:background="@android:color/holo_red_dark">
+    android:background="@android:color/darker_gray">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:id="@+id/tvSongPlaylist"
+        android:text="Song Playlist"/>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="531dp"
+        android:id="@+id/lvSongs"
+        android:layout_gravity="center_horizontal|bottom" />
+
 
 </FrameLayout>

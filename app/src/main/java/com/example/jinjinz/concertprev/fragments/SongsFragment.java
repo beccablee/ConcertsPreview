@@ -1,13 +1,20 @@
 package com.example.jinjinz.concertprev.fragments;
 
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.SongArrayAdapter;
+import com.example.jinjinz.concertprev.models.Song;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,6 +29,11 @@ public class SongsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private ArrayList<Song> songs;
+
+    public ListView lvSongs;
+    public SongArrayAdapter adapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -58,13 +70,27 @@ public class SongsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        songs = new ArrayList<>();
+        adapter = new SongArrayAdapter(getActivity(), songs);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_songs, container, false);
+        View view = inflater.inflate(R.layout.fragment_songs, container, false);
+        lvSongs = (ListView) view.findViewById(R.id.lvSongs);
+        lvSongs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
+                Toast.makeText(getContext(), "Clicked" + pos, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        lvSongs.setAdapter(adapter);
+
+        return view;
     }
 
   /**  // TODO: Rename method, update argument and hook method into UI event

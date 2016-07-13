@@ -37,4 +37,5 @@ dependencies {
     compile 'org.parceler:parceler-api:1.1.1'
     apt 'org.parceler:parceler:1.1.1'
     compile 'com.android.support:palette-v7:24.0.+'
+    compile 'com.android.support:design:24.0.0'
 }
