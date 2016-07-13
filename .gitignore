@@ -30,6 +30,8 @@ proguard-project.txt
 .gradle/**
 build/**
 .idea/**
+app/build/**
+*.DS_Store
 import-summary.txt
 
 *.pydevproject

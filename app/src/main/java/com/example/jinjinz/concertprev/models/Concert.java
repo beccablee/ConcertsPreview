@@ -1,14 +1,18 @@
 package com.example.jinjinz.concertprev.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
 
 /**
  * Created by jinjinz on 7/7/16.
  */
+@Parcel
 public class Concert {
 
 
@@ -67,25 +71,53 @@ public class Concert {
 
     }
 
-    private static ArrayList<Concert> concertsFromJsonArray(JSONArray jsonArray) {
-        ArrayList<Concert> concert = new ArrayList<>();
-        // iterate
-        for (int i = 0; i < jsonArray.length(); i++) {
-            try {
-                concert.add(Concert.fromJsonObject(jsonArray.getJSONObject(i)));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    public static Concert forTesting(JSONObject jsonObject) {
+        Concert concert = new Concert();
+        try {
+            concert.eventName = jsonObject.getJSONObject("_embedded").getJSONArray("events").getJSONObject(0).getString("name");
+            Log.d("ticketrespone", "testing");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return concert;
     }
 
-    private static ArrayList<String> artistsFromJsonArray(JSONArray jsonArray) {
-        ArrayList<String> array = new ArrayList<>();
+    public static ArrayList<Concert> concertsFromJsonArray(JSONArray jsonArray) { // looking for the "events" array --> { _embedded: { events: [ {0, 1, 2, ..} ] } } within the larger "_embedded" array and the largest object that you get from the client response
+        ArrayList<Concert> concert = new ArrayList<>();
         // iterate
         for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject eventObj = null;
             try {
-                array.add(jsonArray.getJSONObject(i).getString("name"));
+                eventObj = jsonArray.getJSONObject(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JSONObject artistObj = null;
+            try {
+                if (eventObj != null) {
+                    artistObj = eventObj.getJSONObject("_embedded");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (!artistObj.has("attractions")) { // if the event object does not have an artist array, continue
+            } else { // if it contains the attractions array (it is a concert and has at least one artist)
+                concert.add(Concert.fromJsonObject(eventObj)); // else, add the object
+            Log.d("populateFragment", "concertarray");
+            }
+        }
+
+        return concert;
+    }
+
+
+
+    private static ArrayList<String> artistsFromJsonArray(JSONArray attractions) { // the attractions array: { _embedded:{ events:[ { ..., _embedded:{ venues:[...], attractions:[ list of at least one artist ] } } ] } }
+        ArrayList<String> array = new ArrayList<>();
+        // iterate
+        for (int i = 0; i < attractions.length(); i++) {
+            try {
+                array.add(attractions.getJSONObject(i).getString("name"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -93,35 +125,65 @@ public class Concert {
         return array;
     }
 
-    public static Concert fromJsonObject(JSONObject jsonObject){
+/*    private static String ratioImg(JSONArray images) {
+        String imgURL = "http://www.schaliken.be/sites/default/files/files/afbeeldingen/Seizoen_15-16/BelegenHelden.jpg";
+        try {
+            imgURL = images.getJSONObject(0).getString("url");
+            Log.d("ratImg", "default");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        // iterate through image array to find 16_9 ratio image
+        for(int i = 0; i < images.length(); i++) {
+            try {
+                if("16_9" == images.getJSONObject(i).getString("url")) {
+                    imgURL = images.getJSONObject(i).getString("url");
+                    Log.d("ratImg", "preferred");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return imgURL;
+    }*/
+
+
+
+    public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
         // extract the values from the json, store them
         try {
-            concert.backdropImage = jsonObject.getJSONArray("images").getJSONObject(0).getString("url");
-            concert.eventName = jsonObject.getString("name");
-            concert.artists = artistsFromJsonArray(jsonObject.getJSONArray("attractions"));
+            //concert.backdropImage = ratioImg(event.getJSONArray("images"));
+            concert.backdropImage = event.getJSONArray("images").getJSONObject(0).getString("url");
+            concert.eventName = event.getString("name");
+            concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         try {
-            concert.countryCode = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("country").getString("countryCode"); // if country != "US", use country code in place of stateCode
-            concert.city = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("city").getString("name");
-            concert.venue = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getString("name");
-            concert.stateCode = jsonObject.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0).getJSONObject("state").getString("stateCode");
+            concert.countryCode = event.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0)
+                    .getJSONObject("country").getString("countryCode"); // if country != "US", use country code in place of stateCode
+            concert.city = event.getJSONObject("_embedded").getJSONArray("venues")
+                    .getJSONObject(0).getJSONObject("city").getString("name");
+            concert.venue = event.getJSONObject("_embedded").getJSONArray("venues")
+                    .getJSONObject(0).getString("name");
+            concert.stateCode = event.getJSONObject("_embedded").getJSONArray("venues")
+                    .getJSONObject(0).optJSONObject("state").optString("stateCode"); // changed to optJSONObject and optString to avoid catch issues
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         try {
-            concert.eventDate = jsonObject.getJSONObject("dates").getJSONObject("start").getString("localDate");
+            concert.eventDate = event.getJSONObject("dates").getJSONObject("start").getString("localDate");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         try {
-            concert.eventTime = jsonObject.getJSONObject("dates").getJSONObject("start").getString("localTime");
+            concert.eventTime = event.getJSONObject("dates").getJSONObject("start").getString("localTime");
         } catch (JSONException e) {
             e.printStackTrace();
         }
