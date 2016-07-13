@@ -27,7 +27,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -153,8 +156,18 @@ public class ConcertActivity extends AppCompatActivity {
 
         artists = artistsToString(concert.getArtists());
 
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = null;
+        try {
+            newDate = format.parse(concert.getEventDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        tvDate.setText(concert.getEventDate());
+        format = new SimpleDateFormat("MMM dd, yyyy");
+        String date = format.format(newDate);
+
+        tvDate.setText(date);
         tvArtists.setText(artists);
         Picasso.with(this).load(concert.backdropImage).into(ivHeader);
 
