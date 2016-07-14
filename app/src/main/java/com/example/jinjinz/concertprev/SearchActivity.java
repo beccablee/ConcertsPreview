@@ -239,7 +239,7 @@ public class SearchActivity extends AppCompatActivity implements com.google.andr
         }
         params.put("latlong", "29.563034,-95.262090"); // must be N, E (in the us the last should def be -) that num + is W
         params.put("radius", "50");
-        params.put("size", "200");
+        params.put("size", "100");
 
         // call client
         client = new AsyncHttpClient();
