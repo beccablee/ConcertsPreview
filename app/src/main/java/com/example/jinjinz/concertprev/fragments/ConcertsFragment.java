@@ -4,13 +4,16 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,7 +35,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     public interface ConcertsFragmentListener {
         void populateConcerts(ConcertsFragment fragment, String query);
         void onConcertTap(Concert concert);
-        void onCreateOptionsMenu(Menu menu, MenuInflater inflater, ConcertsFragment concertsFragment);
 
     }
 
@@ -136,7 +138,24 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        concertsFragmentListener.onCreateOptionsMenu(menu, inflater, this);
+
+        inflater.inflate(R.menu.menu_search, menu);
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView = new SearchView(getActivity());
+        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+        MenuItemCompat.setActionView(item, searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                concertsFragmentListener.populateConcerts(ConcertsFragment.this, query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
 
