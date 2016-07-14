@@ -37,7 +37,10 @@
             android:textStyle="bold"
             android:textSize="30dp"
             android:textColor="#deffffff"
-            android:editable="false" />
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="25" />
 
         <TextView
             android:layout_width="match_parent"
@@ -47,7 +50,11 @@
             android:text="Chicago, IL"
             android:textStyle="italic"
             android:textSize="15dp"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="25"/>
     </LinearLayout>
 
     </RelativeLayout>
