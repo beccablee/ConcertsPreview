@@ -9,9 +9,11 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,14 +41,14 @@ public class PlayerActivity extends AppCompatActivity {
     View view;
     Button prevBtn;
     Button nextBtn;
+    ProgressBar progressBar;
+    int total = 30000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Optional
-        //Add skip + backtrack buttons
         //have progress bar on button
-        //make loading screen, make animation on click, make
-        //when do I end the media player
+        //Change media player into fragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
@@ -78,6 +80,7 @@ public class PlayerActivity extends AppCompatActivity {
         view = findViewById(R.id.background);
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         //set back button listener
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +104,7 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }); */
         //initialize media player
-        UpdateInterface(songs.get(songNum));
+        updateInterface(songs.get(songNum));
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -109,8 +112,9 @@ public class PlayerActivity extends AppCompatActivity {
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                UpdateInterface(songs.get(songNum));
+                updateInterface(songs.get(songNum));
                 songNum++;
+                updateProgressBar();
                 mediaPlayer.start();
             }
         });
@@ -194,6 +198,7 @@ public class PlayerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mediaPlayer.stop();
                 mediaPlayer.reset();
+                progressBar.setProgress(0);
                 try {
                     if(songNum == songs.size()) {
                         songNum = 0;
@@ -207,6 +212,26 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
+    private void updateProgressBar() {
+        //attempt at progressbar
+        new Thread(new Runnable() {
+            public void run() {
+                int currentPosition = 0;
+                progressBar.setMax(total);
+                while (mediaPlayer != null && currentPosition < total) {
+                    try {
+                        Thread.sleep(100);
+                        currentPosition = mediaPlayer.getCurrentPosition();
+                    } catch (InterruptedException e) {
+                        return;
+                    } catch (Exception e) {
+                        return;
+                    }
+                    progressBar.setProgress(currentPosition);
+                }
+            }
+        }).start();
+    }
     @Override
     protected void onNewIntent(Intent intent) {
         //create dummy songs and concerts
@@ -244,7 +269,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     //update interface
-    private void UpdateInterface(Song song) {
+    private void updateInterface(Song song) {
         //Picasso.with(this).load(song.getAlbumArtUrl()).fit().into(albumImg);
         songTitle.setText(song.getName());
         artistTitle.setText(song.getArtists().get(0));

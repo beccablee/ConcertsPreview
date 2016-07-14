@@ -17,10 +17,18 @@
         android:layout_height="300dp"
         android:layout_below="@+id/concertTitle"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:background="@android:color/darker_gray"
         android:elevation="20dp"/>
+
+    <ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@id/albumImg"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@id/concertTitle"
@@ -47,7 +55,7 @@
         android:id="@+id/songTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/albumImg"
+        android:layout_below="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:text="Song Title"
         android:textStyle="bold"
@@ -62,12 +70,13 @@
         android:text="Artist Name"
         android:textColor="@android:color/white"/>
 
+
     <Button
         android:id="@+id/playBtn"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_below="@id/artistTitle"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
         android:background="@drawable/ic_pause_circle" />
 
@@ -78,7 +87,7 @@
         android:background="@drawable/skip_prev"
         android:layout_alignTop="@+id/playBtn"
         android:layout_alignStart="@+id/albumImg"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="20dp" />
 
     <Button
         android:layout_width="50dp"
@@ -87,6 +96,8 @@
         android:id="@+id/nextBtn"
         android:layout_alignTop="@+id/playBtn"
         android:layout_alignEnd="@+id/albumImg"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="20dp"/>
+
+
 
 </RelativeLayout>
