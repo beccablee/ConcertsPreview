@@ -103,10 +103,15 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         // Set item views based on your views and data model
         TextView eventName = viewHolder.tvEventName;
         eventName.setText(concert.getEventName());
-        viewHolder.tvEventName.setTag(concert);
+        //viewHolder.tvEventName.setTag(concert);
         TextView eventLoc = viewHolder.tvEventLocation;
-        eventLoc.setText(MessageFormat.format("{0}, {1}, {2}", concert.getCity(), concert.getStateCode(), concert.getCountryCode()));
-        viewHolder.tvEventLocation.setTag(concert);
+        if (concert.getStateCode() != null) {
+            eventLoc.setText(MessageFormat.format("{0}, {1}, {2}", concert.getCity(), concert.getStateCode(), concert.getCountryCode()));
+        } else {
+            eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getCountryCode()));
+
+        }
+        //viewHolder.tvEventLocation.setTag(concert);
         // set background
         RelativeLayout myRL = viewHolder.rlConcert;
         //myRL.setBackground();
