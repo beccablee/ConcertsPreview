@@ -4,9 +4,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -102,6 +106,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         //TODO: get user location
     }
 
@@ -115,9 +120,22 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         // Set layout manager to position the items
         rvConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        // Find the toolbar view inside the activity layout
+        setHasOptionsMenu(true);
+
+        Toolbar tbSearch = (Toolbar) view.findViewById(R.id.tbSearch);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        ((AppCompatActivity) getActivity()).setSupportActionBar(tbSearch);
+
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_search, menu);
+    }
 
 //
 //    protected void populateConcertsNearYou() {

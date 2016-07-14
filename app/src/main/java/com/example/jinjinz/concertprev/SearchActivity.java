@@ -8,9 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -73,11 +71,13 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                 .addApi(LocationServices.API).addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).build();*/
 
+/*
         // Find the toolbar view inside the activity layout
         Toolbar tbSearch = (Toolbar) findViewById(R.id.tbSearch);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         setSupportActionBar(tbSearch);
+*/
 
         /*responseText = (TextView) findViewById(R.id.response);
 
@@ -141,14 +141,14 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     }
 
-    // Menu icons are inflated just as they were with actionbar
+/*    // Menu icons are inflated just as they were with actionbar
     @Override
     //        @NeedsPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
         return true;
-    }
+    }*/
 
 
     // Google locationservices API
