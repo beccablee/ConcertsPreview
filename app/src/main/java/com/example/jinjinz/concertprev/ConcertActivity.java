@@ -2,6 +2,7 @@ package com.example.jinjinz.concertprev;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentTransaction;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.fragments.SongsFragment;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
@@ -41,14 +43,11 @@ public class ConcertActivity extends AppCompatActivity {
     */
     SongsFragment sFragment;
     Button player;
-    ArrayList<Song> songs;
-    com.example.jinjinz.concertprev.SongArrayAdapter adapter;
+    ArrayList<Parcelable> songs;
+    SongArrayAdapter adapter;
     JSONArray allResults;
 
     //TEMPORARY VARIABLES FOR TESTING
-    public String backdropImage;
-    public ArrayList<String> artistList;
-    public String venue; // may be null (tba)
     public String eventTime; // may be null (tba)
     public String city;
     public String stateCode; // may be null (international events)
@@ -64,17 +63,22 @@ public class ConcertActivity extends AppCompatActivity {
     public TextView tvDate;
     public TextView tvArtists;
 
+    AsyncHttpClient client;
     Concert concert;
+
+    int numberOfSongs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_concert);
 
-        setUpArtistSearch();
-
         concert = Parcels.unwrap(getIntent().getParcelableExtra("concert"));
         songs = new ArrayList<>();
+        //adapter = new SongArrayAdapter(this, songs);
+        client = new AsyncHttpClient();
+
+        setUpArtistSearch();
 
         setUpViews();
 
@@ -84,7 +88,7 @@ public class ConcertActivity extends AppCompatActivity {
         //}
 
         if (savedInstanceState == null) {
-            sFragment = SongsFragment.newInstance("params1", "params2");
+            sFragment = SongsFragment.newInstance(songs);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.songContainer, sFragment);
             ft.commit();
@@ -92,7 +96,6 @@ public class ConcertActivity extends AppCompatActivity {
     }
 
     public void setUpArtistSearch(){
-        AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.spotify.com/v1/search";
 
         RequestParams params = new RequestParams();
@@ -121,7 +124,6 @@ public class ConcertActivity extends AppCompatActivity {
 
     public void searchArtistPlaylist(String artistId){
         String ISOCountryCode = "US";
-        AsyncHttpClient client = new AsyncHttpClient();
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
         params.put("country", ISOCountryCode);
@@ -133,8 +135,7 @@ public class ConcertActivity extends AppCompatActivity {
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
                     songs.addAll(Song.fromJSONArray(songsJSONResult));
-                    //adapter.notifyDataSetChanged();
-                    Toast.makeText(getApplicationContext(), "works", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "songs loaded: " + songs.size(), Toast.LENGTH_SHORT).show();
 
                 } catch (JSONException e){
                     e.printStackTrace();
@@ -143,6 +144,7 @@ public class ConcertActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toast.makeText(getApplicationContext(), "songs failed", Toast.LENGTH_SHORT).show();
             }
         });
     }

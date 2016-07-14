@@ -1,14 +1,19 @@
 package com.example.jinjinz.concertprev.models;
 
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
 /**
  * Created by jinjinz on 7/7/16.
  */
+@Parcel
 public class Song {
 
     public void setName(String name) {
@@ -57,11 +62,11 @@ public class Song {
         return albumArtUrl;
     }
 
-    public static ArrayList<Song> fromJSONArray(JSONArray jsonArray) {
-        ArrayList<Song> tracks = new ArrayList<>();
+    public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray) {
+        ArrayList<Parcelable> tracks = new ArrayList<>();
         try {
             for (int i = 0; i < jsonArray.length(); i++) {
-                tracks.add(Song.fromJSON(jsonArray.getJSONObject(i)));
+                tracks.add(Parcels.wrap(Song.fromJSON(jsonArray.getJSONObject(i))));
             }
         } catch (JSONException e) {
             e.printStackTrace();
