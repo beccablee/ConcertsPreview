@@ -60,6 +60,7 @@ public class ConcertActivity extends AppCompatActivity {
     public CollapsingToolbarLayout collapsingToolbarLayout;
     public ImageView ivHeader;
     public Toolbar toolbar;
+    public TextView tvEvent;
     public TextView tvDate;
     public TextView tvArtists;
 
@@ -77,10 +78,10 @@ public class ConcertActivity extends AppCompatActivity {
 
         setUpViews();
 
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(concert.getEventName());
-        }
+        //setSupportActionBar(toolbar);
+        //if (getSupportActionBar() != null) {
+        //    getSupportActionBar().setTitle(concert.getEventName());
+        //}
 
         if (savedInstanceState == null) {
             sFragment = SongsFragment.newInstance("params1", "params2");
@@ -151,24 +152,17 @@ public class ConcertActivity extends AppCompatActivity {
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         ivHeader = (ImageView) findViewById(R.id.ivHeader);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        tvEvent = (TextView) findViewById(R.id.tvEvent);
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvArtists = (TextView) findViewById(R.id.tvArtists);
 
         artists = artistsToString(concert.getArtists());
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date newDate = null;
-        try {
-            newDate = format.parse(concert.getEventDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        String date = formatDate(concert.getEventDate());
 
-        format = new SimpleDateFormat("MMM dd, yyyy");
-        String date = format.format(newDate);
-
+        tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
-        tvArtists.setText(artists);
+        tvArtists.setText(artists + " at " + concert.getVenue());
         Picasso.with(this).load(concert.backdropImage).into(ivHeader);
 
         player = (Button) findViewById(R.id.playerBtn2);
@@ -187,9 +181,22 @@ public class ConcertActivity extends AppCompatActivity {
             if (i == 0) {
                 artistNames += artist_list.get(i);
             } else {
-                artistNames += ", " + artist_list.get(i);
+                artistNames += " & " + artist_list.get(i);
             }
         }
         return artistNames;
+    }
+
+    public String formatDate(String originalDate){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = null;
+        try {
+            newDate = format.parse(concert.getEventDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        format = new SimpleDateFormat("MMM dd, yyyy");
+        String date = format.format(newDate);
+        return date;
     }
 }
