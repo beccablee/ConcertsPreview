@@ -3,9 +3,13 @@ package com.example.jinjinz.concertprev;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.icu.text.MessageFormat;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +22,7 @@ import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -31,9 +36,9 @@ import cz.msebera.android.httpclient.Header;
 
 
 //@RuntimePermissions
-public class SearchActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ConcertsFragment.ConcertsFragmentListener {
+public class SearchActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener {
 
-    ConcertsFragment cFragment;
+    ConcertsFragment mFragment;
     protected Context context;
     TextView tvLocationTest;
     Button player;
@@ -41,6 +46,8 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     // client call variables
     Concert event = new Concert();
+    boolean readyToPopulate = false;
+    boolean apiConnected = false;
 
     /////////////////////////////////////////////
 
@@ -50,6 +57,8 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     protected String queryText;
     protected String permissions; // array or nah
     private static final int LOCATION_PERMISSIONS = 10;
+    GoogleApiClient mGoogleApiClient;
+    protected Location lastLocation;
     private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
     // Google Location API: AIzaSyBHPJnNxwfY8H_Uo6eGsbKw7Xp8Yag3xUM
@@ -59,7 +68,14 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        ///////////////////////////////////////////
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(SearchActivity.this).addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
+        }
 
+        ///////////////////////////////////////////
 
         player = (Button) findViewById(R.id.playerBtn);
         concert = (Button) findViewById(R.id.concertBtn);
@@ -83,37 +99,100 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         });
 
         if (savedInstanceState == null) {
-            cFragment = cFragment.newInstance("param1", "param2");
+            mFragment = mFragment.newInstance("param1", "param2");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.concertContainer, cFragment);
+            ft.replace(R.id.concertContainer, mFragment);
             ft.commit();
         }
 
     }
 
-    ////////////////////////////////////////
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
 
-    ///////////////////////////////////////////
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
 
     AsyncHttpClient client;
 
+    // Fetch
+    public void fetchConcerts() {
+        if (readyToPopulate && apiConnected) {
+            // url: includes api key and music classification
+            String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+            // the parameter(s)
+            RequestParams params = new RequestParams();
+            if (queryText != null) {
+                params.put("keyword", queryText);
+            }
+            String latlong = (MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
+            // getLastLocation()
+
+            params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
+        /*            Log.v("WEAVER_", "Location Change");
+            tvLocationTest.setText(String.valueOf(location.getLatitude()));
+            latlong = (MessageFormat.format("{0},{1}", location.getLatitude(), location.getLongitude()));
+            //populateConcerts(mFragment, queryText);*/
+
+            params.put("radius", "50");
+            params.put("size", "100");
+
+            // call client
+            client = new AsyncHttpClient();
+            client.get(eventsURL, params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
+                    // DESERIALIZE JSON
+                    // CREATE MODELS AND ADD TO ADAPTER
+                    // LOAD MODEL INTO LIST VIEW
+                    JSONArray eventsArray = null;
+                    try {
+                        eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
+                        Log.d("populateFragment", String.valueOf(eventsArray.length()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("houston", "nope");
+                    }
+                    mFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    Log.d("populateFragment", "failure");
+                    Toast.makeText(SearchActivity.this, "Could not display concerts. Pleas wait and try again later.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+    }
+
     @Override
     public void populateConcerts(final ConcertsFragment fragment, String query) {
-        // url: includes api key and music classification
+        //set ready flag
+        readyToPopulate = true;
+        // fetch
+        fetchConcerts();
+
+       /* // url: includes api key and music classification
         String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
         // the parameter(s)
         RequestParams params = new RequestParams();
-        //params.put("latlong", dummyLatlong);
         if (query != null) {
             params.put("keyword", query);
             queryText = query;// get from search toolbar in ConcertsFragment
         }
-        params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
+        String dummyLatlong = "29.7604,-95.3698";
         // getLastLocation()
-        /*            Log.v("WEAVER_", "Location Change");
+
+        params.put("latlong", dummyLatlong); // must be N, E (in the us the last should def be -) that num + is W
+        *//*            Log.v("WEAVER_", "Location Change");
             tvLocationTest.setText(String.valueOf(location.getLatitude()));
             latlong = (MessageFormat.format("{0},{1}", location.getLatitude(), location.getLongitude()));
-            //populateConcerts(cFragment, queryText);*/
+            //populateConcerts(mFragment, queryText);*//*
 
         params.put("radius", "50");
         params.put("size", "100");
@@ -128,10 +207,11 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                 // LOAD MODEL INTO LIST VIEW
                 JSONArray eventsArray = null;
                 try {
-                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events"); // size = 0 rn
+                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
                     Log.d("populateFragment", String.valueOf(eventsArray.length()));
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.d("houston", "nope");
                 }
                 fragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
             }
@@ -139,8 +219,9 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.d("populateFragment", "failure");
+                Toast.makeText(SearchActivity.this, "Could not display concerts. Pleas wait and try again later.", Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -156,7 +237,24 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(SearchActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(SearchActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            ActivityCompat.requestPermissions(SearchActivity.this, locationPermissions, LOCATION_PERMISSIONS);
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        } else {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Log.d("lastlocation", lastLocation.toString());
+            apiConnected = true;
+            fetchConcerts();
 
+        }
     }
 
     @Override
@@ -169,7 +267,22 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
 
+            case LOCATION_PERMISSIONS: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("requestlocation", "Permissions Granted");
+
+                } else {
+                    Log.d("requestlocation", "Permissions Denied");
+                }
+
+            }
+        }
+    }
 
     /*  Log.d("Latitude","location");
         latitude = String.valueOf(location.getLatitude());
