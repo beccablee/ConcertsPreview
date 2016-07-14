@@ -4,22 +4,35 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jinjinz.concertprev.Adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.SearchActivity;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener {
@@ -30,7 +43,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     }
 
     public interface ConcertsFragmentListener {
-        void populateConcertsNearYou(ConcertsFragment fragment);
+        void populateConcerts(ConcertsFragment fragment, String query);
         void onConcertTap(Concert concert);
     }
 
@@ -47,6 +60,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     private String mParam2;
 
     public String dummyLatlong = "34.0928090,-118.3286610"; // need to get from user (may extract from activity.. not sure how yet)
+    private String queryText;
     AsyncHttpClient client;
     ArrayList<Concert> concerts;
     SearchRecyclerAdapter searchAdapter;
@@ -100,7 +114,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
-        concertsFragmentListener.populateConcertsNearYou(this);
+        concertsFragmentListener.populateConcerts(this, queryText);
     }
 
     @Override
@@ -135,10 +149,76 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_search, menu);
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView = new SearchView(((SearchActivity) getContext()).getSupportActionBar().getThemedContext());
+        MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
+        MenuItemCompat.setActionView(item, searchView);
+
+
+        // on original search
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // perform query here
+
+                // catch query string for use in later method
+                queryText = query;
+
+
+                // clear articles and notify adapter
+                concerts.clear();
+                searchAdapter.notifyDataSetChanged();
+
+                // populate concerts
+
+                // url: includes api key and music classification
+                String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+                // the parameter(s)
+                RequestParams params = new RequestParams();
+                params.put("keyword", query);
+
+                // fetch articles from client
+                // call client
+                client = new AsyncHttpClient();
+                client.get(eventsURL, params, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
+                        // DESERIALIZE JSON
+                        // CREATE MODELS AND ADD TO ADAPTER
+                        // LOAD MODEL INTO LIST VIEW
+                        JSONArray eventsArray = null;
+                        try {
+                            eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events"); // size = 0 rn
+                            Log.d("populateFragment", String.valueOf(eventsArray.length()));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        Log.d("populateFragment", "failure");
+                    }
+                });
+
+                //fetchArticles(params);
+
+                searchView.clearFocus();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+       //return super.onCreateOptionsMenu(menu);
     }
 
 //
-//    protected void populateConcertsNearYou() {
+//    protected void populateConcerts() {
 //        // url: includes api key and music classification
 //        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
 //        // the parameter(s)
