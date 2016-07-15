@@ -162,6 +162,7 @@ public class Concert {
         return array;
     }
 
+    // get a wide image that's large enough to be pretty
     private static String ratioImg(JSONObject event) { //takes an event obj --> { events:[ {0}, {1}, ...]} needs: 0:{images:[ {0}, {1}, ... ]}
         // start with event obj
 
@@ -175,7 +176,9 @@ public class Concert {
             for (int i = 0; i < images.length(); i++) { // step through array
                 try {                                                               // get ratio of the image obj
                     if(images.getJSONObject(i).getString("ratio").equals("16_9")) { // if the ratio is 16_9
-                        return images.getJSONObject(i).getString("url"); // return the url of that img obj
+                        if(images.getJSONObject(i).getInt("width") >= 400) {
+                            return images.getJSONObject(i).getString("url"); // return the url of that img obj
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
