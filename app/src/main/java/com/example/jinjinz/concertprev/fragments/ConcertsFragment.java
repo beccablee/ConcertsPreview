@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,18 +27,22 @@ import com.loopj.android.http.AsyncHttpClient;
 import java.util.ArrayList;
 
 
-public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener{
+public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener, SwipeRefreshLayout.OnRefreshListener {
     // , SearchSuggestionsAdapter.SearchSuggestionsAdapterListener
     /*  @Override
     public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
         return new SuggestionsCursor(constraint);
     }
 */
+    public static SwipeRefreshLayout mSwipeRefreshLayout;
+
 
     @Override
     public void onConcertTap(Concert concert) {
         concertsFragmentListener.onConcertTap(concert);
     }
+
+
 
 
     public interface ConcertsFragmentListener {
@@ -138,7 +143,13 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         ((AppCompatActivity) getActivity()).setSupportActionBar(tbSearch);
-
+        // swipe refresh
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_green_dark), // deprecated but ContextCompat.getColor() doesn't work either
+                getResources().getColor(android.R.color.holo_red_dark),
+                getResources().getColor(android.R.color.holo_blue_dark),
+                getResources().getColor(android.R.color.holo_orange_dark));
         return view;
     }
 
@@ -154,6 +165,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                queryText = query;
                 concertsFragmentListener.populateConcerts(ConcertsFragment.this, query);
                 return false;
             }
@@ -171,6 +183,12 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         searchAdapter.notifyDataSetChanged();
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRefresh() {
+        concertsFragmentListener.populateConcerts(ConcertsFragment.this, queryText);
+
     }
 
 }

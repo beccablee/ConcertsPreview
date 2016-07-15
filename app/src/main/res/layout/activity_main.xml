@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jinjinz.concertprev.MainActivity">
+    tools:context="com.example.jinjinz.concertprev.MainActivity"
+    android:background="#e291939b">
 
     <FrameLayout
         android:layout_width="match_parent"

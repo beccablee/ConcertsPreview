@@ -84,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ft.replace(R.id.mainFragment, mConcertsFragment);
             ft.commit();
         }
+
+/*        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                populateConcerts(mConcertsFragment, queryText);
+            }
+        });*/
         // logic to change fragments will be in concert and song click listeners
 
 
@@ -281,6 +288,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
 
+
+
     // Fragment methods
 
     AsyncHttpClient client;
@@ -322,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         Log.d("houston", "nope");
                     }
                     mConcertsFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                    ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
