@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
+        updateProgressBar();
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(MainActivity.this).addConnectionCallbacks(this)
@@ -98,46 +98,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                testPlayer();
            }
        });
-        //on prepared listener --> what happens when it is ready to play
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
-                if (fragment != null) {
-                    fragment.updateInterface(songs.get(songNum));
-                    fragment.updatePlay(true);
-                }
-                mediaPlayer.start();
-            }
-        });
+        //change from onCreate to when the first song is called
 
-        //switch between songs
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.reset();
-                songNum++;
-                if(songNum == songs.size()) {
-                    songNum = 0;
-                }
-                try {
-                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT);
-                return false;
-            }
-        });
     }
 
     private void testPlayer() {
+        //testing code
         //create dummy songs and concerts
         Concert dummy_c = new Concert();
         Song dummy_ss = new Song();
@@ -151,13 +117,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ArrayList<Song> dummy_s = new ArrayList<>();
         dummy_s.add(dummy_ss);
 
-        //testing code
         PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(dummy_s.get(0));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, playerFragment, "player");
         ft.commit();
         onNewConcert(dummy_c,dummy_s);
-        updateProgressBar();
 
     }
 
@@ -167,6 +131,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             songNum = 0;
             concert = c;
             songs = s;
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            //on prepared listener --> what happens when it is ready to play
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
+                    if (fragment != null) {
+                        fragment.updateInterface(songs.get(songNum));
+                        fragment.updatePlay(true);
+                    }
+                    mediaPlayer.start();
+                }
+            });
+
+            //switch between songs
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.reset();
+                    songNum++;
+                    if(songs != null && songNum == songs.size()) {
+                        songNum = 0;
+                    }
+                    try {
+                        mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                        mediaPlayer.prepareAsync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT);
+                    return false;
+                }
+            });
             try {
                 mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
                 mediaPlayer.prepareAsync();
@@ -251,11 +254,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void updateProgressBar() {
-        Log.i("test", "hi");
         //attempt at progressbar
         new Thread(new Runnable() {
             public void run() {
-                Log.i("test2", "hi");
                 int currentPosition = 0;
                 while (true) {
                     try {
@@ -268,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     }
                     PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentByTag("player");
                     if (fragment != null) {
-                        Log.i("test3", "hi");
                         fragment.setProgressBar(currentPosition);
                     }
                 }
