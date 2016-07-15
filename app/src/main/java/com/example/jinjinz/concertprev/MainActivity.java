@@ -7,12 +7,10 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-<<<<<<< 731e23c2cce647c6d037074f6b15b60560ed59d1
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-=======
->>>>>>> changed media player to fragment
+
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
