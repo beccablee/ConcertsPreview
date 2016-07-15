@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,10 +25,6 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="com.example.jinjinz.concertprev.fragments.ConcertsFragment">
 
-
-
-
-        <!-- TODO: Update blank fragment layout -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvConcerts"
             android:layout_width="match_parent"

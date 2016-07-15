@@ -194,7 +194,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             return;
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            Log.d("lastlocation", lastLocation.toString());
+            // Log.d("lastlocation", lastLocation.toString());
             apiConnected = true;
             fetchConcerts();
 
