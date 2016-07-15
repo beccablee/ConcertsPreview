@@ -306,12 +306,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             playerBar.updateInterface(songs.get(songNum));
         }
         if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            playerBar.updatePlay(false);
+            playerBar.updatePlay(true);
         }
         else {
-            mediaPlayer.start();
-            playerBar.updatePlay(true);
+            playerBar.updatePlay(false);
         }
     }
     public void updateProgressBar() {
