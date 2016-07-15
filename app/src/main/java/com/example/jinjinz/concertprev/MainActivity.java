@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        updateProgressBar();
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(MainActivity.this).addConnectionCallbacks(this)
@@ -152,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     mediaPlayer.start();
                 }
             });
-
+            updateProgressBar();
             //switch between songs
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
