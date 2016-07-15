@@ -67,7 +67,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     private String queryText;
     AsyncHttpClient client;
     ArrayList<Concert> concerts;
-    SearchRecyclerAdapter searchAdapter;
+    public static SearchRecyclerAdapter searchAdapter;
     ConcertsFragmentListener concertsFragmentListener;
 
    // private OnFragmentInteractionListener mListener;
@@ -187,8 +187,9 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
     @Override
     public void onRefresh() {
-        concertsFragmentListener.populateConcerts(ConcertsFragment.this, queryText);
+        concertsFragmentListener.populateConcerts(ConcertsFragment.this, null);
 
     }
+
 
 }

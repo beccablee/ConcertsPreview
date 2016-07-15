@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -125,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(dummy_s.get(0));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, playerFragment, "player");
+        ft.addToBackStack("player");
         ft.commit();
         onNewConcert(dummy_c,dummy_s);
 
@@ -323,13 +323,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     JSONArray eventsArray = null;
                     try {
                         eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
+                        mConcertsFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                        ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                         Log.d("populateFragment", String.valueOf(eventsArray.length()));
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("houston", "nope");
+                        if(queryText != null) {
+                            ConcertsFragment.searchAdapter.clear();
+                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + "in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                        } else {
+                            Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
+                        }
+                        ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                     }
-                    mConcertsFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
-                    ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
+//                    mConcertsFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+//                    ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
