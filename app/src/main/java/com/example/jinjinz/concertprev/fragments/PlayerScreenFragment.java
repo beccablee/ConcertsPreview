@@ -51,6 +51,7 @@ public class PlayerScreenFragment extends Fragment {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
         Bundle args = new Bundle();
         //args.putParcelable("song", song);
+        fragment.initialSong = song;
         fragment.setArguments(args);
         return fragment;
     }

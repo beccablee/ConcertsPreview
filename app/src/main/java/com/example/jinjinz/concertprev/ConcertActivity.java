@@ -153,7 +153,7 @@ public class ConcertActivity extends AppCompatActivity {
         appBar = (AppBarLayout) findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         ivHeader = (ImageView) findViewById(R.id.ivHeader);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar); //Ask Rebecca: what is this for?
         tvEvent = (TextView) findViewById(R.id.tvEvent);
         tvDate = (TextView) findViewById(R.id.tvDate);
         tvArtists = (TextView) findViewById(R.id.tvArtists);
