@@ -35,7 +35,7 @@ public class SongsFragment extends Fragment {
     public SongArrayAdapter adapter;
 
 
-   // private OnFragmentInteractionListener mListener;
+    // private OnFragmentInteractionListener mListener;
 
     public SongsFragment() {
         // Required empty public constructor
@@ -91,16 +91,15 @@ public class SongsFragment extends Fragment {
         adapter.addAll(songs);
     }
 
-  /**  // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }*/
+    /**  // TODO: Rename method, update argument and hook method into UI event
+     public void onButtonPressed(Uri uri) {
+     if (mListener != null) {
+     mListener.onFragmentInteraction(uri);
+     }
+     }
+     @Override
+     public void onDetach() {
+     super.onDetach();
+     mListener = null;
+     }*/
 }

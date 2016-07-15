@@ -42,7 +42,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     Button concert;
 
     // client call variables
-    Concert event = new Concert();
     boolean readyToPopulate = false;
     boolean apiConnected = false;
 
@@ -170,7 +169,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void onConcertTap(Concert concert) {
-        Intent intent = new Intent(this, ConcertActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         // call listener(concert)
         intent.putExtra("concert", Parcels.wrap(concert));
         Toast.makeText(this, concert.getEventName(), Toast.LENGTH_SHORT).show();

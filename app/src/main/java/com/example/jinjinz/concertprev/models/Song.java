@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 import org.parceler.Parcels;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
