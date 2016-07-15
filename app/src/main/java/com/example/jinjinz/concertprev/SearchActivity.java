@@ -73,7 +73,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         player.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(SearchActivity.this, PlayerActivity.class);
+                Intent i = new Intent(SearchActivity.this, MainActivity.class);
                 startActivity(i);
             }
         });
@@ -193,7 +193,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             return;
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            // Log.d("lastlocation", lastLocation.toString());
             apiConnected = true;
             fetchConcerts();
 

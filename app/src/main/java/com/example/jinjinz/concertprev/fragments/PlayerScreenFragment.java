@@ -45,7 +45,7 @@ public class PlayerScreenFragment extends Fragment {
     public interface PlayerScreenFragmentListener {
         String getConcertName(); //get concert name
         void onConcertClick(); //on concert name click
-        void playPauseSong(PlayerScreenFragment fragment); //on play button click
+        void playPauseSong(); //on play button click
         void skipNext(); //on skip next click
         void skipPrev(); //on skip previous click
     }
@@ -81,17 +81,17 @@ public class PlayerScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_player, container, false);
+        view = inflater.inflate(R.layout.activity_player, container, false);
         //initialize values
-        albumImg = (ImageView) v.findViewById(R.id.albumImg);
-        concertTitle = (TextView) v.findViewById(R.id.concertTitle);
-        songTitle = (TextView) v.findViewById(R.id.songTitle);
-        playBtn = (Button) v.findViewById(R.id.playBtn);
-        artistTitle = (TextView) v.findViewById(R.id.artistTitle);
-        view = v.findViewById(R.id.background);
-        prevBtn = (Button) v.findViewById(R.id.prevBtn);
-        nextBtn = (Button) v.findViewById(R.id.nextBtn);
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        albumImg = (ImageView) view.findViewById(R.id.albumImg);
+        concertTitle = (TextView) view.findViewById(R.id.concertTitle);
+        songTitle = (TextView) view.findViewById(R.id.songTitle);
+        playBtn = (Button) view.findViewById(R.id.playBtn);
+        artistTitle = (TextView) view.findViewById(R.id.artistTitle);
+        //view = v.findViewById(R.id.background);
+        prevBtn = (Button) view.findViewById(R.id.prevBtn);
+        nextBtn = (Button) view.findViewById(R.id.nextBtn);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         concertTitle.setText(listener.getConcertName());
         concertTitle.setOnClickListener(new View.OnClickListener() {
@@ -107,7 +107,7 @@ public class PlayerScreenFragment extends Fragment {
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.playPauseSong((PlayerScreenFragment) getParentFragment());
+                listener.playPauseSong();
             }
         });
         prevBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +124,7 @@ public class PlayerScreenFragment extends Fragment {
         });
         progressBar.setMax(total);
         //progressbar
-        return v;
+        return view;
     }
     //update interface
     public void updateInterface(Song song) {
@@ -155,6 +155,7 @@ public class PlayerScreenFragment extends Fragment {
             // Fires if bitmap fails to load
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
+                view.setBackgroundColor(Color.parseColor("#404040"));
             }
 
             @Override
@@ -167,14 +168,15 @@ public class PlayerScreenFragment extends Fragment {
         albumImg.setTag(target);
         // Instruct Picasso to load the bitmap into the target defined above
         Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
+        //view.setBackgroundColor(Color.parseColor("#404040"));
     }
     //call by activity
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
-            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_play_circle_));
+            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_play_circle_));
         }
     }
 
@@ -182,8 +184,8 @@ public class PlayerScreenFragment extends Fragment {
     public void setProgressBar(int time) {
         progressBar.setProgress(time);
     }
-    //move time to activity
-    //method for changing visuals called by activity
+    //NOTE: original implementation worked better bc Timer class is relative to absolute time
+    //Also it would be better to implement only while fragment is open
     /**public void updateProgressBar() {
         //attempt at progressbar
         new Thread(new Runnable() {

@@ -7,12 +7,17 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+<<<<<<< 731e23c2cce647c6d037074f6b15b60560ed59d1
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+=======
+>>>>>>> changed media player to fragment
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ArrayList<Song> songs;
     MediaPlayer mediaPlayer;
     private int songNum;
+    private Button testBtn;
 
     ConcertsFragment mConcertsFragment; // concerts fragment
     SongsFragment mSongsFragment; // songs fragment
@@ -67,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setContentView(R.layout.activity_main);
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(MainActivity.this).addConnectionCallbacks(this)
@@ -82,22 +87,117 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ft.commit();
         }
         // logic to change fragments will be in concert and song click listeners
-    }
 
-    // Player Fragment
-    ////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////
 
     // For dynamically showing and hiding the player frame at the bottom
     //FrameLayout playerBar = (FrameLayout)findViewById(R.id.playerFragment);
     //playerBar. // you can use INVISIBLE also instead of GONE
 
+       testBtn.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               testPlayer();
+           }
+       });
+        //on prepared listener --> what happens when it is ready to play
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
+                if (fragment != null) {
+                    fragment.updateInterface(songs.get(songNum));
+                    fragment.updatePlay(true);
+                }
+                mediaPlayer.start();
+            }
+        });
+
+        //switch between songs
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                mediaPlayer.reset();
+                songNum++;
+                if(songNum == songs.size()) {
+                    songNum = 0;
+                }
+                try {
+                    mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                    mediaPlayer.prepareAsync();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT);
+                return false;
+            }
+        });
+    }
+
+    private void testPlayer() {
+        //create dummy songs and concerts
+        Concert dummy_c = new Concert();
+        Song dummy_ss = new Song();
+        dummy_c.setEventName("TESTING");
+        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
+        ArrayList<String> artist = new ArrayList<>();
+        artist.add("Elvis Presley");
+        dummy_ss.setArtists(artist);
+        dummy_ss.setName("Suspicious Minds");
+        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
+        ArrayList<Song> dummy_s = new ArrayList<>();
+        dummy_s.add(dummy_ss);
+
+        //testing code
+        PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(dummy_s.get(0));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, playerFragment, "player");
+        ft.commit();
+        onNewConcert(dummy_c,dummy_s);
+        updateProgressBar();
+
+    }
+
+    private void onNewConcert(Concert c, ArrayList<Song> s) {
+        //only play if new concert or is different from current playing
+        if (concert == null) {
+            songNum = 0;
+            concert = c;
+            songs = s;
+            try {
+                mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+         else if( !concert.getEventName().equals(c.getEventName())) {
+            //initialize
+            songNum = 0;
+            concert = c;
+            songs = s;
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            //start with first song
+            try {
+                mediaPlayer.setDataSource(songs.get(songNum).getPreviewUrl());
+                mediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    //Player + MediaPlayer methods
+    ////////////////////////////////////////////////////
     @Override
     public String getConcertName() {
-        if (concert != null) {
-            return concert.getEventName();
-        }
-        return null;
+        return concert.getEventName();
     }
     //go to concert fragment
     // on concert name click?
@@ -106,7 +206,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     @Override
-    public void playPauseSong(PlayerScreenFragment fragment) {
+    public void playPauseSong() {
+        PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentById(R.id.mainFragment);
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             fragment.updatePlay(false);
@@ -150,9 +251,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-
-    //We want everything to be happening with the media player here
-    ////////////////////////////////////////////////////
+    public void updateProgressBar() {
+        Log.i("test", "hi");
+        //attempt at progressbar
+        new Thread(new Runnable() {
+            public void run() {
+                Log.i("test2", "hi");
+                int currentPosition = 0;
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                        currentPosition = mediaPlayer.getCurrentPosition();
+                    } catch (InterruptedException e) {
+                        return;
+                    } catch (Exception e) {
+                        return;
+                    }
+                    PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentByTag("player");
+                    if (fragment != null) {
+                        Log.i("test3", "hi");
+                        fragment.setProgressBar(currentPosition);
+                    }
+                }
+            }
+        }).start();
+    }
     ////////////////////////////////////////////////////
 
     // Search Fragment

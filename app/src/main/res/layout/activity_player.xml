@@ -8,8 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.jinjinz.concertprev.PlayerActivity"
-    android:background="#bb000000"
-    android:id="@+id/background">
+    android:background="#bb000000">
 
     <ImageView
         android:id="@+id/albumImg"
@@ -28,7 +27,8 @@
         android:id="@+id/progressBar"
         android:layout_marginBottom="20dp"
         android:layout_below="@id/albumImg"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:indeterminate="false" />
 
     <TextView
         android:id="@id/concertTitle"
@@ -97,7 +97,5 @@
         android:layout_alignTop="@+id/playBtn"
         android:layout_alignEnd="@+id/albumImg"
         android:layout_marginTop="20dp"/>
-
-
 
 </RelativeLayout>

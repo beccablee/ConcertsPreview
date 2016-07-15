@@ -2,14 +2,12 @@ package com.example.jinjinz.concertprev;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -77,7 +75,7 @@ public class PlayerActivity extends AppCompatActivity {
         songNum = 0;
         play = true;
         artistTitle = (TextView) findViewById(R.id.artistTitle);
-        view = findViewById(R.id.background);
+        //view = findViewById(R.id.background);
         prevBtn = (Button) findViewById(R.id.prevBtn);
         nextBtn = (Button) findViewById(R.id.nextBtn);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -284,14 +282,16 @@ public class PlayerActivity extends AppCompatActivity {
                 Palette backgrd = Palette.from(bitmap).generate();
                 Palette.Swatch swatch = backgrd.getDarkMutedSwatch();
                 if (swatch != null) {
-                    view.setBackgroundColor(swatch.getRgb());
+                    //view.setBackgroundColor(swatch.getRgb());
                 }
                 else {
                     swatch = backgrd.getDarkVibrantSwatch();
-                    if (swatch != null)
-                        view.setBackgroundColor(swatch.getRgb());
-                    else
-                        view.setBackgroundColor(Color.parseColor("#404040"));
+                    if (swatch != null) {
+                        //view.setBackgroundColor(swatch.getRgb());
+                    }
+                    else {
+                        //view.setBackgroundColor(Color.parseColor("#404040"));
+                    }
                 }
                 // Set the result as the background color for `R.id.vPalette` view containing the contact's name.
             }
