@@ -1,5 +1,6 @@
 package com.example.jinjinz.concertprev.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,6 @@ import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -25,8 +25,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class SongsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // TODO: Setup interface and load songs into ListView
     private static final String ARG_PARAM1 = "songs";
 
     private ArrayList<Parcelable> songs;
@@ -34,8 +33,12 @@ public class SongsFragment extends Fragment {
     public ListView lvSongs;
     public SongArrayAdapter adapter;
 
+    public interface SongsFragmentListener {
+        void setUpArtistSearch(SongsFragment fragment);
 
-    // private OnFragmentInteractionListener mListener;
+    }
+
+    SongsFragmentListener songsFragmentListener;
 
     public SongsFragment() {
         // Required empty public constructor
@@ -63,8 +66,11 @@ public class SongsFragment extends Fragment {
         if (getArguments() != null) {
             songs = getArguments().getParcelableArrayList(ARG_PARAM1);
             adapter = new SongArrayAdapter(getActivity(), songs);
-
+            adapter.addAll(songs);
+            adapter.notifyDataSetChanged();
         }
+
+        songsFragmentListener.setUpArtistSearch(this);
 
     }
 
@@ -80,15 +86,24 @@ public class SongsFragment extends Fragment {
             }
         });
 
-        adapter.addAll(songs);
-        adapter.notifyDataSetChanged();
         lvSongs.setAdapter(adapter);
 
         return view;
     }
 
-    public void addAll(List<Parcelable> songs){
-        adapter.addAll(songs);
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            songsFragmentListener = (SongsFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString());
+        }
+    }
+
+    public void addSongs(ArrayList<Parcelable> songsArrayList) {
+        adapter.notifyDataSetChanged();
+        songs.addAll(songsArrayList);
+        adapter.notifyDataSetChanged();
     }
 
     /**  // TODO: Rename method, update argument and hook method into UI event
@@ -102,4 +117,6 @@ public class SongsFragment extends Fragment {
      super.onDetach();
      mListener = null;
      }*/
+
 }
+

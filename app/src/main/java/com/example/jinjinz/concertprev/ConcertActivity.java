@@ -36,7 +36,7 @@ import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ConcertActivity extends AppCompatActivity {
+public class ConcertActivity extends AppCompatActivity implements SongsFragment.SongsFragmentListener {
     /*
         public static final String client_id = "a021f18f7ee14283b99e1cd75952c4a7"; // Your client id
         public static final String client_secret = "74973f24f5014ce9bb26d8883283ca6a"; // Your secret
@@ -66,8 +66,6 @@ public class ConcertActivity extends AppCompatActivity {
     AsyncHttpClient client;
     Concert concert;
 
-    int numberOfSongs;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +76,7 @@ public class ConcertActivity extends AppCompatActivity {
         //adapter = new SongArrayAdapter(this, songs);
         client = new AsyncHttpClient();
 
-        setUpArtistSearch();
+        //setUpArtistSearch();
 
         setUpViews();
 
@@ -95,11 +93,11 @@ public class ConcertActivity extends AppCompatActivity {
         }
     }
 
-    public void setUpArtistSearch(){
+    public void setUpArtistSearch(final SongsFragment fragment){
         String url = "https://api.spotify.com/v1/search";
 
         RequestParams params = new RequestParams();
-        params.put("q", "Drake");
+        params.put("q", concert.getArtists().get(0));
         params.put("type", "artist");
         params.put("limit", 1);
 
@@ -109,7 +107,7 @@ public class ConcertActivity extends AppCompatActivity {
                 String artistJSONResult;
                 try {
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
-                    searchArtistPlaylist(artistJSONResult);
+                    searchArtistPlaylist(fragment, artistJSONResult);
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -122,7 +120,7 @@ public class ConcertActivity extends AppCompatActivity {
         });
     }
 
-    public void searchArtistPlaylist(String artistId){
+    public void searchArtistPlaylist(final SongsFragment fragment, String artistId){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
@@ -136,6 +134,7 @@ public class ConcertActivity extends AppCompatActivity {
                     songsJSONResult = response.getJSONArray("tracks");
                     songs.addAll(Song.fromJSONArray(songsJSONResult));
                     Toast.makeText(getApplicationContext(), "songs loaded: " + songs.size(), Toast.LENGTH_SHORT).show();
+                    fragment.addSongs(Song.fromJSONArray(songsJSONResult));
 
                 } catch (JSONException e){
                     e.printStackTrace();
