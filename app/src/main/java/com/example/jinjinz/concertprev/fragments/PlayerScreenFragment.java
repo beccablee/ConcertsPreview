@@ -50,7 +50,7 @@ public class PlayerScreenFragment extends Fragment {
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
         Bundle args = new Bundle();
-        args.putSerializable("song", song);
+        //args.putParcelable("song", song);
         fragment.setArguments(args);
         return fragment;
     }
