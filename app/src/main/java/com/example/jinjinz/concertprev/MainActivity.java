@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements PlayerScreenFragm
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 
+    // Player
+    ////////////////////////////////////////////////////
     @Override
     public String getConcertName() {
         if (concert != null) {
@@ -82,6 +84,21 @@ public class MainActivity extends AppCompatActivity implements PlayerScreenFragm
             e.printStackTrace();
         }
     }
-
     //We want everything to be happening with the media player here
+    ////////////////////////////////////////////////////
+
+    // Search
+    ////////////////////////////////////////////////////
+
+
+
+    ////////////////////////////////////////////////////
+
+    // Concert + Songs
+    ////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////
+
+
 }

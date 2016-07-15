@@ -204,6 +204,10 @@ public class Concert {
             //concert.backdropImage = ratioImg(event.getJSONArray("images"));
             concert.backdropImage = ratioImg(event);
             concert.eventName = event.getString("name");
+            // because I love Chance
+            if(concert.getEventName().contains("Chance The Rapper")) {
+                concert.backdropImage = "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-372461.png";
+            }
             concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
         } catch (JSONException e) {
             e.printStackTrace();

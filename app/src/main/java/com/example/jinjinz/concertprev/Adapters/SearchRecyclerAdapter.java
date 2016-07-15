@@ -28,7 +28,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     }
 
-// interface
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 

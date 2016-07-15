@@ -1,6 +1,7 @@
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,12 +26,19 @@ import com.loopj.android.http.AsyncHttpClient;
 import java.util.ArrayList;
 
 
-public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener {
+public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener{
+    // , SearchSuggestionsAdapter.SearchSuggestionsAdapterListener
+    /*  @Override
+    public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
+        return new SuggestionsCursor(constraint);
+    }
+*/
 
     @Override
     public void onConcertTap(Concert concert) {
         concertsFragmentListener.onConcertTap(concert);
     }
+
 
     public interface ConcertsFragmentListener {
         void populateConcerts(ConcertsFragment fragment, String query);
@@ -142,6 +150,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         final SearchView searchView = new SearchView(getActivity());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, searchView);
+        searchView.setBackgroundColor(Color.WHITE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

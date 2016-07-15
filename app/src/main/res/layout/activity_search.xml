@@ -41,13 +41,5 @@
         android:layout_toRightOf="@+id/concertBtn"
         android:layout_toEndOf="@+id/concertBtn" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/playerBtn"
-        android:layout_alignTop="@id/playerBtn"
-        android:text="latlong"
-        android:id="@+id/tvLocationTest"/>
-
 
 </RelativeLayout>

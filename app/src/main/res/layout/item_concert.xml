@@ -32,6 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:id="@+id/tvEventName"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:text="Chance The Rapper"
             android:gravity="bottom|left"
             android:textStyle="bold"
