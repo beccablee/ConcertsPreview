@@ -162,28 +162,35 @@ public class Concert {
         return array;
     }
 
-/*    private static String ratioImg(JSONArray images) {
-        String imgURL = "http://www.schaliken.be/sites/default/files/files/afbeeldingen/Seizoen_15-16/BelegenHelden.jpg";
+    private static String ratioImg(JSONObject event) { //takes an event obj --> { events:[ {0}, {1}, ...]} needs: 0:{images:[ {0}, {1}, ... ]}
+        // start with event obj
+
+        JSONArray images = null;
         try {
-            imgURL = images.getJSONObject(0).getString("url");
-            Log.d("ratImg", "default");
+            images = event.getJSONArray("images"); // get the json array of images
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        // iterate through image array to find 16_9 ratio image
-        for(int i = 0; i < images.length(); i++) {
-            try {
-                if("16_9" == images.getJSONObject(i).getString("url")) {
-                    imgURL = images.getJSONObject(i).getString("url");
-                    Log.d("ratImg", "preferred");
+        if (images != null) { // if the images jsonarray exists
+            for (int i = 0; i < images.length(); i++) { // step through array
+                try {                                                               // get ratio of the image obj
+                    if(images.getJSONObject(i).getString("ratio").equals("16_9")) { // if the ratio is 16_9
+                        return images.getJSONObject(i).getString("url"); // return the url of that img obj
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+            }
+            try { // if none are 16_9, go get the first one
+                return event.getJSONArray("images").getJSONObject(0).getString("url");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
         }
-        return imgURL;
-    }*/
+        // if no image array exists, use stock img
+        return "http://www.wallpapersxl.com/wallpapers/1920x1080/concerts/1018922/concerts-skate-music-concert-noise-jpg-with-resolution-1018922.jpg";
+
+    }
 
 
 
@@ -192,7 +199,7 @@ public class Concert {
         // extract the values from the json, store them
         try {
             //concert.backdropImage = ratioImg(event.getJSONArray("images"));
-            concert.backdropImage = event.getJSONArray("images").getJSONObject(0).getString("url");
+            concert.backdropImage = ratioImg(event);
             concert.eventName = event.getString("name");
             concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
         } catch (JSONException e) {

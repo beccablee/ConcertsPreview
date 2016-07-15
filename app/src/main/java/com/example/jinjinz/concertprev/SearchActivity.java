@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.icu.text.MessageFormat;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +14,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
@@ -40,7 +38,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     ConcertsFragment mFragment;
     protected Context context;
-    TextView tvLocationTest;
     Button player;
     Button concert;
 
@@ -49,37 +46,29 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     boolean readyToPopulate = false;
     boolean apiConnected = false;
 
-    /////////////////////////////////////////////
-
-    ////////////////////////////////////////////////
     // Location variables
     protected String latlong;
     protected String queryText;
     protected String permissions; // array or nah
     private static final int LOCATION_PERMISSIONS = 10;
-    GoogleApiClient mGoogleApiClient;
+    protected GoogleApiClient mGoogleApiClient;
     protected Location lastLocation;
     private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
-    // Google Location API: AIzaSyBHPJnNxwfY8H_Uo6eGsbKw7Xp8Yag3xUM
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        ///////////////////////////////////////////
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(SearchActivity.this).addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
         }
 
-        ///////////////////////////////////////////
-
         player = (Button) findViewById(R.id.playerBtn);
         concert = (Button) findViewById(R.id.concertBtn);
-        tvLocationTest = (TextView) findViewById(R.id.tvLocationTest);
 
 
         player.setOnClickListener(new View.OnClickListener() {
@@ -129,15 +118,14 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
             if (queryText != null) {
                 params.put("keyword", queryText);
             }
-            String latlong = (MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
-            // getLastLocation()
+            if (lastLocation != null) {
+                latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
+                // getLastLocation()
+            } else {
+                latlong = null;
+            }
 
             params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
-        /*            Log.v("WEAVER_", "Location Change");
-            tvLocationTest.setText(String.valueOf(location.getLatitude()));
-            latlong = (MessageFormat.format("{0},{1}", location.getLatitude(), location.getLongitude()));
-            //populateConcerts(mFragment, queryText);*/
-
             params.put("radius", "50");
             params.put("size", "100");
 
@@ -172,56 +160,13 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
 
     @Override
     public void populateConcerts(final ConcertsFragment fragment, String query) {
-        //set ready flag
+        // set ready flag
         readyToPopulate = true;
+        // set queryText
+        queryText = query;
         // fetch
         fetchConcerts();
 
-       /* // url: includes api key and music classification
-        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
-        // the parameter(s)
-        RequestParams params = new RequestParams();
-        if (query != null) {
-            params.put("keyword", query);
-            queryText = query;// get from search toolbar in ConcertsFragment
-        }
-        String dummyLatlong = "29.7604,-95.3698";
-        // getLastLocation()
-
-        params.put("latlong", dummyLatlong); // must be N, E (in the us the last should def be -) that num + is W
-        *//*            Log.v("WEAVER_", "Location Change");
-            tvLocationTest.setText(String.valueOf(location.getLatitude()));
-            latlong = (MessageFormat.format("{0},{1}", location.getLatitude(), location.getLongitude()));
-            //populateConcerts(mFragment, queryText);*//*
-
-        params.put("radius", "50");
-        params.put("size", "100");
-
-        // call client
-        client = new AsyncHttpClient();
-        client.get(eventsURL, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
-                // DESERIALIZE JSON
-                // CREATE MODELS AND ADD TO ADAPTER
-                // LOAD MODEL INTO LIST VIEW
-                JSONArray eventsArray = null;
-                try {
-                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
-                    Log.d("populateFragment", String.valueOf(eventsArray.length()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d("houston", "nope");
-                }
-                fragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("populateFragment", "failure");
-                Toast.makeText(SearchActivity.this, "Could not display concerts. Pleas wait and try again later.", Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
     @Override
@@ -284,10 +229,5 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         }
     }
 
-    /*  Log.d("Latitude","location");
-        latitude = String.valueOf(location.getLatitude());
-        longitude = String.valueOf(location.getLongitude());
-        latlong = latitude + "," + longitude;
-        tvLocationTest.setText(latlong);*/
 }
 
