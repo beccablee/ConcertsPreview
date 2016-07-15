@@ -22,6 +22,8 @@ import com.example.jinjinz.concertprev.models.Song;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import org.parceler.Parcels;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -50,7 +52,7 @@ public class PlayerScreenFragment extends Fragment {
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
         Bundle args = new Bundle();
-        //args.putParcelable("song", song);
+        args.putParcelable("song", Parcels.wrap(song));
         fragment.initialSong = song;
         fragment.setArguments(args);
         return fragment;
@@ -63,7 +65,7 @@ public class PlayerScreenFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initialSong = getArguments().getParcelable("song");
+        initialSong = Parcels.unwrap(getArguments().getParcelable("song"));
     }
 
     @Override
