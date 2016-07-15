@@ -18,28 +18,40 @@ import java.util.List;
 /**
  * Created by beccalee on 7/13/16.
  */
-public class SongArrayAdapter extends ArrayAdapter<Parcelable> {
+public class SongArrayAdapter extends ArrayAdapter<Parcelable> implements View.OnClickListener {
 
-    private Context context;
+    private Context mContext;
     private Song song;
     TextView tvSongName;
     TextView tvSongArtist;
+    OnSongClickListener mOnSongClickListener;
 
     public SongArrayAdapter(Context context, List<Parcelable> songs) {
         super(context, R.layout.item_song, songs);
     }
 
+    @Override
+    public void onClick(View view) {
+        TextView tvSongName = (TextView) view.findViewById(R.id.tvSongName);
+        Song song = (Song) tvSongName.getTag();
+        mOnSongClickListener.onSongClicked(song);
+    }
 
+    public interface OnSongClickListener {
+        void onSongClicked(Song song);
+    }
 
     public View getView(int position, View convertView, ViewGroup parent) {
         //context = convertView.getContext();
         song = Parcels.unwrap(getItem(position));
         convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_song, parent, false);
+        convertView.setOnClickListener(this);
 
         tvSongName = (TextView) convertView.findViewById(R.id.tvSongName);
         tvSongArtist = (TextView) convertView.findViewById(R.id.tvSongArtist);
 
         tvSongName.setText(song.getName());
+        tvSongName.setTag(song);
         tvSongArtist.setText(song.getArtists().get(0));
 
         return convertView;

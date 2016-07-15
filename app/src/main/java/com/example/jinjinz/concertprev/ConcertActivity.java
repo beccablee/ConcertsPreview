@@ -192,12 +192,16 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date newDate = null;
         try {
-            newDate = format.parse(concert.getEventDate());
+            newDate = format.parse(originalDate);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         format = new SimpleDateFormat("MMM dd, yyyy");
         String date = format.format(newDate);
         return date;
+    }
+
+    public void launchSongView(Song song){
+        Toast.makeText(getApplicationContext(), song.name, Toast.LENGTH_SHORT).show();
     }
 }

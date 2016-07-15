@@ -64,7 +64,7 @@ public class Song {
     public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray) {
         ArrayList<Parcelable> tracks = new ArrayList<>();
         try {
-            for (int i = 0; i < jsonArray.length(); i++) {
+            for (int i = 0; i < 5; i++) {
                 tracks.add(Parcels.wrap(Song.fromJSON(jsonArray.getJSONObject(i))));
             }
         } catch (JSONException e) {

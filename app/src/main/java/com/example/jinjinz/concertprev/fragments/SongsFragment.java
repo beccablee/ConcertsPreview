@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.models.Song;
 
 import java.util.ArrayList;
 
@@ -24,7 +25,7 @@ import java.util.ArrayList;
  * Use the {@link SongsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SongsFragment extends Fragment {
+public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongClickListener{
     // TODO: Setup interface and load songs into ListView
     private static final String ARG_PARAM1 = "songs";
 
@@ -35,6 +36,7 @@ public class SongsFragment extends Fragment {
 
     public interface SongsFragmentListener {
         void setUpArtistSearch(SongsFragment fragment);
+        void launchSongView(Song song);
 
     }
 
@@ -104,6 +106,10 @@ public class SongsFragment extends Fragment {
         adapter.notifyDataSetChanged();
         songs.addAll(songsArrayList);
         adapter.notifyDataSetChanged();
+    }
+
+    public void onSongClicked(Song song){
+        songsFragmentListener.launchSongView(song);
     }
 
     /**  // TODO: Rename method, update argument and hook method into UI event
