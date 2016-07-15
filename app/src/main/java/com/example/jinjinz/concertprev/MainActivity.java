@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // For dynamically showing and hiding the player frame at the bottom
     //FrameLayout playerBar = (FrameLayout)findViewById(R.id.playerFragment);
     //playerBar. // you can use INVISIBLE also instead of GONE
+        testBtn = (Button) findViewById(R.id.button);
 
        testBtn.setOnClickListener(new View.OnClickListener() {
            @Override
