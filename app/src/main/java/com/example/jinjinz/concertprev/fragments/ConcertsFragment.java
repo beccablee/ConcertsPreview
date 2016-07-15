@@ -164,7 +164,4 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         searchAdapter.notifyDataSetChanged();
     }
 
-
-
-
 }

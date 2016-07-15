@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 import org.parceler.Parcels;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -15,7 +16,6 @@ import java.util.ArrayList;
  */
 @Parcel
 public class Song {
-
     public void setName(String name) {
         this.name = name;
     }

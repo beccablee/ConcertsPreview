@@ -25,8 +25,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ConcertActivity" />
-        <activity android:name=".PlayerActivity"
+        <activity
+            android:name=".PlayerActivity"
             android:label="singleTask launchMode"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
+        <activity android:name=".MainActivity"></activity>
     </application>
+
 </manifest>
