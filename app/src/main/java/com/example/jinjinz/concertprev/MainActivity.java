@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intent.putExtra("concert", Parcels.wrap(concert));
         Toast.makeText(this, concert.getEventName(), Toast.LENGTH_SHORT).show();
         startActivity(intent);
+        // for some reason the tappin f2nd phish reloads main activity
     }
 
     // Google api methods
@@ -247,12 +248,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             ActivityCompat.requestPermissions(MainActivity.this, locationPermissions, LOCATION_PERMISSIONS);
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             return;
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -299,6 +295,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.disconnect();
         super.onStop();
     }
+
+
 
 
     ////////////////////////////////////////////////////

@@ -133,4 +133,16 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         return mConcerts.size();
     }
 
+    // Clean all elements of the recycler
+    public void clear() {
+        mConcerts.clear();
+        notifyDataSetChanged();
+    }
+
+    // Add a list of items
+    public void addAll(ArrayList<Concert> concerts) {
+        mConcerts.addAll(concerts);
+        notifyDataSetChanged();
+    }
+
 }
