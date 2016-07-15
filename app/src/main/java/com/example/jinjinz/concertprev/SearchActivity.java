@@ -88,7 +88,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         });
 
         if (savedInstanceState == null) {
-            mFragment = mFragment.newInstance("param1", "param2");
+            mFragment = mFragment.newInstance(); // add params if needed
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.concertContainer, mFragment);
             ft.commit();
@@ -107,7 +107,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
     }
 
     AsyncHttpClient client;
-
     // Fetch
     public void fetchConcerts() {
         if (readyToPopulate && apiConnected) {
