@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
+import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
 import com.example.jinjinz.concertprev.fragments.SongsFragment;
 import com.example.jinjinz.concertprev.models.Concert;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener {
     Concert concert;
     ArrayList<Song> songs;
     MediaPlayer mediaPlayer;
@@ -102,7 +103,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                testPlayer();
            }
        });
-        //change from onCreate to when the first song is called
+        //Test if playbar works
+        //create dummy songs and concerts
+        Concert dummy_c = new Concert();
+        Song dummy_ss = new Song();
+        dummy_c.setEventName("TESTING");
+        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
+        ArrayList<String> artist = new ArrayList<>();
+        artist.add("Elvis Presley");
+        dummy_ss.setArtists(artist);
+        dummy_ss.setName("Suspicious Minds");
+        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
+        ArrayList<Song> dummy_s = new ArrayList<>();
+        dummy_s.add(dummy_ss);
+        onNewConcert(dummy_c,dummy_s);
 
     }
 
@@ -125,9 +139,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, playerFragment, "player");
         ft.addToBackStack("player");
+        PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
+        if (playerBar != null) {
+            ft.hide(playerBar);
+        }
         ft.commit();
         onNewConcert(dummy_c,dummy_s);
-
     }
 
     private void onNewConcert(Concert c, ArrayList<Song> s) {
@@ -138,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             songs = s;
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            updateProgressBar();
+
+            PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
+            if (fragment == null) {
+                PlayerBarFragment playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.playerFragment, playerBar, "bar");
+                ft.commit();
+            }
             //on prepared listener --> what happens when it is ready to play
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -147,10 +173,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         fragment.updateInterface(songs.get(songNum));
                         fragment.updatePlay(true);
                     }
+                    PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
+                    if (playerBar != null) {
+                        playerBar.updatePlay(true);
+                        playerBar.updateInterface(songs.get(songNum));
+                    }
                     mediaPlayer.start();
                 }
             });
-            updateProgressBar();
+
             //switch between songs
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -195,6 +226,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        } else {
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.start();
             }
         }
     }
@@ -257,7 +292,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             e.printStackTrace();
         }
     }
-
+    @Override
+    public void onClosePlayer() {
+        PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (playerBar == null) {
+            playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
+            ft.replace(R.id.playerFragment, playerBar);
+            ft.commit();
+        }
+        else {
+            ft.show(playerBar);
+            playerBar.updateInterface(songs.get(songNum));
+        }
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            playerBar.updatePlay(false);
+        }
+        else {
+            mediaPlayer.start();
+            playerBar.updatePlay(true);
+        }
+    }
     public void updateProgressBar() {
         //attempt at progressbar
         new Thread(new Runnable() {
@@ -434,12 +490,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.disconnect();
         super.onStop();
     }
-
-
-
-
+    //Playerbar
     ////////////////////////////////////////////////////
+    @Override
+    public void openPlayer() {
+        PlayerScreenFragment fragment = PlayerScreenFragment.newInstance(songs.get(songNum));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, fragment);
+    }
+
+    @Override
+    public void playPauseBarBtn() {
+        PlayerBarFragment fragment = (PlayerBarFragment) getSupportFragmentManager().findFragmentById(R.id.playerFragment);
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            fragment.updatePlay(false);
+        }
+        else {
+            mediaPlayer.start();
+            fragment.updatePlay(true);
+        }
+    }
     ////////////////////////////////////////////////////
+
+
 
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////

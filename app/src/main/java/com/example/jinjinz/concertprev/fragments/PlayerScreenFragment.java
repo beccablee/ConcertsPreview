@@ -48,6 +48,7 @@ public class PlayerScreenFragment extends Fragment {
         void playPauseSong(); //on play button click
         void skipNext(); //on skip next click
         void skipPrev(); //on skip previous click
+        void onClosePlayer(); //on Player close (add playbar)
     }
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
@@ -184,25 +185,10 @@ public class PlayerScreenFragment extends Fragment {
     public void setProgressBar(int time) {
         progressBar.setProgress(time);
     }
-    //NOTE: original implementation worked better bc Timer class is relative to absolute time
-    //Also it would be better to implement only while fragment is open
-    /**public void updateProgressBar() {
-        //attempt at progressbar
-        new Thread(new Runnable() {
-            public void run() {
-                int currentPosition = 0;
-                while (true) {
-                    try {
-                        Thread.sleep(100);
-                        currentPosition = listener.checkProgress();
-                    } catch (InterruptedException e) {
-                        return;
-                    } catch (Exception e) {
-                        return;
-                    }
-                    progressBar.setProgress(currentPosition);
-                }
-            }
-        }).start();
-    }*/
+
+    @Override
+    public void onPause() {
+        listener.onClosePlayer();
+        super.onPause();
+    }
 }
