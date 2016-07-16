@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ConcertsFragment mConcertsFragment; // concerts fragment
     ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
 
-
+    //TODO: make only one instance of player and playerBar run after the navigation works
     // Location variables
     protected String latlong;
     protected String queryText;
