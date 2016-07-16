@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev;
+package com.example.jinjinz.concertprev.DatabaseClasses;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,14 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by noradiegwu on 7/15/16.
  */
-public class UserDatabase extends SQLiteOpenHelper {
+public class UserDatabaseHelper extends SQLiteOpenHelper {
     // we can use ORMs (object relational mappers) to persist models (the user!) to a db table
 
     private static final String DB_NAME = "User Database";
     private static final int DB_VERSION = 0;
 
 
-    public UserDatabase(Context context){
+    public UserDatabaseHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
     }
 
