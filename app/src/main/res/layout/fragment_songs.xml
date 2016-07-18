@@ -3,26 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jinjinz.concertprev.fragments.SongsFragment"
-    android:background="@android:color/darker_gray">
+    android:background="@color/material_grey_800">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:id="@+id/tvSongPlaylist"
-            android:text="Song Playlist"/>
+            android:text="Song Playlist"
+            android:textColor="#FF9800"
+            android:paddingLeft="4dp"/>
 
-        <ListView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvSongs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            android:id="@+id/lvSongs"
-            android:layout_gravity="center_horizontal|bottom" />
-    </LinearLayout>
+            android:layout_below="@+id/tvSongPlaylist"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 </FrameLayout>
 

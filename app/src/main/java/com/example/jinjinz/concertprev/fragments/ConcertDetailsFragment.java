@@ -61,7 +61,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
-        songs = new ArrayList<>();
+        //songs = new ArrayList<>();
 
         if (savedInstanceState == null) {
             sFragment = SongsFragment.newInstance(Parcels.wrap(concert));
