@@ -41,42 +41,34 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         public static final String client_id = "a021f18f7ee14283b99e1cd75952c4a7"; // Your client id
         public static final String client_secret = "74973f24f5014ce9bb26d8883283ca6a"; // Your secret
     */
-    SongsFragment sFragment;
-    Button player;
-    ArrayList<Parcelable> songs;
+    SongsFragment sFragment; // Main
+    Button player; // Fragment
+    ArrayList<Parcelable> songs; // In both
     SongArrayAdapter adapter;
-    JSONArray allResults;
 
-    //TEMPORARY VARIABLES FOR TESTING
-    public String eventTime; // may be null (tba)
-    public String city;
-    public String stateCode; // may be null (international events)
-    public String countryCode;
+    public String artists; // Fragment
 
-    public String artists;
+    public AppBarLayout appBar; //
+    public CollapsingToolbarLayout collapsingToolbarLayout; //
+    public ImageView ivHeader; //
+    public Toolbar toolbar; ///
+    public TextView tvEvent; //
+    public TextView tvDate; //
+    public TextView tvArtists; //
 
-    public AppBarLayout appBar;
-    public CollapsingToolbarLayout collapsingToolbarLayout;
-    public ImageView ivHeader;
-    public Toolbar toolbar;
-    public TextView tvEvent;
-    public TextView tvDate;
-    public TextView tvArtists;
-
-    AsyncHttpClient client;
-    Concert concert;
+    AsyncHttpClient client; // Main (already existed)
+    Concert concert; // Fragment (already in Main)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_concert);
 
-        concert = Parcels.unwrap(getIntent().getParcelableExtra("concert"));
-        songs = new ArrayList<>();
-        //adapter = new SongArrayAdapter(this, songs);
+        concert = Parcels.unwrap(getIntent().getParcelableExtra("concert")); // Fragment
+        songs = new ArrayList<>(); /// Fragment
         client = new AsyncHttpClient();
 
-        //setUpArtistSearch();
+        //setUpArtistSearch(); // called by fragment
 
         setUpViews();
 
@@ -86,14 +78,14 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         //}
 
         if (savedInstanceState == null) {
-            sFragment = SongsFragment.newInstance(songs);
+            sFragment = SongsFragment.newInstance(Parcels.wrap(concert));
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.songContainer, sFragment);
             ft.commit();
         }
     }
 
-    public void setUpArtistSearch(final SongsFragment fragment){
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert){ // changed
         String url = "https://api.spotify.com/v1/search";
 
         RequestParams params = new RequestParams();

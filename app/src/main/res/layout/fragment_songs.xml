@@ -5,12 +5,10 @@
     tools:context="com.example.jinjinz.concertprev.fragments.SongsFragment"
     android:background="@android:color/darker_gray">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
 
         <TextView
             android:layout_width="match_parent"
@@ -26,7 +24,5 @@
             android:id="@+id/lvSongs"
             android:layout_gravity="center_horizontal|bottom" />
     </LinearLayout>
-
-
-
 </FrameLayout>
+

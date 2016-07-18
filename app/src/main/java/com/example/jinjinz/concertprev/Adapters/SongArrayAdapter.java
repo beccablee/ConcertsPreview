@@ -26,8 +26,10 @@ public class SongArrayAdapter extends ArrayAdapter<Parcelable> implements View.O
     TextView tvSongArtist;
     OnSongClickListener mOnSongClickListener;
 
-    public SongArrayAdapter(Context context, List<Parcelable> songs) {
+    public SongArrayAdapter(Context context, List<Parcelable> songs, OnSongClickListener songClickListener) {
         super(context, R.layout.item_song, songs);
+        mContext = context;
+        mOnSongClickListener = songClickListener;
     }
 
     @Override
@@ -53,6 +55,8 @@ public class SongArrayAdapter extends ArrayAdapter<Parcelable> implements View.O
         tvSongName.setText(song.getName());
         tvSongName.setTag(song);
         tvSongArtist.setText(song.getArtists().get(0));
+
+        //mOnSongClickListener = (OnSongClickListener) this;
 
         return convertView;
     }

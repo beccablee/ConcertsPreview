@@ -8,12 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
+
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -27,15 +31,18 @@ import java.util.ArrayList;
  */
 public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongClickListener{
     // TODO: Setup interface and load songs into ListView
-    private static final String ARG_PARAM1 = "songs";
 
     private ArrayList<Parcelable> songs;
+    private Concert concert;
+
+    Button player;
+
 
     public ListView lvSongs;
     public SongArrayAdapter adapter;
 
     public interface SongsFragmentListener {
-        void setUpArtistSearch(SongsFragment fragment);
+        void setUpArtistSearch(SongsFragment fragment, Concert concert);
         void launchSongView(Song song);
 
     }
@@ -54,10 +61,11 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
      * @return A new instance of fragment SongsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SongsFragment newInstance(ArrayList<Parcelable> paramSongs) {
+    public static SongsFragment newInstance(Parcelable concert) { //ArrayList<Parcelable> paramSongs,
         SongsFragment fragment = new SongsFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, paramSongs);
+        //args.putParcelableArrayList("songs", paramSongs);
+        args.putParcelable("concert", concert);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,13 +74,16 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            songs = getArguments().getParcelableArrayList(ARG_PARAM1);
-            adapter = new SongArrayAdapter(getActivity(), songs);
-            adapter.addAll(songs);
-            adapter.notifyDataSetChanged();
+            //songs = getArguments().getParcelableArrayList("songs"); // might be unnecessary
+            songs = new ArrayList<>();
+            concert = Parcels.unwrap(getArguments().getParcelable("concert"));
+            adapter = new SongArrayAdapter(getActivity(), songs, this);
+            //adapter.addAll(songs);
+            //adapter.notifyDataSetChanged();
+            //TO DO: get concert to pass through
         }
 
-        songsFragmentListener.setUpArtistSearch(this);
+        songsFragmentListener.setUpArtistSearch(this, concert);
 
     }
 

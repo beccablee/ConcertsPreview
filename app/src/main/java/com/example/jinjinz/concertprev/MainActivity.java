@@ -1,12 +1,12 @@
 package com.example.jinjinz.concertprev;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
 import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
@@ -40,15 +41,17 @@ import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener {
+
     Concert concert;
     ArrayList<Song> songs;
+    ArrayList<Parcelable> pSongs;
     MediaPlayer mediaPlayer;
     private int songNum;
     private Button testBtn;
 
     ConcertsFragment mConcertsFragment; // concerts fragment
-    SongsFragment mSongsFragment; // songs fragment
+    ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
 
 
     // Location variables
@@ -347,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AsyncHttpClient client;
     // Fetch
     public void fetchConcerts() {
-        if (readyToPopulate && apiConnected) {
+        if (readyToPopulate || apiConnected) { //////////// should be && --> onConnected()
             // url: includes api key and music classification
             String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
             // the parameter(s)
@@ -419,18 +422,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onConcertTap(Concert concert) {
 
 
-/*        // open songs fragment --> needs more stuff from songsfrag
-        mSongsFragment = mSongsFragment.newInstance(parcelableSongs); // add params if needed
+        // open songs fragment --> needs more stuff from songsfrag
+        mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, mSongsFragment);
+        ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
-        ft.commit();*/
+        ft.commit();
 
-        Intent intent = new Intent(this, ConcertActivity.class);
+        /*Intent intent = new Intent(this, ConcertActivity.class);
         // call listener(concert)
         intent.putExtra("concert", Parcels.wrap(concert));
         Toast.makeText(this, concert.getEventName(), Toast.LENGTH_SHORT).show();
-        startActivity(intent);
+        startActivity(intent);*/
         // for some reason the tappin f2nd phish reloads main activity
     }
 
@@ -516,6 +519,73 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
+
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert){
+        String url = "https://api.spotify.com/v1/search";
+
+        client = new AsyncHttpClient();
+        pSongs = new ArrayList<>();
+
+        RequestParams params = new RequestParams();
+        params.put("q", concert.getArtists().get(0));
+        params.put("type", "artist");
+        params.put("limit", 1);
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                String artistJSONResult;
+                try {
+                    artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
+                    searchArtistPlaylist(fragment, artistJSONResult);
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.d("DEBUG", "" + statusCode);
+            }
+        });
+    }
+
+    public void searchArtistPlaylist(final SongsFragment fragment, String artistId){
+        String ISOCountryCode = "US";
+        String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
+        RequestParams params = new RequestParams();
+        params.put("country", ISOCountryCode);
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                JSONArray songsJSONResult;
+                try {
+                    songsJSONResult = response.getJSONArray("tracks");
+                    pSongs.addAll(Song.fromJSONArray(songsJSONResult));
+                    Toast.makeText(getApplicationContext(), "songs loaded: " + pSongs.size(), Toast.LENGTH_SHORT).show();
+                    fragment.addSongs(Song.fromJSONArray(songsJSONResult));
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toast.makeText(getApplicationContext(), "songs failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void launchSongView(Song song){
+        Toast.makeText(this, song.name, Toast.LENGTH_SHORT).show();
+        PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(song);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, playerFragment, "player");
+        ft.addToBackStack("player");
+        ft.commit();
+    }
 
 
     ////////////////////////////////////////////////////
