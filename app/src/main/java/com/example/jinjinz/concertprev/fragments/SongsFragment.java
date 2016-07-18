@@ -41,7 +41,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     public interface SongsFragmentListener {
         void setUpArtistSearch(SongsFragment fragment, Concert concert, int artist_index);
         void launchSongView(Song song);
-
     }
 
     SongsFragmentListener songsFragmentListener;

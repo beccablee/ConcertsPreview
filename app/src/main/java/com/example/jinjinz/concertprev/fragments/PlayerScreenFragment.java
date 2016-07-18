@@ -49,6 +49,7 @@ public class PlayerScreenFragment extends Fragment {
         void skipNext(); //on skip next click
         void skipPrev(); //on skip previous click
         void onClosePlayer(); //on Player close (add playbar)
+        void onOpenPlayer(); //on Player open (change ui)
     }
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
@@ -61,6 +62,13 @@ public class PlayerScreenFragment extends Fragment {
 
     public PlayerScreenFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        listener.onOpenPlayer();
+
     }
 
     @Override
@@ -130,6 +138,7 @@ public class PlayerScreenFragment extends Fragment {
     //update interface
     public void updateInterface(Song song) {
         //Picasso.with(this).load(song.getAlbumArtUrl()).fit().into(albumImg);
+        concertTitle.setText(listener.getConcertName());
         songTitle.setText(song.getName());
         artistTitle.setText(song.getArtists().get(0));
         // Define a listener for image loading
@@ -139,12 +148,12 @@ public class PlayerScreenFragment extends Fragment {
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 albumImg.setImageBitmap(bitmap);
                 Palette backgrd = Palette.from(bitmap).generate();
-                Palette.Swatch swatch = backgrd.getDarkMutedSwatch();
+                Palette.Swatch swatch = backgrd.getDarkVibrantSwatch();
                 if (swatch != null) {
                     view.setBackgroundColor(swatch.getRgb());
                 }
                 else {
-                    swatch = backgrd.getDarkVibrantSwatch();
+                    swatch = backgrd.getDarkMutedSwatch();
                     if (swatch != null)
                         view.setBackgroundColor(swatch.getRgb());
                     else

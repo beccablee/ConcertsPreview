@@ -34,6 +34,7 @@ public class PlayerBarFragment extends Fragment {
     public interface PlayerBarFragmentListener {
         void openPlayer();
         void playPauseBarBtn();
+        void onOpenBar();
     }
     public PlayerBarFragment() {
         // Required empty public constructor
@@ -53,7 +54,11 @@ public class PlayerBarFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        listener.onOpenBar();
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -13,7 +13,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -38,6 +37,7 @@ import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -45,13 +45,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     Concert concert;
     ArrayList<Song> songs;
-    ArrayList<Parcelable> pSongs;
+    ArrayList<Parcelable> pSongs; //I need this now
+    Concert pConcert;
     MediaPlayer mediaPlayer;
     private int songNum;
     private Button testBtn;
 
     ConcertsFragment mConcertsFragment; // concerts fragment
     ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
+
+    PlayerBarFragment barFragment;
+    PlayerScreenFragment playerFragment;
 
     //TODO: make only one instance of player and playerBar run after the navigation works
     // Location variables
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // logic to change fragments will be in concert and song click listeners
 
 
-    // For dynamically showing and hiding the player frame at the bottom
+  /**  // For dynamically showing and hiding the player frame at the bottom
     //FrameLayout playerBar = (FrameLayout)findViewById(R.id.playerFragment);
     //playerBar. // you can use INVISIBLE also instead of GONE
         testBtn = (Button) findViewById(R.id.button);
@@ -119,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
         ArrayList<Song> dummy_s = new ArrayList<>();
         dummy_s.add(dummy_ss);
-        onNewConcert(dummy_c,dummy_s);
+        onNewConcert(dummy_c,dummy_s); */
 
     }
 
@@ -161,30 +165,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             updateProgressBar();
 
             //playerbar initialize
-            PlayerBarFragment playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
+          /**  barFragment = PlayerBarFragment.newInstance(songs.get(songNum));
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.playerFragment, playerBar, "bar");
+            ft.replace(R.id.playerFragment, barFragment, "bar");
             ft.commit();
             //hide playerbar on initialization
-            PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
-            if (fragment != null) {
+            if (playerFragment.isVisible()) {
                 ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
                 ft.commit();
-            }
+            }*/
 
             //on prepared listener --> what happens when it is ready to play
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
-                    if (fragment != null) {
-                        fragment.updateInterface(songs.get(songNum));
-                        fragment.updatePlay(true);
+                    if (playerFragment != null && playerFragment.isVisible()) {
+                        playerFragment.updateInterface(songs.get(songNum));
+                        playerFragment.updatePlay(true);
                     }
-                    PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
-                    if (playerBar != null) {
-                        playerBar.updatePlay(true);
-                        playerBar.updateInterface(songs.get(songNum));
+                    if (barFragment != null && barFragment.isVisible()) {
+                        barFragment.updatePlay(true);
+                        barFragment.updateInterface(songs.get(songNum));
                     }
                     mediaPlayer.start();
                 }
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 e.printStackTrace();
             }
         }
-         else if( !concert.getEventName().equals(c.getEventName())) {
+         else if(!concert.getEventName().equals(c.getEventName())) {
             //initialize
             songNum = 0;
             concert = c;
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mediaPlayer.stop();
         mediaPlayer.reset();
         try {
+            songNum++;
             if(songNum == songs.size()) {
                 songNum = 0;
             }
@@ -302,25 +304,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
     @Override
     public void onClosePlayer() {
-        PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
+        //PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (playerBar == null) {
-            playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
-            ft.replace(R.id.playerFragment, playerBar);
+        if (barFragment == null) {
+            barFragment = PlayerBarFragment.newInstance(songs.get(songNum));
+            ft.replace(R.id.playerFragment, barFragment, "bar");
             ft.commit();
         }
         else {
-            ft.show(playerBar);
-            playerBar.updateInterface(songs.get(songNum));
+            ft.show(barFragment);
             ft.commit();
         }
-        if (mediaPlayer.isPlaying()) {
-            playerBar.updatePlay(true);
-        }
-        else {
-            playerBar.updatePlay(false);
-        }
+
     }
+
+    @Override
+    public void onOpenPlayer() {
+        playerFragment.updateInterface(songs.get(songNum));
+        playerFragment.updatePlay(mediaPlayer.isPlaying());
+    }
+
     public void updateProgressBar() {
         //attempt at progressbar
         new Thread(new Runnable() {
@@ -335,9 +338,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     } catch (Exception e) {
                         return;
                     }
-                    PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentByTag("player");
-                    if (fragment != null) {
-                        fragment.setProgressBar(currentPosition);
+                    //PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentByTag("player");
+                    if (playerFragment != null && playerFragment.isVisible()) {
+                        playerFragment.setProgressBar(currentPosition);
                     }
                 }
             }
@@ -423,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // fetch
         fetchConcerts();
     }
-
+    //TODO figure out what's up
     @Override
     public void onConcertTap(Concert concert) {
 
@@ -501,9 +504,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ////////////////////////////////////////////////////
     @Override
     public void openPlayer() {
-        PlayerScreenFragment fragment = PlayerScreenFragment.newInstance(songs.get(songNum));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, fragment);
+        ft.replace(R.id.mainFragment, playerFragment, "player");
+        if (barFragment != null) {
+            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
+        }
+        ft.addToBackStack("player");
+        ft.commit();
     }
 
     @Override
@@ -518,6 +525,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             fragment.updatePlay(true);
         }
     }
+    @Override
+    public void onOpenBar() {
+        barFragment.updateInterface(songs.get(songNum));
+        if (mediaPlayer.isPlaying()) {
+            barFragment.updatePlay(true);
+        }
+        else {
+            barFragment.updatePlay(false);
+        }
+
+    }
     ////////////////////////////////////////////////////
 
 
@@ -531,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         client = new AsyncHttpClient();
         pSongs = new ArrayList<>();
-
+        pConcert = concert;
         RequestParams params = new RequestParams();
         params.put("q", concert.getArtists().get(artist_index));
         params.put("type", "artist");
@@ -586,14 +604,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public void launchSongView(Song song){
         Toast.makeText(this, song.name, Toast.LENGTH_SHORT).show();
-        PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(song);
+        if (playerFragment == null) {
+            playerFragment = playerFragment.newInstance(song);
+        }
+        ArrayList<Song> pSongs2 = new ArrayList<>();
+        for (int i = 0; i < pSongs.size(); i++) {
+            pSongs2.add(i, (Song) Parcels.unwrap(pSongs.get(i)));
+        }
+        Collections.shuffle(pSongs2);
+        pSongs2.add(0, song);
+        onNewConcert(pConcert, pSongs2);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, playerFragment, "player");
+        if (barFragment != null) {
+            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
+        }
+
         ft.addToBackStack("player");
         ft.commit();
     }
-
-
     ////////////////////////////////////////////////////
 
 
