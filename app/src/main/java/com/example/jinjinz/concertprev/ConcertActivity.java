@@ -193,7 +193,7 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         return date;
     }
 
-    public void launchSongView(Song song){
+    public void launchSongView(Song song, ArrayList<Parcelable> songs){
         Toast.makeText(getApplicationContext(), song.name, Toast.LENGTH_SHORT).show();
     }
 }

@@ -40,7 +40,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     public interface SongsFragmentListener {
         void setUpArtistSearch(SongsFragment fragment, Concert concert, int artist_index);
-        void launchSongView(Song song);
+        void launchSongView(Song song, ArrayList<Parcelable> songs);
     }
 
     SongsFragmentListener songsFragmentListener;
@@ -113,7 +113,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     }
 
     public void onSongClicked(Song song){
-        songsFragmentListener.launchSongView(song);
+        songsFragmentListener.launchSongView(song, songs);
     }
 
     /**  // TODO: Rename method, update argument and hook method into UI event

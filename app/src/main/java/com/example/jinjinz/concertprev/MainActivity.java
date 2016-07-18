@@ -601,15 +601,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
     }
-
-    public void launchSongView(Song song){
+    @Override
+    public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
         Toast.makeText(this, song.name, Toast.LENGTH_SHORT).show();
         if (playerFragment == null) {
             playerFragment = playerFragment.newInstance(song);
         }
         ArrayList<Song> pSongs2 = new ArrayList<>();
-        for (int i = 0; i < pSongs.size(); i++) {
-            pSongs2.add(i, (Song) Parcels.unwrap(pSongs.get(i)));
+        for (int i = 0; i < tempSongs.size(); i++) {
+            pSongs2.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
         }
         Collections.shuffle(pSongs2);
         pSongs2.add(0, song);
