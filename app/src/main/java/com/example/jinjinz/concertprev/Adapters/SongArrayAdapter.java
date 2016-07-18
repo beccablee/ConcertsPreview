@@ -82,7 +82,7 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         tvSongName.setTag(song);
 
         TextView tvSongArtist = viewHolder.tvSongArtist;
-        tvSongArtist.setText(song.getArtists().get(0));
+        tvSongArtist.setText(artistsToString(song.getArtists()));
 
     }
 
@@ -90,6 +90,18 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
     @Override
     public int getItemCount() {
         return mSongs.size();
+    }
+
+    public String artistsToString(ArrayList<String> artist_list) {
+        String artistNames = "";
+        for (int i = 0; i < artist_list.size(); i++){
+            if (i == 0) {
+                artistNames += artist_list.get(i);
+            } else {
+                artistNames += " & " + artist_list.get(i);
+            }
+        }
+        return artistNames;
     }
 
     //public View getView(int position, View convertView, ViewGroup parent) {

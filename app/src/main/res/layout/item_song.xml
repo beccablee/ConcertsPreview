@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp">
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,10 +19,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Song Artisti"
+        android:text="Song Artist"
         android:id="@+id/tvSongArtist"
         android:layout_below="@+id/tvSongName"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="#CCCCCC"/>
+        android:textColor="#CCCCCC"
+        android:ellipsize="end"
+        android:lines="1"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_height="2px"
+        android:background="#666666"/>
 </RelativeLayout>

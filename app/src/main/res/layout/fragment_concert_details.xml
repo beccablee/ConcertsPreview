@@ -81,7 +81,7 @@
                     android:paddingBottom="28dp"
                     android:paddingLeft="8dp"
                     android:text="Artists"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#EEEEEE"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
                     android:shadowColor="#000000"
