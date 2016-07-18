@@ -37,12 +37,11 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     Button player;
 
-
     public ListView lvSongs;
     public SongArrayAdapter adapter;
 
     public interface SongsFragmentListener {
-        void setUpArtistSearch(SongsFragment fragment, Concert concert);
+        void setUpArtistSearch(SongsFragment fragment, Concert concert, int artist_index);
         void launchSongView(Song song);
 
     }
@@ -53,14 +52,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         // Required empty public constructor
     }
 
-    /*
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @return A new instance of fragment SongsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SongsFragment newInstance(Parcelable concert) { //ArrayList<Parcelable> paramSongs,
         SongsFragment fragment = new SongsFragment();
         Bundle args = new Bundle();
@@ -82,8 +73,10 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
             //adapter.notifyDataSetChanged();
             //TO DO: get concert to pass through
         }
+        for (int i = 0; i < concert.getArtists().size(); i++){
+            songsFragmentListener.setUpArtistSearch(this, concert, i);
+        }
 
-        songsFragmentListener.setUpArtistSearch(this, concert);
 
     }
 

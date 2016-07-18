@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.squareup.picasso.Picasso;
@@ -34,7 +33,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
     public String artists; // Fragment
     SongsFragment sFragment; // Main
-    public SongArrayAdapter adapter;
+    //public SongArrayAdapter adapter;
 
     //Button player;
 
