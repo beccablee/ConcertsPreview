@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AsyncHttpClient client;
     // Fetch
     public void fetchConcerts() {
-        if (readyToPopulate || apiConnected) { //////////// should be && --> onConnected()
+        if (readyToPopulate && apiConnected) { //////////// should be && --> onConnected()
             // url: includes api key and music classification
             String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
             // the parameter(s)
