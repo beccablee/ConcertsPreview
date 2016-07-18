@@ -526,14 +526,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
 
-    public void setUpArtistSearch(final SongsFragment fragment, Concert concert){
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artist_index){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
         pSongs = new ArrayList<>();
 
         RequestParams params = new RequestParams();
-        params.put("q", concert.getArtists().get(0));
+        params.put("q", concert.getArtists().get(artist_index));
         params.put("type", "artist");
         params.put("limit", 1);
 
@@ -568,8 +568,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    pSongs.addAll(Song.fromJSONArray(songsJSONResult));
-                    Toast.makeText(getApplicationContext(), "songs loaded: " + pSongs.size(), Toast.LENGTH_SHORT).show();
+                    //pSongs.addAll(Song.fromJSONArray(songsJSONResult));
+                    //Toast.makeText(getApplicationContext(), "songs loaded: " + pSongs.size(), Toast.LENGTH_SHORT).show();
                     fragment.addSongs(Song.fromJSONArray(songsJSONResult));
 
                 } catch (JSONException e){

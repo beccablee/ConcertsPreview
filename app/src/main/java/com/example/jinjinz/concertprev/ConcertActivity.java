@@ -85,11 +85,11 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         }
     }
 
-    public void setUpArtistSearch(final SongsFragment fragment, Concert concert){ // changed
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artist_index){ // changed
         String url = "https://api.spotify.com/v1/search";
 
         RequestParams params = new RequestParams();
-        params.put("q", concert.getArtists().get(0));
+        params.put("q", concert.getArtists().get(artist_index));
         params.put("type", "artist");
         params.put("limit", 1);
 
