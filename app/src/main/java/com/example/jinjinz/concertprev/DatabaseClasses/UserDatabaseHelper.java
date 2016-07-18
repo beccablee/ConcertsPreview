@@ -10,8 +10,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class UserDatabaseHelper extends SQLiteOpenHelper {
     // we can use ORMs (object relational mappers) to persist models (the user!) to a db table
 
-    private static final String DB_NAME = "User Database";
+    private static final String DB_NAME = "concertDatabase.db";
+    private static final String TABLE_USER = "User";
+    private static final String COLUMN_ID = "_id";
     private static final int DB_VERSION = 0;
+
 
 
     public UserDatabaseHelper(Context context){
