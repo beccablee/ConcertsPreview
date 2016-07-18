@@ -24,16 +24,8 @@ public class User { // from what I'm reading SQLite can only hold "TEXT (similar
         return faveSongs;
     }
 
-    public void setFaveSongs(ArrayList<Song> faveSongs) {
-        this.faveSongs = faveSongs;
-    }
-
     public ArrayList<Concert> getSavedConcerts() {
         return savedConcerts;
-    }
-
-    public void setSavedConcerts(ArrayList<Concert> savedConcerts) {
-        this.savedConcerts = savedConcerts;
     }
 
 
