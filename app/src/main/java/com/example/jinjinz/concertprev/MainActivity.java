@@ -160,13 +160,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             updateProgressBar();
 
+            //playerbar initialize
+            PlayerBarFragment playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.playerFragment, playerBar, "bar");
+            ft.commit();
+            //hide playerbar on initialization
             PlayerScreenFragment fragment = (PlayerScreenFragment)getSupportFragmentManager().findFragmentByTag("player");
-            if (fragment == null) {
-                PlayerBarFragment playerBar = PlayerBarFragment.newInstance(songs.get(songNum));
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.playerFragment, playerBar, "bar");
+            if (fragment != null) {
+                ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
                 ft.commit();
             }
+
             //on prepared listener --> what happens when it is ready to play
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -307,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         else {
             ft.show(playerBar);
             playerBar.updateInterface(songs.get(songNum));
+            ft.commit();
         }
         if (mediaPlayer.isPlaying()) {
             playerBar.updatePlay(true);
