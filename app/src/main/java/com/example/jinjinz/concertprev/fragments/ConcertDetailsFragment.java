@@ -99,15 +99,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvDate.setText(date);
         tvArtists.setText(artists + " at " + concert.getVenue());
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
-
-//        player = (Button) view.findViewById(R.id.playerBtn2);
-//        player.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent i = new Intent(ConcertActivity.this, PlayerActivity.class);
-//                startActivity(i);
-//            }
-//        });
     }
 
 /*    public String artistsToString(ArrayList<String> artist_list) {
@@ -120,7 +111,7 @@ public class ConcertDetailsFragment extends SongsFragment {
             }
         }
         return artistNames;
+<<<<<<< 8a98577ddf13296a38aa4ff6b9f0de18d757afa1
 }*/
-
-
+    
 }

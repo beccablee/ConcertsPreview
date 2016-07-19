@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
@@ -33,9 +32,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     private ArrayList<Parcelable> songs;
     private Concert concert;
 
-    Button player;
-
-    //public ListView lvSongs;
     public static SongArrayAdapter adapter;
 
     public interface SongsFragmentListener {
@@ -49,10 +45,9 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         // Required empty public constructor
     }
 
-    public static SongsFragment newInstance(Parcelable concert) { //ArrayList<Parcelable> paramSongs,
+    public static SongsFragment newInstance(Parcelable concert) {
         SongsFragment fragment = new SongsFragment();
         Bundle args = new Bundle();
-        //args.putParcelableArrayList("songs", paramSongs);
         args.putParcelable("concert", concert);
         fragment.setArguments(args);
         return fragment;
@@ -61,36 +56,21 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         songs = new ArrayList<>();
 
         if (getArguments() != null) {
-            //songs = getArguments().getParcelableArrayList("songs"); // might be unnecessary
             concert = Parcels.unwrap(getArguments().getParcelable("concert"));
             adapter = new SongArrayAdapter(getActivity(), songs, this);
-            //adapter.addAll(songs);
-            //adapter.notifyDataSetChanged();
         }
         for (int i = 0; i < concert.getArtists().size(); i++){
             songsFragmentListener.setUpArtistSearch(this, concert, i);
         }
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         RecyclerView rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
-
-
-        //lvSongs = (ListView) view.findViewById(R.id.lvSongs);
-        //lvSongs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        //    @Override
-        //    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long id) {
-        //  Toast.makeText(getContext(), "Clicked" + pos, Toast.LENGTH_SHORT).show();
-        //    }
-        //});
 
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -115,18 +95,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     public void onSongClicked(Song song){
         songsFragmentListener.launchSongView(song, songs);
     }
-
-    /**  // TODO: Rename method, update argument and hook method into UI event
-     public void onButtonPressed(Uri uri) {
-     if (mListener != null) {
-     mListener.onFragmentInteraction(uri);
-     }
-     }
-     @Override
-     public void onDetach() {
-     super.onDetach();
-     mListener = null;
-     }*/
 
 }
 
