@@ -4,12 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by noradiegwu on 7/15/16.
- */
-public class UserDatabaseHelper extends SQLiteOpenHelper {
-    // we can use ORMs (object relational mappers) to persist models (the user!) to a db table
 
+public class UserDatabaseHelper extends SQLiteOpenHelper {
+// responsible for creating the db
     private static final String DB_NAME = "concertAppDatabase.db";
     private static final int DB_VERSION = 0;
 
@@ -33,6 +30,7 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
     // modifying the table structure,
     // adding constraints to database,
     // changeing the version number, etc
+    // It will delete all the data and re-create the table with the new info
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // SQL for updating the tables

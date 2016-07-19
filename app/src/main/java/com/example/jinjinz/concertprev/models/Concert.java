@@ -12,9 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by jinjinz on 7/7/16.
- */
 @Parcel
 public class Concert {
 
@@ -22,9 +19,9 @@ public class Concert {
     //root url: https://app.ticketmaster.com/discovery/v2/
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
+    public long dbId;
     public String backdropImage;
     public String headliner;
-    public ArrayList<String> artists;
     public String venue; // may be null (tba)
     public String artistsString;
     public String eventName;
@@ -33,7 +30,12 @@ public class Concert {
     public String city;
     public String stateCode;
     public String countryCode;
+    public ArrayList<String> artists;
 
+
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
+    }
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
@@ -65,17 +67,32 @@ public class Concert {
     public void setStateCode(String stateCode) {
         this.stateCode = stateCode;
     }
+    public void setHeadliner(String headliner) {
+        this.headliner = headliner;
+    }
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
+    public void setArtistsString(String artistsString) {
+        this.artistsString = artistsString;
+    }
+    public String getArtistsString() {
+        return artistsString;
+    }
 
+    public long getDbId() {
+        return dbId;
+    }
     public String getCountryCode() {
         return countryCode;
     }
 
     public String getStateCode() {
         return stateCode;
+    }
+    public String getHeadliner() {
+        return headliner;
     }
 
     public String getCity() {

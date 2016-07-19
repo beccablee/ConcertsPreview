@@ -16,9 +16,6 @@ import com.squareup.picasso.Picasso;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-/**
- * Created by noradiegwu on 7/12/16.
- */
 public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAdapter.ViewHolder> implements View.OnClickListener {
     @Override
     public void onClick(View view) {
@@ -59,12 +56,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         // open concert details(concert)
     }
 
-    // Store a member variable for the contacts
+    // Store a member variable for the concerts
     private ArrayList<Concert> mConcerts;
     // Store the context for easy access
     private Context mContext;
 
-    // Pass in the contact array into the constructor
+    // Pass the concert array into the recycler constructor
     public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts, SearchRecyclerAdapterListener searchRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
@@ -96,35 +93,23 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     // Involves populating data into the item through holder
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        // Get the data model based on position
+        //Get concert based on position
         Concert concert = mConcerts.get(position);
 
         // Set item views based on your views and data model
         TextView eventName = viewHolder.tvEventName;
         eventName.setText(concert.getEventName());
-        //viewHolder.tvEventName.setTag(concert);
         TextView eventLoc = viewHolder.tvEventLocation;
         if (concert.getStateCode() != null) {
-            eventLoc.setText(MessageFormat.format("{0}, {1}, {2}", concert.getCity(), concert.getStateCode(), concert.getCountryCode()));
+            eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getStateCode()));
         } else {
             eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getCountryCode()));
 
         }
-        //viewHolder.tvEventLocation.setTag(concert);
-        // set background
-        RelativeLayout myRL = viewHolder.rlConcert;
-        //myRL.setBackground();
         // set background programatically with image
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
         Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
         viewHolder.ivBackgroundImage.setTag(concert);
-        //Picasso.with(getContext()).load(concert.getBackdropImage()).into(backgroundImg);
-
-        // everywhere may not have a state code
-        //TODO: consider adding logic to decide to use state or country code
-
-
-
     }
 
     // Returns the total count of items in the list

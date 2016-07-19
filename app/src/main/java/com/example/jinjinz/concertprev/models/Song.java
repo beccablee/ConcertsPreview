@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Parcel
 public class Song {
 
-    public int dbID;
+    public long dbID;
     public String name;
     public String spotifyID;
     public ArrayList<String> artists; //names
@@ -55,7 +55,7 @@ public class Song {
         return artistsString;
     }
 
-    public int getDbID() {
+    public long getDbID() {
         return dbID;
     }
 

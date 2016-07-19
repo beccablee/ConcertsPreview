@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import com.example.jinjinz.concertprev.Adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
-import com.loopj.android.http.AsyncHttpClient;
 
 import java.util.ArrayList;
 
@@ -63,9 +62,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     private String mParam1;
     private String mParam2;
 
-    public String dummyLatlong = "34.0928090,-118.3286610"; // need to get from user (may extract from activity.. not sure how yet)
     private String queryText;
-    AsyncHttpClient client;
     ArrayList<Concert> concerts;
     public static SearchRecyclerAdapter searchAdapter;
     ConcertsFragmentListener concertsFragmentListener;
@@ -98,7 +95,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         try {
             concertsFragmentListener = (ConcertsFragmentListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnArticleSelectedListener");
+            throw new ClassCastException(context.toString() + " must implement OnConcertsFragmentListener");
         }
     }
 
@@ -122,8 +119,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        //TODO: get user location
     }
 
     @Override

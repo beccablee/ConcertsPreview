@@ -353,8 +353,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ////////////////////////////////////////////////////
     ////////////////////////////////////////////////////
 
-
-
     // Fragment methods
 
     AsyncHttpClient client;

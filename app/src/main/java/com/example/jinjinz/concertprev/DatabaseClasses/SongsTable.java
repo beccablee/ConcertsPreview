@@ -3,9 +3,6 @@ package com.example.jinjinz.concertprev.DatabaseClasses;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-/**
- * Created by noradiegwu on 7/18/16.
- */
 public class SongsTable {
 
     // songs table name/columns
