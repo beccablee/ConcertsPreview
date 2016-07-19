@@ -60,6 +60,8 @@ public class UserDataSource {
         song.setArtistsString(cursor.getString(3));
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
+
+        return song;
     }
 
 }
