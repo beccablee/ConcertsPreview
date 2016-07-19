@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 e.printStackTrace();
             }
         }
-         else if(!concert.getEventName().equals(c.getEventName())) {
+         else {
             //initialize
             songNum = 0;
             concert = c;
@@ -235,10 +235,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-        } else {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.start();
             }
         }
     }
@@ -254,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // on concert name click?
     @Override
     public void onConcertClick() {
+
     }
 
     @Override
@@ -268,7 +265,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             fragment.updatePlay(true);
         }
     }
-
+    @Override
+    public void backInStack() {
+        super.onBackPressed();
+    }
     @Override
     public void skipNext() {
         mediaPlayer.stop();
@@ -314,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         else {
             ft.show(barFragment);
             ft.commit();
+            onOpenBar();
         }
 
     }
@@ -542,7 +543,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////
 
     public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artist_index){
         String url = "https://api.spotify.com/v1/search";
@@ -603,7 +603,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
     @Override
     public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
-        Toast.makeText(this, song.name, Toast.LENGTH_SHORT).show();
         if (playerFragment == null) {
             playerFragment = playerFragment.newInstance(song);
         }

@@ -1,6 +1,5 @@
 package com.example.jinjinz.concertprev;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
@@ -9,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -158,14 +156,6 @@ public class ConcertActivity extends AppCompatActivity implements SongsFragment.
         tvArtists.setText(artists + " at " + concert.getVenue());
         Picasso.with(this).load(concert.backdropImage).into(ivHeader);
 
-        player = (Button) findViewById(R.id.playerBtn2);
-        player.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(ConcertActivity.this, PlayerActivity.class);
-                startActivity(i);
-            }
-        });
     }
 
     public String artistsToString(ArrayList<String> artist_list) {

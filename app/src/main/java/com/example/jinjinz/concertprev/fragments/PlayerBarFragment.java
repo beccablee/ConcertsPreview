@@ -55,8 +55,8 @@ public class PlayerBarFragment extends Fragment {
         return fragment;
     }
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         listener.onOpenBar();
     }
     @Override
@@ -81,9 +81,9 @@ public class PlayerBarFragment extends Fragment {
         songTitle2 = (TextView) v.findViewById(R.id.songTitle2);
         artistTitle2 = (TextView) v.findViewById(R.id.artistTitle2);
         playBtn2 = (Button) v.findViewById(R.id.playBtn2);
-
-        songTitle2.setText(song.getName());
-        artistTitle2.setText(song.getArtists().get(0));
+        //songTitle2.setText(song.getName());
+        //artistTitle2.setText(song.getArtists().get(0));
+        listener.onOpenBar();
         playBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

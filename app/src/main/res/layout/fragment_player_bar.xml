@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="50dp"
+    android:padding="5dp"
     tools:context="com.example.jinjinz.concertprev.fragments.PlayerBarFragment">
 
     <TextView
@@ -22,7 +23,7 @@
         android:textColor="@android:color/white"/>
 
     <Button
-        android:layout_width="50dp"
+        android:layout_width="40dp"
         android:layout_height="50dp"
         android:background="@drawable/ic_pause_circle"
         android:id="@+id/playBtn2"

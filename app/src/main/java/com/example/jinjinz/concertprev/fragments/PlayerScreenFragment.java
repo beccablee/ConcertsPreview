@@ -50,6 +50,7 @@ public class PlayerScreenFragment extends Fragment {
         void skipPrev(); //on skip previous click
         void onClosePlayer(); //on Player close (add playbar)
         void onOpenPlayer(); //on Player open (change ui)
+        void backInStack();
     }
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
@@ -101,6 +102,7 @@ public class PlayerScreenFragment extends Fragment {
         prevBtn = (Button) view.findViewById(R.id.prevBtn);
         nextBtn = (Button) view.findViewById(R.id.nextBtn);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        backBtn = (Button) view.findViewById(R.id.backBtn);
 
         concertTitle.setText(listener.getConcertName());
         concertTitle.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +115,12 @@ public class PlayerScreenFragment extends Fragment {
         updateInterface(initialSong);
         setProgressBar(0);
         //set onClickListeners for buttons
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.backInStack();
+            }
+        });
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
