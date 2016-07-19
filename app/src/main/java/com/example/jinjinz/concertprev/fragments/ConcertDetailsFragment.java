@@ -19,10 +19,7 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by beccalee on 7/18/16.
@@ -93,9 +90,10 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
 
-        artists = artistsToString(concert.getArtists());
+        artists = concert.artistsString;
+        //artists = artistsToString(concert.getArtists());
 
-        String date = formatDate(concert.getEventDate());
+        String date = concert.getEventDate();
 
         tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
@@ -112,7 +110,7 @@ public class ConcertDetailsFragment extends SongsFragment {
 //        });
     }
 
-    public String artistsToString(ArrayList<String> artist_list) {
+/*    public String artistsToString(ArrayList<String> artist_list) {
         String artistNames = "";
         for (int i = 0; i < artist_list.size(); i++){
             if (i == 0) {
@@ -122,20 +120,7 @@ public class ConcertDetailsFragment extends SongsFragment {
             }
         }
         return artistNames;
-    }
-
-    public String formatDate(String originalDate){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date newDate = null;
-        try {
-            newDate = format.parse(originalDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        format = new SimpleDateFormat("MMM dd, yyyy");
-        String date = format.format(newDate);
-        return date;
-    }
+}*/
 
 
 }

@@ -15,12 +15,25 @@ import java.util.ArrayList;
  */
 @Parcel
 public class Song {
+
+    public int dbID;
+    public String name;
+    public String spotifyID;
+    public ArrayList<String> artists; //names
+    public String artistsString; // formatted for details view and db
+    public String previewUrl;
+    public String albumArtUrl;
+
+
+    public void setDbID(int dbID) {
+        this.dbID = dbID;
+    }
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setSpotifyID(String id) {
+        this.spotifyID = id;
     }
 
     public void setArtists(ArrayList<String> artists) {
@@ -35,18 +48,23 @@ public class Song {
         this.albumArtUrl = albumArtUrl;
     }
 
-    public String name;
-    public String id;
-    public ArrayList<String> artists; //names
-    public String previewUrl;
-    public String albumArtUrl;
+    public void setArtistsString(String artistsString) {
+        this.artistsString = artistsString;
+    }
+    public String getArtistsString() {
+        return artistsString;
+    }
+
+    public int getDbID() {
+        return dbID;
+    }
 
     public String getName() {
         return name;
     }
 
     public String getId() {
-        return id;
+        return spotifyID;
     }
 
     public ArrayList<String> getArtists() {
@@ -73,6 +91,18 @@ public class Song {
         return tracks;
     }
 
+    public static String artistsToString(ArrayList<String> artist_list) {
+        String artistNames = "";
+        for (int i = 0; i < artist_list.size(); i++){
+            if (i == 0) {
+                artistNames += artist_list.get(i);
+            } else {
+                artistNames += " & " + artist_list.get(i);
+            }
+        }
+        return artistNames;
+    }
+
     public static Song fromJSON(JSONObject jsonObject){
         Song song = new Song();
         JSONArray artist_list;
@@ -80,7 +110,7 @@ public class Song {
 
         try {
             song.name = jsonObject.getString("name");
-            song.id = jsonObject.getString("id");
+            song.spotifyID = jsonObject.getString("id");
             song.previewUrl = jsonObject.getString("preview_url");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -95,6 +125,7 @@ public class Song {
             for (int i = 0; i < artist_list.length(); i++) {
                 song.artists.add(artist_list.getJSONObject(i).getString("name"));
             }
+            song.artistsString = android.text.TextUtils.join(" & ", song.artists);
         } catch (JSONException e){
             e.printStackTrace();
         }

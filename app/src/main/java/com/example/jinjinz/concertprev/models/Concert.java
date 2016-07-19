@@ -7,7 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by jinjinz on 7/7/16.
@@ -20,9 +23,16 @@ public class Concert {
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
     public String backdropImage;
-    //private final String headliner;
+    public String headliner;
     public ArrayList<String> artists;
     public String venue; // may be null (tba)
+    public String artistsString;
+    public String eventName;
+    public String eventTime; // may be null (tba)
+    public String eventDate; // may be null (tba)
+    public String city;
+    public String stateCode;
+    public String countryCode;
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
@@ -59,13 +69,6 @@ public class Concert {
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
-
-    public String eventName;
-    public String eventTime; // may be null (tba)
-    public String eventDate; // may be null (tba)
-    public String city;
-    public String stateCode; // may be null (international events)
-    public String countryCode;
 
     public String getCountryCode() {
         return countryCode;
@@ -108,17 +111,6 @@ public class Concert {
 
     }
 
-    public static Concert forTesting(JSONObject jsonObject) {
-        Concert concert = new Concert();
-        try {
-            concert.eventName = jsonObject.getJSONObject("_embedded").getJSONArray("events").getJSONObject(0).getString("name");
-            Log.d("ticketrespone", "testing");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return concert;
-    }
-
     public static ArrayList<Concert> concertsFromJsonArray(JSONArray jsonArray) { // looking for the "events" array --> { _embedded: { events: [ {0, 1, 2, ..} ] } } within the larger "_embedded" array and the largest object that you get from the client response
         ArrayList<Concert> concert = new ArrayList<>();
         // iterate
@@ -146,7 +138,6 @@ public class Concert {
 
         return concert;
     }
-
 
 
     private static ArrayList<String> artistsFromJsonArray(JSONArray attractions) { // the attractions array: { _embedded:{ events:[ { ..., _embedded:{ venues:[...], attractions:[ list of at least one artist ] } } ] } }
@@ -195,7 +186,18 @@ public class Concert {
 
     }
 
-
+    public static String formatDate(String originalDate){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = null;
+        try {
+            newDate = format.parse(originalDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        format = new SimpleDateFormat("MMM dd, yyyy");
+        String date = format.format(newDate);
+        return date;
+    }
 
     public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
@@ -209,6 +211,8 @@ public class Concert {
                 concert.backdropImage = "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-372461.png";
             }
             concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
+            concert.artistsString = android.text.TextUtils.join(", ", concert.artists);
+            concert.headliner = concert.artists.get(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -228,7 +232,7 @@ public class Concert {
         }
 
         try {
-            concert.eventDate = event.getJSONObject("dates").getJSONObject("start").getString("localDate");
+            concert.eventDate = formatDate(event.getJSONObject("dates").getJSONObject("start").getString("localDate"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -242,5 +246,6 @@ public class Concert {
 
         return concert;
     }
+
 
 }

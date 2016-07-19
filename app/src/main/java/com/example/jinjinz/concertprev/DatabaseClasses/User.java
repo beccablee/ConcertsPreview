@@ -8,10 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by noradiegwu on 7/15/16.
  */
-public class User { // from what I'm reading SQLite can only hold "TEXT (similar to String in Java),
-    // INTEGER (similar to long in Java) and REAL (similar to double in Java)" no other objs
-    // so instead of passing in a User, we will need to pass in identifying data of that user
-    // and use that to populate our views and id our user and their preferences
+public class User { // this model will be built up from the db on load and used to populate the user profile
 
     // favorited songs list
     ArrayList<Song> faveSongs;
