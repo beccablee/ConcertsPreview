@@ -24,12 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ConcertActivity" />
-        <activity
-            android:name=".PlayerActivity"
-            android:label="singleTask launchMode"
-            android:launchMode="singleTask" />
-        <activity android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

@@ -91,7 +91,7 @@ public class PlayerScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.activity_player, container, false);
+        view = inflater.inflate(R.layout.fragment_player, container, false);
         //initialize values
         albumImg = (ImageView) view.findViewById(R.id.albumImg);
         concertTitle = (TextView) view.findViewById(R.id.concertTitle);

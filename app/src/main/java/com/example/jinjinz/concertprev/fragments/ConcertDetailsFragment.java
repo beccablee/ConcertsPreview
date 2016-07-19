@@ -30,9 +30,6 @@ public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
     public String artists; // Fragment
     SongsFragment sFragment; // Main
-    //public SongArrayAdapter adapter;
-
-    //Button player;
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -58,7 +55,6 @@ public class ConcertDetailsFragment extends SongsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
-        //songs = new ArrayList<>();
 
         if (savedInstanceState == null) {
             sFragment = SongsFragment.newInstance(Parcels.wrap(concert));
@@ -91,7 +87,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
 
         artists = concert.artistsString;
-        //artists = artistsToString(concert.getArtists());
 
         String date = concert.getEventDate();
 
@@ -101,17 +96,4 @@ public class ConcertDetailsFragment extends SongsFragment {
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
     }
 
-/*    public String artistsToString(ArrayList<String> artist_list) {
-        String artistNames = "";
-        for (int i = 0; i < artist_list.size(); i++){
-            if (i == 0) {
-                artistNames += artist_list.get(i);
-            } else {
-                artistNames += " & " + artist_list.get(i);
-            }
-        }
-        return artistNames;
-<<<<<<< 8a98577ddf13296a38aa4ff6b9f0de18d757afa1
-}*/
-    
 }

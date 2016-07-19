@@ -36,14 +36,9 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
     }
 
     public SongArrayAdapter(Context context, ArrayList<Parcelable> songs, OnSongClickListener songClickListener) {
-        //super(context, R.layout.item_song, songs);
         mContext = context;
         mSongs = songs;
         mOnSongClickListener = songClickListener;
-    }
-
-    private Context getContext() {
-        return mContext;
     }
 
     @Override
@@ -103,27 +98,4 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         }
         return artistNames;
     }
-
-    //public View getView(int position, View convertView, ViewGroup parent) {
-        //Song song = Parcels.unwrap(getItem(position));
-        //ViewHolder viewHolder;
-
-        //if (convertView == null) {
-        //    viewHolder = new ViewHolder();
-            //convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_song, parent, false);
-            //convertView.setOnClickListener(this);
-            //viewHolder.tvSongName = (TextView) convertView.findViewById(R.id.tvSongName);
-            //viewHolder.tvSongArtist = (TextView) convertView.findViewById(R.id.tvSongArtist);
-            //convertView.setTag(viewHolder);
-        //} else {
-        //    viewHolder = (ViewHolder) convertView.getTag();
-        //}
-        // Populate the data into the template view using the data object
-        //viewHolder.tvSongName.setText(song.getName());
-        //viewHolder.tvSongName.setTag(song);
-        //viewHolder.tvSongArtist.setText(song.getArtists().get(0));
-        // Return the completed view to render on screen
-        //return convertView;
-
-    //}
 }

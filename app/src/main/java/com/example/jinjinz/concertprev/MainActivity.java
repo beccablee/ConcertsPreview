@@ -90,41 +90,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ft.commit();
         }
 
-/*        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                populateConcerts(mConcertsFragment, queryText);
-            }
-        });*/
-        // logic to change fragments will be in concert and song click listeners
-
-
-  /**  // For dynamically showing and hiding the player frame at the bottom
-    //FrameLayout playerBar = (FrameLayout)findViewById(R.id.playerFragment);
-    //playerBar. // you can use INVISIBLE also instead of GONE
-        testBtn = (Button) findViewById(R.id.button);
-
-       testBtn.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-               testPlayer();
-           }
-       });
-        //Test if playbar works
-        //create dummy songs and concerts
-        Concert dummy_c = new Concert();
-        Song dummy_ss = new Song();
-        dummy_c.setEventName("TESTING");
-        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
-        ArrayList<String> artist = new ArrayList<>();
-        artist.add("Elvis Presley");
-        dummy_ss.setArtists(artist);
-        dummy_ss.setName("Suspicious Minds");
-        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
-        ArrayList<Song> dummy_s = new ArrayList<>();
-        dummy_s.add(dummy_ss);
-        onNewConcert(dummy_c,dummy_s); */
-
     }
 
     private void testPlayer() {
@@ -436,13 +401,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
         ft.commit();
-
-        /*Intent intent = new Intent(this, ConcertActivity.class);
-        // call listener(concert)
-        intent.putExtra("concert", Parcels.wrap(concert));
-        Toast.makeText(this, concert.getEventName(), Toast.LENGTH_SHORT).show();
-        startActivity(intent);*/
-        // for some reason the tappin f2nd phish reloads main activity
     }
 
     // Google api methods

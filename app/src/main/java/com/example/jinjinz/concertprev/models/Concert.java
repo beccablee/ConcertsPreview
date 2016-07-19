@@ -229,7 +229,9 @@ public class Concert {
             }
             concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
             concert.artistsString = android.text.TextUtils.join(", ", concert.artists);
-            concert.headliner = concert.artists.get(0);
+            if (concert.artists.size() != 0) {
+                concert.headliner = concert.artists.get(0);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
