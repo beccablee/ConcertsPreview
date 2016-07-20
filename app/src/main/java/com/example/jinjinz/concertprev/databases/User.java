@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.DatabaseClasses;
+package com.example.jinjinz.concertprev.databases;
 
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
