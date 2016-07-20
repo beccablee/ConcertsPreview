@@ -50,41 +50,21 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
     }
 
-
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private String queryText;
     ArrayList<Concert> concerts;
     public static SearchRecyclerAdapter searchAdapter;
     ConcertsFragmentListener concertsFragmentListener;
-
-   // private OnFragmentInteractionListener mListener;
 
     public ConcertsFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
      * @return A new instance of fragment ConcertsFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static ConcertsFragment newInstance() { // Don't really need yet
+    public static ConcertsFragment newInstance() {
         ConcertsFragment fragment = new ConcertsFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,13 +82,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-/*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-*/
-
         concerts = new ArrayList<>();
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
@@ -138,6 +111,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         // Make sure the toolbar exists in the activity and is not null
         ((AppCompatActivity) getActivity()).setSupportActionBar(tbSearch);
+        tbSearch.setTitle("Working Title");
         // swipe refresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -171,7 +145,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
             }
         });
     }
-
 
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.clear();

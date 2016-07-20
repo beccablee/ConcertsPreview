@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jinjinz.concertprev.fragments.SongsFragment"
-    android:background="@color/material_grey_800">
+    android:background="@color/darkGrey">
 
     <RelativeLayout
         android:layout_width="match_parent"

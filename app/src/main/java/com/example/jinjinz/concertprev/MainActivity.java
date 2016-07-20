@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
 import com.example.jinjinz.concertprev.fragments.SongsFragment;
+import com.example.jinjinz.concertprev.fragments.UserFragment;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 import com.google.android.gms.common.ConnectionResult;
@@ -128,17 +130,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             updateProgressBar();
-
-            //playerbar initialize
-          /**  barFragment = PlayerBarFragment.newInstance(songs.get(songNum));
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.playerFragment, barFragment, "bar");
-            ft.commit();
-            //hide playerbar on initialization
-            if (playerFragment.isVisible()) {
-                ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
-                ft.commit();
-            }*/
 
             //on prepared listener --> what happens when it is ready to play
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -579,6 +570,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
     ////////////////////////////////////////////////////
+
+    public void getProfile(MenuItem item) {
+        UserFragment userFragment = UserFragment.newInstance();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, userFragment, "user");
+        ft.addToBackStack("user");
+        ft.commit();
+    }
 
 
 }

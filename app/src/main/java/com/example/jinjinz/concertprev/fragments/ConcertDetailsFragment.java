@@ -81,19 +81,23 @@ public class ConcertDetailsFragment extends SongsFragment {
         appBar = (AppBarLayout) view.findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
         ivHeader = (ImageView) view.findViewById(R.id.ivHeader);
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar); //Ask Rebecca: what is this for?
-        tvEvent = (TextView) view.findViewById(R.id.tvEvent);
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        //tvEvent = (TextView) view.findViewById(R.id.tvEvent);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
 
         artists = concert.artistsString;
 
         String date = concert.getEventDate();
-
-        tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
-        tvArtists.setText(artists + " at " + concert.getVenue());
+        if (concert.getVenue() != null) {
+            tvArtists.setText(artists + " at " + concert.getVenue());
+        }
+        else {
+            tvArtists.setText(artists);
+        }
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
+        toolbar.setTitle(concert.getEventName());
     }
 
 }

@@ -1,13 +1,10 @@
 package com.example.jinjinz.concertprev.fragments;
 
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,12 +17,15 @@ import com.example.jinjinz.concertprev.R;
  * create an instance of this fragment.
  */
 public class UserFragment extends Fragment {
-
-
+    Toolbar tb;
     public UserFragment() {
         // Required empty public constructor
     }
 
+    public static UserFragment newInstance() {
+        UserFragment fragment = new UserFragment();
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,14 +37,19 @@ public class UserFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_user, container, false);
-        ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
+
+        //toobar
+        setHasOptionsMenu(true);
+        tb = (Toolbar) v.findViewById(R.id.userBar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(tb);
+      /**  ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
         viewPager.setAdapter(new UserFragmentPagerAdapter(getFragmentManager(), getContext()));
         TabLayout tabLayout = (TabLayout) v.findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);*/
         return v;
     }
 
-    public class UserFragmentPagerAdapter extends FragmentPagerAdapter {
+    /**public class UserFragmentPagerAdapter extends FragmentPagerAdapter {
         final int PAGE_COUNT = 2;
         private String tabTitles[] = new String[] { "Concerts", "Songs" };
         private Context context;
@@ -61,10 +66,10 @@ public class UserFragment extends Fragment {
         //Implement Fragments after
         @Override
         public Fragment getItem(int position) {
-        /**    if (position == 0) {
+           if (position == 0) {
                 return new UserConcertsFragment();
             }
-            else if (position == 1) return new UserSongsFragment(); */
+            else if (position == 1) return new UserSongsFragment();
             return null;
         }
 
@@ -73,6 +78,6 @@ public class UserFragment extends Fragment {
             // Generate title based on item position
             return tabTitles[position];
         }
-    }
+    } */
 
 }
