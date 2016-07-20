@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    //pSongs.addAll(Song.fromJSONArray(songsJSONResult));
+                    pSongs.addAll(Song.fromJSONArray(songsJSONResult, songsPerArtist));
                     fragment.addSongs(Song.fromJSONArray(songsJSONResult, songsPerArtist));
 
                 } catch (JSONException e){

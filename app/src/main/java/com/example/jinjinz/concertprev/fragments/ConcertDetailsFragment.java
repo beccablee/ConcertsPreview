@@ -20,17 +20,14 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
-
 /**
  * Created by beccalee on 7/18/16.
  */
 public class ConcertDetailsFragment extends SongsFragment {
 
-    private ArrayList<Parcelable> songs;
     private Concert concert;
-    public String artists; // Fragment
-    SongsFragment mSongsFragment; // Main
+    public String artists;
+    SongsFragment mSongsFragment;
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -69,12 +66,10 @@ public class ConcertDetailsFragment extends SongsFragment {
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             transaction.add(R.id.songContainer, mSongsFragment).commit();
         }
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_concert_details, container, false);
         setUpViews(view);
         return view;
@@ -85,7 +80,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         concertDetailsFragmentListener = (ConcertDetailsFragmentListener) context;
     }
 
-
     public void setUpViews(View view){
         appBar = (AppBarLayout) view.findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
@@ -95,24 +89,14 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
-        btnLikeConcert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Concert concertToLike = new Concert();
-                concertToLike = concert;
-                concertDetailsFragmentListener.onLikeConcert(concertToLike);
-            }
-        });
+        setUpListeners();
 
         artists = concert.artistsString;
-
         String date = concert.getEventDate();
 
         ivHeader.setTag(concert);
-
         tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
-
         if (concert.getVenue() == null) {
             tvArtists.setText(artists);
         }
@@ -122,4 +106,37 @@ public class ConcertDetailsFragment extends SongsFragment {
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
     }
 
+    public void setUpListeners(){
+        btnLikeConcert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Concert concertToLike = new Concert();
+                concertToLike = concert;
+                concertDetailsFragmentListener.onLikeConcert(concertToLike);
+            }
+        });
+
+        appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
+                }
+                if (scrollRange + verticalOffset == 0) {
+                    collapsingToolbarLayout.setTitle(concert.getEventName());
+                    isShow = true;
+                    tvEvent.setVisibility(View.GONE);
+                    tvArtists.setVisibility(View.GONE);
+                } else if(isShow) {
+                    collapsingToolbarLayout.setTitle("");
+                    isShow = false;
+                    tvEvent.setVisibility(View.VISIBLE);
+                    tvArtists.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
 }

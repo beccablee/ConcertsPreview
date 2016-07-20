@@ -16,7 +16,7 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="225dip"
+            android:layout_height="250dip"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginBottom="32dp"
@@ -26,8 +26,8 @@
 
             <ImageView
                 android:id="@+id/ivHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
@@ -89,7 +89,9 @@
                     android:shadowColor="#000000"
                     android:shadowDx="0"
                     android:shadowDy="0"
-                    android:shadowRadius="25"/>
+                    android:shadowRadius="25"
+                    android:ellipsize="end"
+                    android:maxLines="6"/>
             </RelativeLayout>
 
             <Button

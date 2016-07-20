@@ -32,58 +32,46 @@ public class Song {
     public void setName(String name) {
         this.name = name;
     }
-
     public void setSpotifyID(String id) {
         this.spotifyID = id;
     }
-
     public void setArtists(ArrayList<String> artists) {
         this.artists = artists;
     }
-
     public void setPreviewUrl(String previewUrl) {
         this.previewUrl = previewUrl;
     }
-
     public void setAlbumArtUrl(String albumArtUrl) {
         this.albumArtUrl = albumArtUrl;
     }
-
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
     }
+
     public String getArtistsString() {
         return artistsString;
     }
-
     public long getDbID() {
         return dbID;
     }
-
     public String getName() {
         return name;
     }
-
     public String getId() {
         return spotifyID;
     }
-
     public String getSpotifyID() {
         return spotifyID;
     }
-
     public int getSongsPerArtist() {
         return songsPerArtist;
     }
-
     public ArrayList<String> getArtists() {
         return artists;
     }
-
     public String getPreviewUrl() {
         return previewUrl;
     }
-
     public String getAlbumArtUrl() {
         return albumArtUrl;
     }
@@ -104,7 +92,6 @@ public class Song {
         Song song = new Song();
         JSONArray artist_list;
         song.artists = new ArrayList<>();
-
         try {
             song.name = jsonObject.getString("name");
             song.spotifyID = jsonObject.getString("id");
