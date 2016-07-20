@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         //PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (barFragment == null) {
-            barFragment = PlayerBarFragment.newInstance(songs.get(songNum));
+            barFragment = PlayerBarFragment.newInstance();
             ft.replace(R.id.playerFragment, barFragment, "bar");
             ft.commit();
         }
@@ -477,14 +477,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artist_index){
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
         pSongs = new ArrayList<>();
         pConcert = concert;
         RequestParams params = new RequestParams();
-        params.put("q", concert.getArtists().get(artist_index));
+        params.put("q", concert.getArtists().get(artistIndex));
         params.put("type", "artist");
         params.put("limit", 1);
 
@@ -520,7 +520,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    fragment.addSongs(Song.fromJSONArray(songsJSONResult));
+                    fragment.addSongs(Song.fromJSONArray(songsJSONResult, 7));
 
                 } catch (JSONException e){
                     e.printStackTrace();
@@ -534,6 +534,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
     }
+
+
     @Override
     public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
         if (playerFragment == null) {

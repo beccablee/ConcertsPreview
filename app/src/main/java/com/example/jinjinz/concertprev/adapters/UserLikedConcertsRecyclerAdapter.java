@@ -1,8 +1,4 @@
-<<<<<<< 26e43ee2bbebe8ebe413d9e2226aa1b51eba45e6:app/src/main/java/com/example/jinjinz/concertprev/Adapters/UserLikedConcertsRecyclerAdapter.java
 package com.example.jinjinz.concertprev.adapters;
-=======
-package com.example.jinjinz.concertprev.adapter;
->>>>>>> cleanup:app/src/main/java/com/example/jinjinz/concertprev/adapter/UserLikedConcertsRecyclerAdapter.java
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
