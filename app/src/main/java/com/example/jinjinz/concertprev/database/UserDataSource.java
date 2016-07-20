@@ -21,10 +21,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         dbHelper = new UserDatabaseHelper(context);
     }
 
-    public UserDataSource() {
-
-    }
-
     // all the columns in the song table
     String[] allSongColumns = {SongsTable.COLUMN_ENTRY_ID, SongsTable.COLUMN_SPOTIFY_ID, SongsTable.COLUMN_SONG_NAME,
             SongsTable.COLUMN_SONG_ARTISTS, SongsTable.COLUMN_SONG_PREVIEW_URL, SongsTable.COLUMN_ALBUM_ART_URL};
@@ -41,17 +37,19 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             ConcertsTable.COLUMN_CONCERT_ARTISTS,
             ConcertsTable.COLUMN_CONCERT_IMAGE_URL};
 
+    /** Creates and/or opens a database that will be used for reading and writing */
     public void openDB() {
         Log.d("dbCommands", "opening " + dbHelper.getDatabaseName() + " from UserDataSource");
         database = dbHelper.getWritableDatabase();
     }
 
+    /** Closes open database object */
     public void closeDB() {
         Log.d("dbCommands", "closing " + dbHelper.getDatabaseName() + " from UserDataSource");
         dbHelper.close();
     }
 
-    // insert concert to db
+    /** Inserts the liked concert into the database after checking for the possibility of duplication */
     public Concert insertLikedConcert(Concert concert) { //gets concert from like button click
 
         // set key-value pairs for columns of concert table
@@ -89,13 +87,14 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         // Toast.makeText(MainActivity.this, "Error adding liked concert, try again later", Toast.LENGTH_SHORT).show();
     }
 
-    // remove concert from db
+    /** Removes liked concert from database */
     public void deleteLikedConcert(Concert concert) {
         long deleteId = concert.getDbId(); // the db id of the concert
         database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
         Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
     }
 
+    /** Builds and returns an ArrayList of Concerts from the database with newest additions at the beginning of the array */
     public ArrayList<Concert> getAllLikedConcerts() {
         ArrayList<Concert> allConcerts = new ArrayList<>();
 
@@ -113,7 +112,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return allConcerts;
     }
 
-    // insert song from db
+    ////////////////////** Inserts the liked song into the database after checking for the possibility of duplication */
     public Song insertLikedSong(Song likedSong) { // gets song from like button click
 
         // set key-value pairs for columns of song table
@@ -140,13 +139,14 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         // Toast.makeText(MainActivity.this, "Error adding liked song, try again later", Toast.LENGTH_SHORT).show();
     }
 
-    // remove song from db
+    /** Removes liked song from database */
     public void deleteLikedSongs(Song song) {
         long deleteId = song.getDbID();
         database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
         Log.d("dbCommands", "Song deleted with: " + song.getDbID());
     }
 
+    /////////////////////** Builds and returns an ArrayList of Songs from the database with newest additions at the beginning of the array */
     public ArrayList<Song> getAllLikedSongs() {
         ArrayList<Song> likedSongs = new ArrayList<Song>();
         Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
@@ -160,7 +160,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         cursor.close();
         return likedSongs; // return the arraylist of songs
     }
-    
+
+    /** Creates and returns a Song object from the cursor */
     public static Song cursorToSong(Cursor cursor) {
         Song song = new Song();
         song.setDbID(cursor.getInt(0)); // db id
@@ -173,6 +174,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return song;
     }
 
+    /** Creates and returns a Concert object from the cursor */
     public static Concert cursorToConcert(Cursor cursor) {
         Concert concert = new Concert();
         concert.setDbId(cursor.getInt(0));
@@ -189,6 +191,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return concert;
     }
 
+    /** Checks if a certain concert is already in the database
+     * Returns true if it exists */
     private boolean isConcertAlreadyInDb(Concert concert) {
         Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                 null, null, null, null, null); // query whole table

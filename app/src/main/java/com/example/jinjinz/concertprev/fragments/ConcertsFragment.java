@@ -18,8 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
+import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -129,11 +129,13 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         });
     }
 
+    /** Adds an array list of Concert objects to the custom adapter */
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.clear();
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
+
 
     @Override
     public void onRefresh() {

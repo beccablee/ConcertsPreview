@@ -128,6 +128,7 @@ public class Concert {
 
     }
 
+    /** Builds and returns an ArrayList of Concerts from the supplied JSONArray from the Ticketmaster API */
     public static ArrayList<Concert> concertsFromJsonArray(JSONArray jsonArray) { // looking for the "events" array --> { _embedded: { events: [ {0, 1, 2, ..} ] } } within the larger "_embedded" array and the largest object that you get from the client response
         ArrayList<Concert> concert = new ArrayList<>();
         // iterate
@@ -156,7 +157,7 @@ public class Concert {
         return concert;
     }
 
-
+    /** Builds and returns an ArrayList of artist names with the supplied artist(attractions) JSONArray from the Ticketmaster API */
     private static ArrayList<String> artistsFromJsonArray(JSONArray attractions) { // the attractions array: { _embedded:{ events:[ { ..., _embedded:{ venues:[...], attractions:[ list of at least one artist ] } } ] } }
         ArrayList<String> array = new ArrayList<>();
         // iterate
@@ -171,6 +172,7 @@ public class Concert {
     }
 
     // get a wide image that's large enough to be pretty
+    /** Finds and returns a backdrop image for a concert with a ratio made to fit cleanly into the concert ImageView and a size large enough to appear crisp onscreen */
     private static String ratioImg(JSONObject event) { //takes an event obj --> { events:[ {0}, {1}, ...]} needs: 0:{images:[ {0}, {1}, ... ]}
         // start with event obj
 
@@ -203,6 +205,7 @@ public class Concert {
 
     }
 
+    /** Formats given date from the Ticketmaster API into a clean, easily readable format */
     public static String formatDate(String originalDate){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date newDate = null;
@@ -216,6 +219,7 @@ public class Concert {
         return date;
     }
 
+    /** Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API */
     public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
         // extract the values from the json, store them

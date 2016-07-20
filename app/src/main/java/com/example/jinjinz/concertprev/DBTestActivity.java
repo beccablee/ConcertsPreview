@@ -30,7 +30,7 @@ public class DBTestActivity extends AppCompatActivity implements UserLikedConcer
         ArrayList<Concert> concerts = new ArrayList<>();
         ArrayList<Concert> myconcerts;
         myconcerts = Parcels.unwrap(getIntent().getParcelableExtra("concerts"));
-        likedConcertsRecyclerAdapter = new UserLikedConcertsRecyclerAdapter(DBTestActivity.this, concerts);
+        likedConcertsRecyclerAdapter = new UserLikedConcertsRecyclerAdapter(DBTestActivity.this, concerts, this);
         concerts.addAll(myconcerts); // array of liked concerts
         likedConcertsRecyclerAdapter.notifyDataSetChanged();
         //ArrayAdapter<Concert> concertArrayAdapter = new ArrayAdapter<Concert>(DBTestActivity.this, R.layout.activity_dbtest, concerts);

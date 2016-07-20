@@ -88,6 +88,14 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
         setUpListeners();
+        btnLikeConcert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Concert concertToLike;
+                concertToLike = concert;
+                concertDetailsFragmentListener.onLikeConcert(concertToLike);
+            }
+        });
 
         artists = concert.artistsString;
         String date = concert.getEventDate();

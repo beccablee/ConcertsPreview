@@ -94,13 +94,23 @@
                     android:maxLines="6"/>
             </RelativeLayout>
 
-            <Button
-                style="?android:attr/buttonStyleSmall"
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+"
-                android:id="@+id/btnLikeConcert"
-                android:clickable="true" />
+                android:layout_height="wrap_content">
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:id="@+id/btnLikeConcert"
+                    android:clickable="true" />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="x"
+                    android:layout_toRightOf="@+id/btnLikeConcert"/>
+            </RelativeLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 

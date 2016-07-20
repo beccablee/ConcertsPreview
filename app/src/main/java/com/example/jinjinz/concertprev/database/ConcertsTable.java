@@ -29,12 +29,14 @@ public class ConcertsTable {
     // Deletes the entire table (if it exists)
     private static final String dropConcertsTable = "DROP IF EXISTS " + TABLE_NAME;
 
-    // on creating the db
+    /** Creates the concerts table in the SQLite database
+     * Runs when database is being created or updated */
     public static void onCreate(SQLiteDatabase database) {
         database.execSQL(createConcertsTable);
     }
 
-    // on upgrading the db
+    /** Drops and recreates concerts table
+     *  Runs when database is upgrading */
     public static void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         Log.w("dbCommands", "Concerts table. " + "Upgrading db from version " + oldVersion + " to version " + newVersion + ", destroying all data.");
         database.execSQL(dropConcertsTable);

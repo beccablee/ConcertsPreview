@@ -16,8 +16,8 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
-    // These is where we need to write create table statements.
-    // This is called when database is created
+    /** Calls to table methods of creation
+     * Called when database is being created */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // SQL for creating the tables
@@ -25,12 +25,8 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
         ConcertsTable.onCreate(sqLiteDatabase);
     }
 
-
-    // This method is called when database is upgraded like
-    // modifying the table structure,
-    // adding constraints to database,
-    // changeing the version number, etc
-    // It will delete all the data and re-create the table with the new info
+    /** Calls to table methods of upgrading
+     * Called when database is being upgraded */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // SQL for updating the tables

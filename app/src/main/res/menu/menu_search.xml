@@ -17,6 +17,12 @@
         android:onClick="getProfile"
         />
 
+    <item android:id="@+id/miFaved"
+        android:title="liked"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@android:drawable/btn_star"
+        android:onClick="getLikes"/>
+
 
 
 
