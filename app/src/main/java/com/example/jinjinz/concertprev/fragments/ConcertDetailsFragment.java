@@ -112,11 +112,12 @@ public class ConcertDetailsFragment extends SongsFragment {
 
         tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
-        if (concert.getVenue() != null) {
-            tvArtists.setText(artists + " at " + concert.getVenue());
+
+        if (concert.getVenue() == null) {
+            tvArtists.setText(artists);
         }
         else {
-            tvArtists.setText(artists);
+            tvArtists.setText(artists + " at " + concert.getVenue());
         }
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
         toolbar.setTitle(concert.getEventName());

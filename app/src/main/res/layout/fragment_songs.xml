@@ -7,7 +7,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/rlRecyclerView">
 
         <TextView
             android:layout_width="match_parent"
@@ -25,6 +26,23 @@
             android:layout_below="@+id/tvSongPlaylist"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:id="@+id/llLoading"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tvLoading"
+            android:text="Loading..."
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="#EEEEEE"/>
 
     </RelativeLayout>
 </FrameLayout>

@@ -468,14 +468,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artist_index){
+    public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artistIndex, final int songsPerArtist){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
         pSongs = new ArrayList<>();
         pConcert = concert;
         RequestParams params = new RequestParams();
-        params.put("q", concert.getArtists().get(artist_index));
+        params.put("q", concert.getArtists().get(artistIndex));
         params.put("type", "artist");
         params.put("limit", 1);
 
@@ -485,7 +485,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 String artistJSONResult;
                 try {
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
-                    searchArtistPlaylist(fragment, artistJSONResult);
+                    searchArtistPlaylist(fragment, artistJSONResult, songsPerArtist);
                 } catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    public void searchArtistPlaylist(final SongsFragment fragment, String artistId){
+    public void searchArtistPlaylist(final SongsFragment fragment, String artistId, final int songsPerArtist){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
@@ -510,7 +510,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    fragment.addSongs(Song.fromJSONArray(songsJSONResult));
+                    //pSongs.addAll(Song.fromJSONArray(songsJSONResult));
+                    fragment.addSongs(Song.fromJSONArray(songsJSONResult, songsPerArtist));
 
                 } catch (JSONException e){
                     e.printStackTrace();

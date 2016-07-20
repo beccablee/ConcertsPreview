@@ -23,6 +23,7 @@ public class Song {
     public String artistsString; // formatted for details view and db
     public String previewUrl;
     public String albumArtUrl;
+    public int songsPerArtist;
 
 
     public void setDbID(int dbID) {
@@ -67,6 +68,14 @@ public class Song {
         return spotifyID;
     }
 
+    public String getSpotifyID() {
+        return spotifyID;
+    }
+
+    public int getSongsPerArtist() {
+        return songsPerArtist;
+    }
+
     public ArrayList<String> getArtists() {
         return artists;
     }
@@ -79,28 +88,16 @@ public class Song {
         return albumArtUrl;
     }
 
-    public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray) {
+    public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray, int songsPerArtist) {
         ArrayList<Parcelable> tracks = new ArrayList<>();
         try {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < songsPerArtist; i++) {
                 tracks.add(Parcels.wrap(Song.fromJSON(jsonArray.getJSONObject(i))));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return tracks;
-    }
-
-    public static String artistsToString(ArrayList<String> artist_list) {
-        String artistNames = "";
-        for (int i = 0; i < artist_list.size(); i++){
-            if (i == 0) {
-                artistNames += artist_list.get(i);
-            } else {
-                artistNames += " & " + artist_list.get(i);
-            }
-        }
-        return artistNames;
     }
 
     public static Song fromJSON(JSONObject jsonObject){
@@ -129,9 +126,6 @@ public class Song {
         } catch (JSONException e){
             e.printStackTrace();
         }
-
         return song;
     }
-
-
 }
