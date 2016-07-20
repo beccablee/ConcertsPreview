@@ -1,4 +1,8 @@
+<<<<<<< 26e43ee2bbebe8ebe413d9e2226aa1b51eba45e6:app/src/main/java/com/example/jinjinz/concertprev/Adapters/UserLikedConcertsRecyclerAdapter.java
 package com.example.jinjinz.concertprev.adapters;
+=======
+package com.example.jinjinz.concertprev.adapter;
+>>>>>>> cleanup:app/src/main/java/com/example/jinjinz/concertprev/adapter/UserLikedConcertsRecyclerAdapter.java
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -62,13 +66,12 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
     private Context mContext;
 
     // Pass the concert array into the recycler constructor
-    public UserLikedConcertsRecyclerAdapter(Context context, ArrayList<Concert> concerts) {
+    public UserLikedConcertsRecyclerAdapter(Context context, ArrayList<Concert> concerts, UserLikedConcertsRecyclerAdapterListener userLikedConcertsRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
-        //mUserLikedConcertsRecyclerAdapterListener = userLikedConcertsRecyclerAdapterListener;
+        mUserLikedConcertsRecyclerAdapterListener = userLikedConcertsRecyclerAdapterListener;
     }
 
-    // Easy access to the context object in the recyclerview
     private Context getContext() {
         return mContext;
     }

@@ -97,4 +97,5 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         }
         return artistNames;
     }
+
 }

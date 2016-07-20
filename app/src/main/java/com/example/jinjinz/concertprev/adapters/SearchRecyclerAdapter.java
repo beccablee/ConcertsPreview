@@ -24,7 +24,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         listener.onConcertTap(concert);
     }
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvEventName;
@@ -49,13 +48,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     public interface SearchRecyclerAdapterListener {
         void onConcertTap(Concert concert);
-        // pass to fragment
-        // open concert details(concert)
     }
 
-    // Store a member variable for the concerts
     private ArrayList<Concert> mConcerts;
-    // Store the context for easy access
     private Context mContext;
 
     // Pass the concert array into the recycler constructor
@@ -71,6 +66,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     }
 
     // Usually involves inflating a layout from XML and returning the holder
+    /** Inflates XML layout and returns the ViewHolder */
     @Override
     public SearchRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -85,7 +81,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         return viewHolder;
     }
 
-    // Involves populating data into the item through holder
+    /** Populates data into views utilizing the ViewHolder */
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         //Get concert based on position
@@ -113,7 +109,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         return mConcerts.size();
     }
 
-    // Clean all elements of the recycler
+    /** Clears and notifies the adapter */
     public void clear() {
         mConcerts.clear();
         notifyDataSetChanged();
