@@ -27,11 +27,24 @@
     </FrameLayout>
 
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Concerts"
+        android:id="@+id/likedConcerts" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:background="@android:color/white" />
+        android:layout_height="50dp"></FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Songs"
+        android:id="@+id/textView2" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"></FrameLayout>
 
 </LinearLayout>

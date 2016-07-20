@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.Adapters;
+package com.example.jinjinz.concertprev.adapters;
 
 import android.content.Context;
 import android.os.Parcelable;

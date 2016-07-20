@@ -19,7 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jinjinz.concertprev.Adapters.SearchRecyclerAdapter;
+import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 

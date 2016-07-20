@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.example.jinjinz.concertprev.Adapters.SongArrayAdapter;
+import com.example.jinjinz.concertprev.adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
