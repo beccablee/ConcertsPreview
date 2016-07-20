@@ -21,14 +21,12 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     public void onClick(View view) {
         ImageView ivBackgroundImage = (ImageView) view.findViewById(R.id.ivBackgroundImage);
         Concert concert = (Concert) ivBackgroundImage.getTag();
-        mSearchRecyclerAdapterListener.onConcertTap(concert);
-
+        listener.onConcertTap(concert);
     }
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final Context context;
         public TextView tvEventName;
         public TextView tvEventLocation;
         public RelativeLayout rlConcert;
@@ -39,7 +37,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
             // Stores the itemView in a public final member variable that can be used
             // to access the context from any ViewHolder instance.
             super(itemView);
-            context = itemView.getContext();
             tvEventName = (TextView) itemView.findViewById(R.id.tvEventName);
             tvEventLocation = (TextView) itemView.findViewById(R.id.tvEventLocation);
             rlConcert = (RelativeLayout) itemView.findViewById(R.id.rlConcert);
@@ -48,7 +45,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     }
 
-    SearchRecyclerAdapterListener mSearchRecyclerAdapterListener;
+    SearchRecyclerAdapterListener listener;
 
     public interface SearchRecyclerAdapterListener {
         void onConcertTap(Concert concert);
@@ -65,15 +62,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts, SearchRecyclerAdapterListener searchRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
-        mSearchRecyclerAdapterListener = searchRecyclerAdapterListener;
+        listener = searchRecyclerAdapterListener;
     }
 
-    // Easy access to the context object in the recyclerview
+    // access to the context object in the recyclerview
     private Context getContext() {
         return mContext;
     }
-
-    // Implement the three recyclerview methods
 
     // Usually involves inflating a layout from XML and returning the holder
     @Override
@@ -125,9 +120,9 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     }
 
     // Add a list of items
+    //TODO: do we still need this
     public void addAll(ArrayList<Concert> concerts) {
         mConcerts.addAll(concerts);
         notifyDataSetChanged();
     }
-
 }

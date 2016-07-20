@@ -34,16 +34,17 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     private Concert concert;
 
     public static SongArrayAdapter adapter;
-    RecyclerView rvSongs;
-    RelativeLayout llLoading;
-    RelativeLayout rlRecyclerView;
+    private RecyclerView rvSongs;
+    private RelativeLayout llLoading;
+    private RelativeLayout rlRecyclerView;
+    SongsFragmentListener listener;
 
     public interface SongsFragmentListener {
         void setUpArtistSearch(SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist);
         void launchSongView(Song song, ArrayList<Parcelable> songs);
     }
 
-    SongsFragmentListener songsFragmentListener;
+
 
     public SongsFragment() {
         // Required empty public constructor
@@ -70,7 +71,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
             int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
             for (int i = 0; i < numberOfArtists; i++){
-                songsFragmentListener.setUpArtistSearch(this, concert, i, songsPerArtist);
+                listener.setUpArtistSearch(this, concert, i, songsPerArtist);
             }
         }
     }
@@ -93,7 +94,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            songsFragmentListener = (SongsFragmentListener) context;
+            listener = (SongsFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString());
         }
@@ -110,10 +111,10 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     }
 
     public void onSongClicked(Song song){
-        songsFragmentListener.launchSongView(song, songs);
+        listener.launchSongView(song, songs);
     }
 
-    public int computeSongsPerArtist(int numberOfArtists){
+    public static int computeSongsPerArtist(int numberOfArtists){
         int songsPerPlaylist = 70;
         int songsPerArtist;
         if (numberOfArtists > 70){

@@ -15,8 +15,8 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:id="@+id/tvSongPlaylist"
-            android:text="Song Playlist"
-            android:textColor="#FF9800"
+            android:text="@string/playlist"
+            android:textColor="@color/colorAccent"
             android:paddingLeft="5dp"/>
 
         <android.support.v7.widget.RecyclerView
@@ -39,8 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/tvLoading"
-            android:text="Loading..."
-            android:textSize="20dp"
+            android:text="@string/load"
+            android:textSize="20sp"
             android:gravity="center"
             android:textColor="#EEEEEE"/>
 

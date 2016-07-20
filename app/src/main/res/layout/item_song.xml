@@ -7,7 +7,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
         android:singleLine="true"
         android:ellipsize="end"
         android:text="Song Name"
@@ -15,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="#ffffff"/>
+        android:textColor="@android:color/white"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,7 +27,7 @@
         android:layout_below="@+id/tvSongName"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="#CCCCCC"
+        android:textColor="@color/lightGrey"
         android:ellipsize="end"
         android:lines="1"/>
 
@@ -35,6 +36,6 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_height="2px"
-        android:background="#666666"
+        android:background="@color/midDarkGrey"
         android:id="@+id/view" />
 </RelativeLayout>

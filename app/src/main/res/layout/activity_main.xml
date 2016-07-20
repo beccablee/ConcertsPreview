@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jinjinz.concertprev.MainActivity"
-    android:background="#e291939b">
+    android:background="@color/grey">
 
     <FrameLayout
         android:layout_width="match_parent"

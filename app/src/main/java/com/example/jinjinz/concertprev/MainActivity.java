@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.databases.UserDataSource;
@@ -47,17 +46,14 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener,
         PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener, ConcertDetailsFragment.ConcertDetailsFragmentListener {
-
+    //currently playing
     Concert concert;
     ArrayList<Song> songs;
-    ArrayList<Parcelable> pSongs; //I need this now
     Concert pConcert;
     MediaPlayer mediaPlayer;
     private int songNum;
-    private Button testBtn;
 
     ConcertsFragment mConcertsFragment; // concerts fragment
-    ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
 
     PlayerBarFragment barFragment;
     PlayerScreenFragment playerFragment;
@@ -181,11 +177,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public String getConcertName() {
         return concert.getEventName();
     }
+
     //go to concert fragment
-    // on concert name click?
     @Override
     public void onConcertClick() {
-
+        ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
+        ft.addToBackStack("details");
+        ft.commit();
     }
 
     @Override
@@ -239,10 +239,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
     @Override
     public void onClosePlayer() {
-        //PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (barFragment == null) {
-            barFragment = PlayerBarFragment.newInstance(songs.get(songNum));
+            barFragment = PlayerBarFragment.newInstance();
             ft.replace(R.id.playerFragment, barFragment, "bar");
             ft.commit();
         }
@@ -286,10 +285,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // Search Fragment
     ////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////
-
-    // Fragment methods
-
     AsyncHttpClient client;
     // Fetch
     public void fetchConcerts() {
@@ -337,8 +332,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         }
                         ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                     }
-//                    mConcertsFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
-//                    ConcertsFragment.mSwipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
@@ -360,11 +353,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // fetch
         fetchConcerts();
     }
-    //TODO figure out what's up
+
     @Override
     public void onConcertTap(Concert concert) {
         // open songs fragment --> needs more stuff from songsfrag
-        mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
+        ConcertDetailsFragment mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
@@ -424,6 +417,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.disconnect();
         super.onStop();
     }
+    ////////////////////////////////////////////////////
+
     //Playerbar
     ////////////////////////////////////////////////////
     @Override
@@ -464,14 +459,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
 
-    // Concert + Songs Fragment
+    // Concert Details Fragment
     ////////////////////////////////////////////////////
 
     public void setUpArtistSearch(final SongsFragment fragment, Concert concert, int artistIndex, final int songsPerArtist){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
-        pSongs = new ArrayList<>();
         pConcert = concert;
         RequestParams params = new RequestParams();
         params.put("q", concert.getArtists().get(artistIndex));
@@ -509,7 +503,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    pSongs.addAll(Song.fromJSONArray(songsJSONResult, songsPerArtist));
                     fragment.addSongs(Song.fromJSONArray(songsJSONResult, songsPerArtist));
 
                 } catch (JSONException e){
@@ -544,8 +537,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.addToBackStack("player");
         ft.commit();
     }
-    public static UserDataSource userDataSource;
+    ////////////////////////////////////////////////////
 
+
+    //Database stuff
+    ////////////////////////////////////////////////////
+    public static UserDataSource userDataSource;
     @Override
     public void onLikeConcert(Concert concert) {
         userDataSource.insertLikedConcert(concert); // adds concert to db
@@ -557,10 +554,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         intent.putExtra("concerts", Parcels.wrap(likedConcerts));
         startActivity(intent);
     }
-
-
     ////////////////////////////////////////////////////
 
+    //profile page stuff
+    ////////////////////////////////////////////////////
     public void getProfile(MenuItem item) {
         UserFragment userFragment = UserFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -568,6 +565,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.addToBackStack("user");
         ft.commit();
     }
-
-
+    ////////////////////////////////////////////////////
 }

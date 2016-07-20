@@ -24,10 +24,8 @@ import org.parceler.Parcels;
  * Created by beccalee on 7/18/16.
  */
 public class ConcertDetailsFragment extends SongsFragment {
-
     private Concert concert;
-    public String artists;
-    SongsFragment mSongsFragment;
+    public String artists; // Fragment
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -62,9 +60,9 @@ public class ConcertDetailsFragment extends SongsFragment {
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
 
         if (savedInstanceState == null) {
-            mSongsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
+            SongsFragment songsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.add(R.id.songContainer, mSongsFragment).commit();
+            transaction.add(R.id.songContainer, songsFragment).commit();
         }
     }
 

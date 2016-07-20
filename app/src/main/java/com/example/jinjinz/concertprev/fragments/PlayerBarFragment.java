@@ -2,9 +2,9 @@ package com.example.jinjinz.concertprev.fragments;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,23 +14,17 @@ import android.widget.TextView;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Song;
 
-import org.parceler.Parcels;
-
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PlayerBarFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class PlayerBarFragment extends Fragment {
-    Song song;
-    TextView songTitle2;
-    TextView artistTitle2;
-    Button playBtn2;
-    PlayerBarFragmentListener listener;
+    private TextView songTitle2;
+    private TextView artistTitle2;
+    private Button playBtn2;
+    private PlayerBarFragmentListener listener;
 
-    /**
-     * stuff Activity should do: change interface when song changes, react when player tries to be opened, react play button
-     */
     public interface PlayerBarFragmentListener {
         void openPlayer();
         void playPauseBarBtn();
@@ -41,17 +35,10 @@ public class PlayerBarFragment extends Fragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
      * @return A new instance of fragment PlayerBarFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PlayerBarFragment newInstance(Song song) {
+    public static PlayerBarFragment newInstance() {
         PlayerBarFragment fragment = new PlayerBarFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("song", Parcels.wrap(song));
-        fragment.setArguments(args);
         return fragment;
     }
     @Override
@@ -68,9 +55,6 @@ public class PlayerBarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            song = Parcels.unwrap(getArguments().getParcelable("song"));
-        }
     }
 
     @Override
@@ -81,8 +65,6 @@ public class PlayerBarFragment extends Fragment {
         songTitle2 = (TextView) v.findViewById(R.id.songTitle2);
         artistTitle2 = (TextView) v.findViewById(R.id.artistTitle2);
         playBtn2 = (Button) v.findViewById(R.id.playBtn2);
-        //songTitle2.setText(song.getName());
-        //artistTitle2.setText(song.getArtists().get(0));
         listener.onOpenBar();
         playBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,21 +78,21 @@ public class PlayerBarFragment extends Fragment {
                 listener.openPlayer();
             }
         });
-        v.setBackgroundColor(Color.parseColor("#404040"));
+        v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
         return v;
     }
 
-    //call by activity
+    //set play button visuals
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
             playBtn2.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            playBtn2.setBackground(getContext().getDrawable(R.drawable.ic_play_circle_));
+            playBtn2.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 
-    public  void updateInterface(Song song) {
+    public void updateInterface(Song song) {
         songTitle2.setText(song.getName());
         artistTitle2.setText(song.getArtists().get(0));
     }

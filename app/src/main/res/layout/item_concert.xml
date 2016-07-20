@@ -38,8 +38,8 @@
             android:gravity="bottom|left"
             android:textStyle="bold"
             android:textSize="30dp"
-            android:textColor="#deffffff"
-            android:shadowColor="#000000"
+            android:textColor="@color/transparentWhite"
+            android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="25" />
@@ -52,8 +52,8 @@
             android:text="Chicago, IL"
             android:textStyle="italic"
             android:textSize="15dp"
-            android:textColor="#ffffff"
-            android:shadowColor="#000000"
+            android:textColor="@android:color/white"
+            android:shadowColor="@android:color/black"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="25"/>

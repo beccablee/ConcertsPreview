@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,19 +29,19 @@ import org.parceler.Parcels;
  * A simple {@link Fragment} subclass.
  */
 public class PlayerScreenFragment extends Fragment {
-    ImageView albumImg;
-    TextView concertTitle; // TODO: make it clickable
-    Button backBtn;
-    TextView songTitle;
-    TextView artistTitle;
-    Button playBtn;
-    View view;
-    Button prevBtn;
-    Button nextBtn;
-    ProgressBar progressBar;
-    int total = 30000;
-    PlayerScreenFragmentListener listener;
-    Song initialSong;
+    private ImageView albumImg;
+    private TextView concertTitle;
+    private Button backBtn;
+    private TextView songTitle;
+    private TextView artistTitle;
+    private Button playBtn;
+    private View view;
+    private Button prevBtn;
+    private Button nextBtn;
+    private ProgressBar progressBar;
+    private final int TOTAL = 30000;
+    private PlayerScreenFragmentListener listener;
+    private Song initialSong;
 
     public interface PlayerScreenFragmentListener {
         String getConcertName(); //get concert name
@@ -50,7 +51,7 @@ public class PlayerScreenFragment extends Fragment {
         void skipPrev(); //on skip previous click
         void onClosePlayer(); //on Player close (add playbar)
         void onOpenPlayer(); //on Player open (change ui)
-        void backInStack();
+        void backInStack(); //go back
     }
     public static PlayerScreenFragment newInstance(Song song) {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
@@ -69,7 +70,6 @@ public class PlayerScreenFragment extends Fragment {
     public void onStart() {
         super.onStart();
         listener.onOpenPlayer();
-
     }
 
     @Override
@@ -113,7 +113,6 @@ public class PlayerScreenFragment extends Fragment {
         });
         //initialize interface
         updateInterface(initialSong);
-        setProgressBar(0);
         //set onClickListeners for buttons
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,8 +138,7 @@ public class PlayerScreenFragment extends Fragment {
                 listener.skipNext();
             }
         });
-        progressBar.setMax(total);
-        //progressbar
+        progressBar.setMax(TOTAL);
         return view;
     }
     //update interface
@@ -173,7 +171,7 @@ public class PlayerScreenFragment extends Fragment {
             // Fires if bitmap fails to load
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-                view.setBackgroundColor(Color.parseColor("#404040"));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
             }
 
             @Override
@@ -186,7 +184,6 @@ public class PlayerScreenFragment extends Fragment {
         albumImg.setTag(target);
         // Instruct Picasso to load the bitmap into the target defined above
         Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
-        //view.setBackgroundColor(Color.parseColor("#404040"));
     }
     //call by activity
     public void updatePlay(boolean isPlaying) {
@@ -194,7 +191,7 @@ public class PlayerScreenFragment extends Fragment {
             playBtn.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_play_circle_));
+            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 

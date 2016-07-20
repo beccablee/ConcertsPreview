@@ -20,9 +20,8 @@ import java.util.ArrayList;
  */
 public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.ViewHolder> implements View.OnClickListener {
 
-    private Context mContext;
     private ArrayList<Parcelable> mSongs;
-    OnSongClickListener mOnSongClickListener;
+    private OnSongClickListener listener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvSongName;
@@ -36,16 +35,15 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
     }
 
     public SongArrayAdapter(Context context, ArrayList<Parcelable> songs, OnSongClickListener songClickListener) {
-        mContext = context;
         mSongs = songs;
-        mOnSongClickListener = songClickListener;
+        listener = songClickListener;
     }
 
     @Override
     public void onClick(View view) {
         TextView tvSongName = (TextView) view.findViewById(R.id.tvSongName);
         Song song = (Song) tvSongName.getTag();
-        mOnSongClickListener.onSongClicked(song);
+        listener.onSongClicked(song);
     }
 
     public interface OnSongClickListener {
@@ -87,7 +85,8 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         return mSongs.size();
     }
 
-    public String artistsToString(ArrayList<String> artist_list) {
+    //artist names to strings
+    public static String artistsToString(ArrayList<String> artist_list) {
         String artistNames = "";
         for (int i = 0; i < artist_list.size(); i++){
             if (i == 0) {

@@ -1,7 +1,6 @@
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,8 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -33,27 +32,22 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         return new SuggestionsCursor(constraint);
     }
 */
-    public static SwipeRefreshLayout mSwipeRefreshLayout;
+    public interface ConcertsFragmentListener {
+        void populateConcerts(ConcertsFragment fragment, String query);
+        void onConcertTap(Concert concert);
+    }
 
+    public static SwipeRefreshLayout mSwipeRefreshLayout;
+    public static SearchRecyclerAdapter searchAdapter;
+
+    private String queryText;
+    private ArrayList<Concert> concerts;
+    private ConcertsFragmentListener concertsFragmentListener;
 
     @Override
     public void onConcertTap(Concert concert) {
         concertsFragmentListener.onConcertTap(concert);
     }
-
-
-
-
-    public interface ConcertsFragmentListener {
-        void populateConcerts(ConcertsFragment fragment, String query);
-        void onConcertTap(Concert concert);
-
-    }
-
-    private String queryText;
-    ArrayList<Concert> concerts;
-    public static SearchRecyclerAdapter searchAdapter;
-    ConcertsFragmentListener concertsFragmentListener;
 
     public ConcertsFragment() {
         // Required empty public constructor
@@ -64,8 +58,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
      */
     public static ConcertsFragment newInstance() {
         ConcertsFragment fragment = new ConcertsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -99,39 +91,29 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         View view = inflater.inflate(R.layout.fragment_concerts, container, false);
         // Lookup the recyclerview in the fragment and
         RecyclerView rvConcerts = (RecyclerView) view.findViewById(R.id.rvConcerts);
-        // / connect adapter to recyclerview
+        // connect adapter to recyclerview
         rvConcerts.setAdapter(searchAdapter);
         // Set layout manager to position the items
         rvConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         // Find the toolbar view inside the activity layout
         setHasOptionsMenu(true);
 
         Toolbar tbSearch = (Toolbar) view.findViewById(R.id.tbSearch);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
         ((AppCompatActivity) getActivity()).setSupportActionBar(tbSearch);
-        tbSearch.setTitle("Working Title");
         // swipe refresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setOnRefreshListener(this);
-        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_green_dark), // deprecated but ContextCompat.getColor() doesn't work either
-                getResources().getColor(android.R.color.holo_red_dark),
-                getResources().getColor(android.R.color.holo_blue_dark),
-                getResources().getColor(android.R.color.holo_orange_dark));
         return view;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         inflater.inflate(R.menu.menu_search, menu);
         final MenuItem item = menu.findItem(R.id.action_search);
-       // menu.findItem(R.id.user_profile).setOnMenuItemClickListener(new );
         final SearchView searchView = new SearchView(getActivity());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, searchView);
-        searchView.setBackgroundColor(Color.WHITE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -149,7 +131,6 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.clear();
-        searchAdapter.notifyDataSetChanged();
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
