@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.databases;
+package com.example.jinjinz.concertprev.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -66,16 +66,22 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         values.put(ConcertsTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
         values.put(ConcertsTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
 
-        // insert and return the concert
-        long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert) and returns the row id of the inserted concert ( or -1 if an error occurred)
-        if (insertId != -1) {
-            Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
-                    ConcertsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
-            cursor.moveToFirst(); // move to the first row if the query results (whatever was queried) the single liked concert in this case
-            Concert myConcert = cursorToConcert(cursor); // turn row into concert
-            cursor.close();
-            Log.d("dbCommands", "liked a concert");
-            return myConcert; // return it for UI
+        // check if it exists already
+        if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
+            Log.d("dbCommands", "already liked this concert");
+        } else {
+            long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert) and returns the row id of the inserted concert ( or -1 if an error occurred)
+            if (insertId != -1) {
+                Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                        ConcertsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
+                cursor.moveToFirst(); // move to the first row if the query results (whatever was queried) the single liked concert in this case
+                Concert myConcert = cursorToConcert(cursor); // turn row into concert
+                cursor.close();
+                Log.d("dbCommands", "liked a concert");
+                return myConcert; // return it for UI
+            } else {
+                Log.d("dbCommands", "error liking concert");
+            }
         }
 
         return null; // return null for error handling
@@ -91,16 +97,17 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
     }
 
     public ArrayList<Concert> getAllLikedConcerts() {
-        ArrayList<Concert> allConcerts = new ArrayList<Concert>();
+        ArrayList<Concert> allConcerts = new ArrayList<>();
 
         Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                 null, null, null, null, null);
 
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
+        cursor.moveToLast();
+        //cursor.moveToFirst();
+        while (!cursor.isBeforeFirst()) {
             Concert concert = cursorToConcert(cursor);
             allConcerts.add(concert);
-            cursor.moveToNext();
+            cursor.moveToPrevious();
         }
         cursor.close();
         return allConcerts;
@@ -180,6 +187,24 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setBackdropImage(cursor.getString(9));
 
         return concert;
+    }
+
+    private boolean isConcertAlreadyInDb(Concert concert) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        // move cursor to beginning of query
+        cursor.moveToFirst();
+        // while not after last
+        while(!cursor.isAfterLast()) {
+            // if cursor.name == concert.name
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                return true;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+
+        return false;
     }
 
 }
