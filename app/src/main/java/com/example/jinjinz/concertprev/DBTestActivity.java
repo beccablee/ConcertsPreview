@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.jinjinz.concertprev.Adapters.UserLikedConcertsRecyclerAdapter;
+import com.example.jinjinz.concertprev.adapters.UserLikedConcertsRecyclerAdapter;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
 import com.example.jinjinz.concertprev.models.Concert;
 

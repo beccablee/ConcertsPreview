@@ -28,10 +28,10 @@ import org.parceler.Parcels;
  * A simple {@link Fragment} subclass.
  */
 public class PlayerScreenFragment extends Fragment {
-    ImageView albumImg; //done -sh
+    ImageView albumImg;
     TextView concertTitle; // TODO: make it clickable
-    Button backBtn; //TODO: take out
-    TextView songTitle; //done -sh
+    Button backBtn;
+    TextView songTitle;
     TextView artistTitle;
     Button playBtn;
     View view;

@@ -91,7 +91,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
         ivHeader = (ImageView) view.findViewById(R.id.ivHeader);
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        //tvEvent = (TextView) view.findViewById(R.id.tvEvent);
+        tvEvent = (TextView) view.findViewById(R.id.tvEvent);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
@@ -120,7 +120,6 @@ public class ConcertDetailsFragment extends SongsFragment {
             tvArtists.setText(artists + " at " + concert.getVenue());
         }
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
-        toolbar.setTitle(concert.getEventName());
     }
 
 }

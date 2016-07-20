@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.Adapters;
+package com.example.jinjinz.concertprev.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

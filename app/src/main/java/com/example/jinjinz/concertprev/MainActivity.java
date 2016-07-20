@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     PlayerBarFragment barFragment;
     PlayerScreenFragment playerFragment;
 
-    //TODO: make only one instance of player and playerBar run after the navigation works
     // Location variables
     protected String latlong;
     protected String queryText;
