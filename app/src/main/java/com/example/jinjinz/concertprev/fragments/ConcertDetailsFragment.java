@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     private ArrayList<Parcelable> songs;
     private Concert concert;
     public String artists; // Fragment
-    SongsFragment sFragment; // Main
+    SongsFragment mSongsFragment; // Main
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -38,10 +39,17 @@ public class ConcertDetailsFragment extends SongsFragment {
     public TextView tvEvent;
     public TextView tvDate;
     public TextView tvArtists;
+    public Button btnLikeConcert;
 
     public ConcertDetailsFragment() {
         // Required empty public constructor
     }
+
+    public interface ConcertDetailsFragmentListener {
+        void onLikeConcert(Concert concert);
+    }
+
+    ConcertDetailsFragmentListener concertDetailsFragmentListener;
 
     public static ConcertDetailsFragment newInstance(Parcelable concert) {
         ConcertDetailsFragment fragment = new ConcertDetailsFragment();
@@ -57,9 +65,9 @@ public class ConcertDetailsFragment extends SongsFragment {
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
 
         if (savedInstanceState == null) {
-            sFragment = SongsFragment.newInstance(Parcels.wrap(concert));
+            mSongsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.add(R.id.songContainer, sFragment).commit();
+            transaction.add(R.id.songContainer, mSongsFragment).commit();
         }
 
     }
@@ -74,6 +82,7 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     public void onAttach(Context context) {
         super.onAttach(context);
+        concertDetailsFragmentListener = (ConcertDetailsFragmentListener) context;
     }
 
 
@@ -85,10 +94,23 @@ public class ConcertDetailsFragment extends SongsFragment {
         //tvEvent = (TextView) view.findViewById(R.id.tvEvent);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
+        btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
+        btnLikeConcert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Concert concertToLike = new Concert();
+                concertToLike = concert;
+                concertDetailsFragmentListener.onLikeConcert(concertToLike);
+            }
+        });
 
         artists = concert.artistsString;
 
         String date = concert.getEventDate();
+
+        ivHeader.setTag(concert);
+
+        tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
         if (concert.getVenue() != null) {
             tvArtists.setText(artists + " at " + concert.getVenue());

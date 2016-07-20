@@ -127,6 +127,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
         inflater.inflate(R.menu.menu_search, menu);
         final MenuItem item = menu.findItem(R.id.action_search);
+       // menu.findItem(R.id.user_profile).setOnMenuItemClickListener(new );
         final SearchView searchView = new SearchView(getActivity());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, searchView);

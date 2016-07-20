@@ -1,6 +1,7 @@
 package com.example.jinjinz.concertprev;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.AudioManager;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.jinjinz.concertprev.DatabaseClasses.UserDataSource;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
 import com.example.jinjinz.concertprev.fragments.ConcertsFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
@@ -43,7 +45,8 @@ import java.util.Collections;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks, ConcertsFragment.ConcertsFragmentListener,
+        PlayerScreenFragment.PlayerScreenFragmentListener, PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener, ConcertDetailsFragment.ConcertDetailsFragmentListener {
 
     Concert concert;
     ArrayList<Song> songs;
@@ -92,33 +95,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ft.commit();
         }
 
-    }
+        // open datasource for use
+        userDataSource = new UserDataSource(MainActivity.this);
+        userDataSource.openDB();
 
-    private void testPlayer() {
-        //testing code
-        //create dummy songs and concerts
-        Concert dummy_c = new Concert();
-        Song dummy_ss = new Song();
-        dummy_c.setEventName("TESTING");
-        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
-        ArrayList<String> artist = new ArrayList<>();
-        artist.add("Elvis Presley");
-        dummy_ss.setArtists(artist);
-        dummy_ss.setName("Suspicious Minds");
-        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
-        ArrayList<Song> dummy_s = new ArrayList<>();
-        dummy_s.add(dummy_ss);
-
-        PlayerScreenFragment playerFragment = PlayerScreenFragment.newInstance(dummy_s.get(0));
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, playerFragment, "player");
-        ft.addToBackStack("player");
-        PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
-        if (playerBar != null) {
-            ft.hide(playerBar);
-        }
-        ft.commit();
-        onNewConcert(dummy_c,dummy_s);
     }
 
     private void onNewConcert(Concert c, ArrayList<Song> s) {
@@ -384,8 +364,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     //TODO figure out what's up
     @Override
     public void onConcertTap(Concert concert) {
-
-
         // open songs fragment --> needs more stuff from songsfrag
         mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -394,15 +372,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
 
-    // Google api methods
+    ///// Google api methods /////
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+
             ActivityCompat.requestPermissions(MainActivity.this, locationPermissions, LOCATION_PERMISSIONS);
 
-            return;
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             // Log.d("lastlocation", lastLocation.toString());
@@ -533,8 +510,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 JSONArray songsJSONResult;
                 try {
                     songsJSONResult = response.getJSONArray("tracks");
-                    //pSongs.addAll(Song.fromJSONArray(songsJSONResult));
-                    //Toast.makeText(getApplicationContext(), "songs loaded: " + pSongs.size(), Toast.LENGTH_SHORT).show();
                     fragment.addSongs(Song.fromJSONArray(songsJSONResult));
 
                 } catch (JSONException e){
@@ -569,6 +544,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.addToBackStack("player");
         ft.commit();
     }
+    public static UserDataSource userDataSource;
+
+    @Override
+    public void onLikeConcert(Concert concert) {
+        userDataSource.insertLikedConcert(concert); // adds concert to db
+    }
+
+    public void userProfile(MenuItem item) {
+        Intent intent = new Intent(MainActivity.this, DBTestActivity.class);
+        ArrayList<Concert> likedConcerts = userDataSource.getAllLikedConcerts();
+        intent.putExtra("concerts", Parcels.wrap(likedConcerts));
+        startActivity(intent);
+    }
+
+
     ////////////////////////////////////////////////////
 
     public void getProfile(MenuItem item) {

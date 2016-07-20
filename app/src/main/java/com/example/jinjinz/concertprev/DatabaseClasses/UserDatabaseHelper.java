@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class UserDatabaseHelper extends SQLiteOpenHelper {
 // responsible for creating the db
     private static final String DB_NAME = "concertAppDatabase.db";
-    private static final int DB_VERSION = 0;
+    private static final int DB_VERSION = 1;
 
 
 
@@ -21,8 +21,8 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // SQL for creating the tables
-/*        SongsTable.onCreate(sqLiteDatabase);
-        ConcertsTable.onCreate(sqLiteDatabase);*/
+        SongsTable.onCreate(sqLiteDatabase);
+        ConcertsTable.onCreate(sqLiteDatabase);
     }
 
 
@@ -34,7 +34,7 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // SQL for updating the tables
-/*        SongsTable.onUpgrade(sqLiteDatabase, oldVersion, newVersion);
-        ConcertsTable.onUpgrade(sqLiteDatabase, oldVersion, newVersion);*/
+        SongsTable.onUpgrade(sqLiteDatabase, oldVersion, newVersion);
+        ConcertsTable.onUpgrade(sqLiteDatabase, oldVersion, newVersion);
     }
 }

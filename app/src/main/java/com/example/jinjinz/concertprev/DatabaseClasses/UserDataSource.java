@@ -11,8 +11,8 @@ import com.example.jinjinz.concertprev.models.Song;
 
 import java.util.ArrayList;
 
-public class UserDataSource { // Our DAO (data access object) that is responsible for handling bd connection and accessing and modifying the data in the db
-    // it also converts the data into objects that our app can easily use
+public class UserDataSource { // Our DAO (data access object) that is responsible for handling db connection and accessing and modifying the data in the db
+    // it also converts the data into objects that our app can be readily used for our ui
 
     private SQLiteDatabase database;
     private UserDatabaseHelper dbHelper;
@@ -21,19 +21,29 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         dbHelper = new UserDatabaseHelper(context);
     }
 
+    public UserDataSource() {
+
+    }
+
     // all the columns in the song table
     String[] allSongColumns = {SongsTable.COLUMN_ENTRY_ID, SongsTable.COLUMN_SPOTIFY_ID, SongsTable.COLUMN_SONG_NAME,
             SongsTable.COLUMN_SONG_ARTISTS, SongsTable.COLUMN_SONG_PREVIEW_URL, SongsTable.COLUMN_ALBUM_ART_URL};
 
     // all the columns in the concert table
-    String [] allConcertColumns = {ConcertsTable.COLUMN_ENTRY_ID, ConcertsTable.COLUMN_CONCERT_NAME, ConcertsTable.COLUMN_CONCERT_CITY,
-            ConcertsTable.COLUMN_CONCERT_STATE, ConcertsTable.COLUMN_CONCERT_COUNTRY, ConcertsTable.COLUMN_CONCERT_TIME,
-            ConcertsTable.COLUMN_CONCERT_DATE, ConcertsTable.COLUMN_CONCERT_VENUE,
-            ConcertsTable.COLUMN_CONCERT_ARTISTS, ConcertsTable.COLUMN_CONCERT_IMAGE_URL};
+    String [] allConcertColumns = {ConcertsTable.COLUMN_ENTRY_ID,
+            ConcertsTable.COLUMN_CONCERT_NAME,
+            ConcertsTable.COLUMN_CONCERT_CITY,
+            ConcertsTable.COLUMN_CONCERT_STATE,
+            ConcertsTable.COLUMN_CONCERT_COUNTRY,
+            ConcertsTable.COLUMN_CONCERT_VENUE,
+            ConcertsTable.COLUMN_CONCERT_TIME,
+            ConcertsTable.COLUMN_CONCERT_DATE,
+            ConcertsTable.COLUMN_CONCERT_ARTISTS,
+            ConcertsTable.COLUMN_CONCERT_IMAGE_URL};
 
     public void openDB() {
         Log.d("dbCommands", "opening " + dbHelper.getDatabaseName() + " from UserDataSource");
-        dbHelper.getWritableDatabase();
+        database = dbHelper.getWritableDatabase();
     }
 
     public void closeDB() {
@@ -64,12 +74,13 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             cursor.moveToFirst(); // move to the first row if the query results (whatever was queried) the single liked concert in this case
             Concert myConcert = cursorToConcert(cursor); // turn row into concert
             cursor.close();
+            Log.d("dbCommands", "liked a concert");
             return myConcert; // return it for UI
         }
 
         return null; // return null for error handling
         // in parent activity: if insertLikedConcert(..) returns null, toast error message
-        // Toast.makeText(MainActivity.class, "Error adding liked concert, try again later", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(MainActivity.this, "Error adding liked concert, try again later", Toast.LENGTH_SHORT).show();
     }
 
     // remove concert from db
@@ -89,6 +100,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         while (!cursor.isAfterLast()) {
             Concert concert = cursorToConcert(cursor);
             allConcerts.add(concert);
+            cursor.moveToNext();
         }
         cursor.close();
         return allConcerts;
@@ -118,7 +130,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         }
         return null; // return null for error handling
         // in parent activity: if insertLikedSong(..) returns null, toast error message
-        // Toast.makeText(MainActivity.class, "Error adding liked song, try again later", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(MainActivity.this, "Error adding liked song, try again later", Toast.LENGTH_SHORT).show();
     }
 
     // remove song from db
@@ -161,9 +173,11 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setCity(cursor.getString(2));
         concert.setStateCode(cursor.getString(3)); // null for intl concerts
         concert.setCountryCode(cursor.getString(4));
-        concert.setEventTime(cursor.getString(5));
-        concert.setArtistsString(cursor.getString(6));
-        concert.setBackdropImage(cursor.getString(7));
+        concert.setVenue(cursor.getString(5));
+        concert.setEventTime(cursor.getString(6));
+        concert.setEventDate(cursor.getString(7));
+        concert.setArtistsString(cursor.getString(8));
+        concert.setBackdropImage(cursor.getString(9));
 
         return concert;
     }
