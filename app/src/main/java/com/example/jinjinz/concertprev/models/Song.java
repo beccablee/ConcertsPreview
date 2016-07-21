@@ -25,7 +25,6 @@ public class Song {
     public String albumArtUrl;
     public int songsPerArtist;
 
-
     public void setDbID(int dbID) {
         this.dbID = dbID;
     }
@@ -34,9 +33,6 @@ public class Song {
     }
     public void setSpotifyID(String id) {
         this.spotifyID = id;
-    }
-    public void setArtists(ArrayList<String> artists) {
-        this.artists = artists;
     }
     public void setPreviewUrl(String previewUrl) {
         this.previewUrl = previewUrl;
@@ -60,12 +56,6 @@ public class Song {
     public String getId() {
         return spotifyID;
     }
-    public String getSpotifyID() {
-        return spotifyID;
-    }
-    public int getSongsPerArtist() {
-        return songsPerArtist;
-    }
     public ArrayList<String> getArtists() {
         return artists;
     }
@@ -76,6 +66,7 @@ public class Song {
         return albumArtUrl;
     }
 
+    /* Adds songs to the tracks ArrayList from JSON */
     public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray, int songsPerArtist) {
         ArrayList<Parcelable> tracks = new ArrayList<>();
         try {
@@ -88,6 +79,7 @@ public class Song {
         return tracks;
     }
 
+    /* Gets song details from JSON */
     public static Song fromJSON(JSONObject jsonObject){
         Song song = new Song();
         JSONArray artist_list;
@@ -104,6 +96,7 @@ public class Song {
         } catch (JSONException e){
             e.printStackTrace();
         }
+        // Gets each artist's name from JSONArray
         try {
             artist_list = jsonObject.getJSONArray("artists");
             for (int i = 0; i < artist_list.length(); i++) {

@@ -25,7 +25,7 @@ import org.parceler.Parcels;
  */
 public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
-    public String artists; // Fragment
+    public String artists;
 
     public AppBarLayout appBar;
     public CollapsingToolbarLayout collapsingToolbarLayout;
@@ -36,16 +36,19 @@ public class ConcertDetailsFragment extends SongsFragment {
     public TextView tvArtists;
     public Button btnLikeConcert;
 
+    SongsFragment mSongsFragment;
+    ConcertDetailsFragmentListener concertDetailsFragmentListener;
+
+    // Required empty public constructor
     public ConcertDetailsFragment() {
-        // Required empty public constructor
     }
 
+    /* Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
         void onLikeConcert(Concert concert);
     }
 
-    ConcertDetailsFragmentListener concertDetailsFragmentListener;
-
+    /* Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
     public static ConcertDetailsFragment newInstance(Parcelable concert) {
         ConcertDetailsFragment fragment = new ConcertDetailsFragment();
         Bundle args = new Bundle();
@@ -54,6 +57,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         return fragment;
     }
 
+    /* Creates a SongsFragment nested in the ConcertDetailsFragment */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         concertDetailsFragmentListener = (ConcertDetailsFragmentListener) context;
     }
 
+    /* Finds and populates views for the fragment */
     public void setUpViews(View view){
         appBar = (AppBarLayout) view.findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
@@ -112,6 +117,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
     }
 
+    /* Sets up 'like' button and makes title appear in the AppBar when collapsed */
     public void setUpListeners(){
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,7 +131,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
-
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 if (scrollRange == -1) {
@@ -136,7 +141,7 @@ public class ConcertDetailsFragment extends SongsFragment {
                     isShow = true;
                     tvEvent.setVisibility(View.GONE);
                     tvArtists.setVisibility(View.GONE);
-                } else if(isShow) {
+                } else if (isShow) {
                     collapsingToolbarLayout.setTitle("");
                     isShow = false;
                     tvEvent.setVisibility(View.VISIBLE);

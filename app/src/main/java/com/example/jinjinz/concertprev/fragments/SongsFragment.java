@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.example.jinjinz.concertprev.adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.SongArrayAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
@@ -20,36 +20,31 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-/*
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SongsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SongsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongClickListener{
 
     private ArrayList<Parcelable> songs;
     private Concert concert;
 
-    public static SongArrayAdapter adapter;
     private RecyclerView rvSongs;
     private RelativeLayout llLoading;
     private RelativeLayout rlRecyclerView;
     SongsFragmentListener listener;
 
+    public static SongArrayAdapter adapter;
+    SongsFragmentListener songsFragmentListener;
+
+    /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
         void setUpArtistSearch(SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist);
         void launchSongView(Song song, ArrayList<Parcelable> songs);
     }
 
-
-
+    /* Required empty public constructor */
     public SongsFragment() {
-        // Required empty public constructor
     }
 
+    /* Creates a new instance of the SongsFragment and gets concert Object (Parcelable) */
     public static SongsFragment newInstance(Parcelable concert) {
         SongsFragment fragment = new SongsFragment();
         Bundle args = new Bundle();
@@ -62,7 +57,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         songs = new ArrayList<>();
-
         if (getArguments() != null) {
             concert = Parcels.unwrap(getArguments().getParcelable("concert"));
             adapter = new SongArrayAdapter(getActivity(), songs, this);
@@ -82,11 +76,10 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
         rlRecyclerView = (RelativeLayout) view.findViewById(R.id.rlRecyclerView);
+        rlRecyclerView.setVisibility(View.GONE);
 
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        rlRecyclerView.setVisibility(View.GONE);
 
         return view;
     }
@@ -100,6 +93,19 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
+    /* Removes loading symbol and displays populated RecyclerView when returning to the fragment */
+    @Override
+    public void onResume() {
+        super.onResume();
+        llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
+        rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
+        if (llLoading.getVisibility() == View.VISIBLE && songs.size() != 0) {
+            llLoading.setVisibility(View.GONE);
+            rlRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /* Adds songs to the ArrayList and populates the RecyclerView */
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
         llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
         rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
@@ -114,19 +120,17 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         listener.launchSongView(song, songs);
     }
 
+    /* Returns the number of songs each artist will have in the playlist */
     public static int computeSongsPerArtist(int numberOfArtists){
         int songsPerPlaylist = 70;
         int songsPerArtist;
         if (numberOfArtists > 70){
             songsPerArtist = 1;
-        }
-        else if (numberOfArtists > 8){
+        } else if (numberOfArtists > 8){
             songsPerArtist = songsPerPlaylist / numberOfArtists;
-        }
-        else if (numberOfArtists > 4){
+        } else if (numberOfArtists > 4){
             songsPerArtist = 7;
-        }
-        else {
+        } else {
             songsPerArtist = 8;
         }
         return songsPerArtist;

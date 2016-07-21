@@ -46,46 +46,42 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         listener.onSongClicked(song);
     }
 
+    /* Communicates between SongArrayAdapter and SongsFragment */
     public interface OnSongClickListener {
         void onSongClicked(Song song);
     }
 
+    /* Inflates layout and returns new ViewHolder instance */
     @Override
     public SongArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-
-        // Inflate the custom layout
         View songView = LayoutInflater.from(context).inflate(R.layout.item_song, parent, false);
         songView.setOnClickListener(this);
 
-        // Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(songView);
         return viewHolder;
     }
 
-    // Involves populating data into the item through holder
+    /* Populates data into each item through the ViewHolder */
     @Override
     public void onBindViewHolder(SongArrayAdapter.ViewHolder viewHolder, int position) {
-        // Get the data model based on position
+        // Gets the data model based on position
         Song song = Parcels.unwrap(mSongs.get(position));
 
-        // Set item views based on your views and data model
+        // Sets the item views based on the data model
         TextView tvSongName = viewHolder.tvSongName;
         tvSongName.setText(song.getName());
         tvSongName.setTag(song);
-
         TextView tvSongArtist = viewHolder.tvSongArtist;
         tvSongArtist.setText(artistsToString(song.getArtists()));
-
     }
 
-    // Returns the total count of items in the list
     @Override
     public int getItemCount() {
         return mSongs.size();
     }
 
-    //artist names to strings
+    /* Returns a String of artists' names from an ArrayList of artists' names */
     public static String artistsToString(ArrayList<String> artist_list) {
         String artistNames = "";
         for (int i = 0; i < artist_list.size(); i++){
