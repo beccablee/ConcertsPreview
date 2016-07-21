@@ -60,19 +60,20 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         if (getArguments() != null) {
             concert = Parcels.unwrap(getArguments().getParcelable("concert"));
             adapter = new SongArrayAdapter(getActivity(), songs, this);
-
-            int numberOfArtists = concert.getArtists().size();
-            int songsPerArtist = computeSongsPerArtist(numberOfArtists);
-
-            for (int i = 0; i < numberOfArtists; i++){
-                listener.setUpArtistSearch(this, concert, i, songsPerArtist);
-            }
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
+
+        int numberOfArtists = concert.getArtists().size();
+        int songsPerArtist = computeSongsPerArtist(numberOfArtists);
+
+        for (int i = 0; i < numberOfArtists; i++){
+            listener.setUpArtistSearch(this, concert, i, songsPerArtist);
+        }
+
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
         rlRecyclerView = (RelativeLayout) view.findViewById(R.id.rlRecyclerView);
