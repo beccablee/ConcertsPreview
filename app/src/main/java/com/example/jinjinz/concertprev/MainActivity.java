@@ -54,25 +54,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private Concert mMediaPlayerConcert;
     private Concert mConcert;
     private MediaPlayer mediaPlayer;
-    private int mCurrentSongIndex;
-    protected PlayerBarFragment barFragment;
-    protected PlayerScreenFragment playerFragment;
+    private int iCurrentSongIndex;
+    private PlayerBarFragment mBarFragment;
+    private PlayerScreenFragment mPlayerFragment;
 
     // Search Fragment variables
-    protected SearchFragment mSearchFragment;
-    private boolean readyToPopulate = false;
-    private boolean apiConnected = false;
+    private SearchFragment mSearchFragment;
+    private boolean fIsReadyToPopulate = false;
+    private boolean fIsApiConnected = false;
 
     // Concerts details variables
-    protected ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
+    private ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
 
-    // Location variables
-    private String latlong;
-    protected String queryText;
-    protected String permissions; // array or nah
+    private String queryText;
     private static final int LOCATION_PERMISSIONS = 10;
-    protected GoogleApiClient mGoogleApiClient;
-    protected Location lastLocation;
+    private GoogleApiClient mGoogleApiClient;
+    private Location lastLocation;
     private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     // database variables
@@ -108,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private void onNewConcert(Concert c, ArrayList<Song> s) {
         //only play if new concert or is different from current playing
         if (mediaPlayer == null) {
-            mCurrentSongIndex = 0;
+            iCurrentSongIndex = 0;
             mMediaPlayerConcert = c;
             mSongs = s;
             mediaPlayer = new MediaPlayer();
@@ -119,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    if (playerFragment != null && playerFragment.isVisible()) {
-                        playerFragment.updateInterface(mSongs.get(mCurrentSongIndex));
-                        playerFragment.updatePlay(true);
+                    if (mPlayerFragment != null && mPlayerFragment.isVisible()) {
+                        mPlayerFragment.updateInterface(mSongs.get(iCurrentSongIndex));
+                        mPlayerFragment.updatePlay(true);
                     }
-                    if (barFragment != null && barFragment.isVisible()) {
-                        barFragment.updatePlay(true);
-                        barFragment.updateInterface(mSongs.get(mCurrentSongIndex));
+                    if (mBarFragment != null && mBarFragment.isVisible()) {
+                        mBarFragment.updatePlay(true);
+                        mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
                     }
                     mediaPlayer.start();
                 }
@@ -136,12 +133,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 @Override
                 public void onCompletion(MediaPlayer mediaPlayer) {
                     mediaPlayer.reset();
-                    mCurrentSongIndex++;
-                    if(mSongs != null && mCurrentSongIndex == mSongs.size()) {
-                        mCurrentSongIndex = 0;
+                    iCurrentSongIndex++;
+                    if(mSongs != null && iCurrentSongIndex == mSongs.size()) {
+                        iCurrentSongIndex = 0;
                     }
                     try {
-                        mediaPlayer.setDataSource(mSongs.get(mCurrentSongIndex).getPreviewUrl());
+                        mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
                         mediaPlayer.prepareAsync();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -158,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             });
             try {
-                mediaPlayer.setDataSource(mSongs.get(mCurrentSongIndex).getPreviewUrl());
+                mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -168,14 +165,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         else {
             //initialize
-            mCurrentSongIndex = 0;
+            iCurrentSongIndex = 0;
             mMediaPlayerConcert = c;
             mSongs = s;
             mediaPlayer.stop();
             mediaPlayer.reset();
             //start with first song
             try {
-                mediaPlayer.setDataSource(mSongs.get(mCurrentSongIndex).getPreviewUrl());
+                mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
                 mediaPlayer.prepareAsync();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -220,11 +217,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mediaPlayer.stop();
         mediaPlayer.reset();
         try {
-            mCurrentSongIndex++;
-            if(mCurrentSongIndex == mSongs.size()) {
-                mCurrentSongIndex = 0;
+            iCurrentSongIndex++;
+            if(iCurrentSongIndex == mSongs.size()) {
+                iCurrentSongIndex = 0;
             }
-            mediaPlayer.setDataSource(mSongs.get(mCurrentSongIndex).getPreviewUrl());
+            mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -237,14 +234,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void skipPrev() {
         mediaPlayer.stop();
         mediaPlayer.reset();
-        if (mCurrentSongIndex >= 1) {
-            mCurrentSongIndex = mCurrentSongIndex - 1;
+        if (iCurrentSongIndex >= 1) {
+            iCurrentSongIndex = iCurrentSongIndex - 1;
         }
-        else if (mCurrentSongIndex == 0) {
-            mCurrentSongIndex = mSongs.size() - 1;
+        else if (iCurrentSongIndex == 0) {
+            iCurrentSongIndex = mSongs.size() - 1;
         }
         try {
-            mediaPlayer.setDataSource(mSongs.get(mCurrentSongIndex).getPreviewUrl());
+            mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -255,13 +252,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onClosePlayer() {
         //PlayerBarFragment playerBar = (PlayerBarFragment) getSupportFragmentManager().findFragmentByTag("bar");
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (barFragment == null) {
-            barFragment = PlayerBarFragment.newInstance();
-            ft.replace(R.id.playerFragment, barFragment, "bar");
+        if (mBarFragment == null) {
+            mBarFragment = PlayerBarFragment.newInstance();
+            ft.replace(R.id.playerFragment, mBarFragment, "bar");
             ft.commit();
         }
         else {
-            ft.show(barFragment);
+            ft.show(mBarFragment);
             ft.commit();
             onOpenBar();
         }
@@ -270,8 +267,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onOpenPlayer() {
-        playerFragment.updateInterface(mSongs.get(mCurrentSongIndex));
-        playerFragment.updatePlay(mediaPlayer.isPlaying());
+        mPlayerFragment.updateInterface(mSongs.get(iCurrentSongIndex));
+        mPlayerFragment.updatePlay(mediaPlayer.isPlaying());
     }
 
     public void updateProgressBar() {
@@ -291,8 +288,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         return;
                     }
                     //PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentByTag("player");
-                    if (playerFragment != null && playerFragment.isVisible()) {
-                        playerFragment.setProgressBar(currentPosition);
+                    if (mPlayerFragment != null && mPlayerFragment.isVisible()) {
+                        mPlayerFragment.setProgressBar(currentPosition);
                     }
                 }
             }
@@ -309,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AsyncHttpClient client;
     // Fetch
     public void fetchConcerts() {
-        if (readyToPopulate && apiConnected) {
+        if (fIsReadyToPopulate && fIsApiConnected) {
             // url: includes api key and music classification
             String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
             // the parameter(s)
@@ -317,6 +314,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             if (queryText != null) {
                 params.put("keyword", queryText);
             }
+            String latlong;
             if (lastLocation != null) {
                 latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
                 // getLastLocation()
@@ -368,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void populateConcerts(SearchFragment fragment, String query) {
         // set ready flag
-        readyToPopulate = true;
+        fIsReadyToPopulate = true;
         // set queryText for use in concerts GET method
         queryText = query;
         // fetch
@@ -395,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            apiConnected = true;
+            fIsApiConnected = true;
             fetchConcerts();
 
         }
@@ -443,8 +441,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void openPlayer() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, playerFragment, "player");
-        if (barFragment != null) {
+        ft.replace(R.id.mainFragment, mPlayerFragment, "player");
+        if (mBarFragment != null) {
             ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
         }
         ft.addToBackStack("player");
@@ -465,12 +463,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
     @Override
     public void onOpenBar() {
-        barFragment.updateInterface(mSongs.get(mCurrentSongIndex));
+        mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
         if (mediaPlayer.isPlaying()) {
-            barFragment.updatePlay(true);
+            mBarFragment.updatePlay(true);
         }
         else {
-            barFragment.updatePlay(false);
+            mBarFragment.updatePlay(false);
         }
 
     }
@@ -539,8 +537,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
-        if (playerFragment == null) {
-            playerFragment = PlayerScreenFragment.newInstance();
+        if (mPlayerFragment == null) {
+            mPlayerFragment = PlayerScreenFragment.newInstance();
         }
         ArrayList<Song> pSongs2 = new ArrayList<>();
         for (int i = 0; i < tempSongs.size(); i++) {
@@ -550,8 +548,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         pSongs2.add(0, song);
         onNewConcert(mConcert, pSongs2);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, playerFragment, "player");
-        if (barFragment != null) {
+        ft.replace(R.id.mainFragment, mPlayerFragment, "player");
+        if (mBarFragment != null) {
             ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
         }
 
