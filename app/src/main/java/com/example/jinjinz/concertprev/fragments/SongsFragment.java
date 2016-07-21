@@ -33,7 +33,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     SongsFragmentListener listener;
 
     public static SongArrayAdapter adapter;
-    SongsFragmentListener songsFragmentListener;
 
     /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
@@ -100,7 +99,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         super.onResume();
         llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
         rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
-        if (llLoading.getVisibility() == View.VISIBLE && songs.size() != 0) {
+        if (songs != null && songs.size() != 0) {
             llLoading.setVisibility(View.GONE);
             rlRecyclerView.setVisibility(View.VISIBLE);
         }
@@ -111,13 +110,14 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         try {
             llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
             llLoading.setVisibility(View.GONE);
+            rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
+            rlRecyclerView.setVisibility(View.VISIBLE);
         } catch (Exception e) {
             Log.i("no loading screen", "0");
         }
-        rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
         songs.addAll(songsArrayList);
-        rlRecyclerView.setVisibility(View.VISIBLE);
         adapter.notifyDataSetChanged();
+
     }
 
     public void onSongClicked(Song song){

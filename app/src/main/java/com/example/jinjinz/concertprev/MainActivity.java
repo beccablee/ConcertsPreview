@@ -511,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    public void searchArtistPlaylist(final SongsFragment fragment, String artistId, final int songsPerArtist){
+    public void searchArtistPlaylist(final SongsFragment fragment, final String artistId, final int songsPerArtist){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
@@ -524,7 +524,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 try {
                     songsJsonResult = response.getJSONArray("tracks");
                     fragment.addSongs(Song.fromJSONArray(songsJsonResult, songsPerArtist));
-
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "Spotify client tracks GET error: " + statusCode);
@@ -537,7 +536,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
     }
-
 
     @Override
     public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
