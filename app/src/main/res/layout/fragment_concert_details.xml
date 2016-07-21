@@ -31,8 +31,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
-                android:clickable="true"
-                android:onClick="onLikeConcert"/>
+                android:clickable="true"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

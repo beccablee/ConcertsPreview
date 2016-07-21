@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onConcertClick() {
-        //TODO: go to concert fragment on concert name click?
+        //TODO: go to concert fragment on concert name click
     }
 
     @Override
