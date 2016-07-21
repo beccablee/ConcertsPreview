@@ -49,34 +49,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
         ConcertDetailsFragment.ConcertDetailsFragmentListener {
 
-    ArrayList<Song> mSongs;
-    ArrayList<Parcelable> mParcelableSongs; //I need this now
-    Concert mMediaPlayerConcert; // concert for the media player
-    Concert mConcert; // concert for the concert details, may be different at times
-    MediaPlayer mediaPlayer;
-    int mCurrentSongIndex;
-
-    SearchFragment mSearchFragment; // concerts fragment
-    ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
-
-    PlayerBarFragment barFragment;
-    PlayerScreenFragment playerFragment;
-
+    // Media player variables
+    private ArrayList<Song> mSongs;
+    private Concert mMediaPlayerConcert;
+    private Concert mConcert;
+    private MediaPlayer mediaPlayer;
+    private int mCurrentSongIndex;
+    protected PlayerBarFragment barFragment;
+    protected PlayerScreenFragment playerFragment;
     //TODO: make only one instance of player and playerBar run after the navigation works
+
+    // Search Fragment variables
+    protected SearchFragment mSearchFragment;
+    private boolean readyToPopulate = false;
+    private boolean apiConnected = false;
+
+    // Concerts details variables
+    private ArrayList<Parcelable> mParcelableSongs; //I need this now
+    protected ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
+
     // Location variables
-    protected String latlong;
+    private String latlong;
     protected String queryText;
     protected String permissions; // array or nah
     private static final int LOCATION_PERMISSIONS = 10;
     protected GoogleApiClient mGoogleApiClient;
     protected Location lastLocation;
-    private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET};
+    private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
-    // Concerts list client call variables
-    boolean readyToPopulate = false;
-    boolean apiConnected = false;
-
+    // database variables
     public static UserDataSource userDataSource;
 
 
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Create an instance of GoogleAPIClient.
+        // Create an instance of GoogleApiClient
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(MainActivity.this).addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this).addApi(LocationServices.API).build();
@@ -98,11 +99,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ft.commit();
         }
 
-        // open datasource for use
+        // open data source
         userDataSource = new UserDataSource(MainActivity.this);
         userDataSource.openDB();
 
     }
+
+    //Player + MediaPlayer methods
+    ////////////////////////////////////////////////////
 
     private void onNewConcert(Concert c, ArrayList<Song> s) {
         //only play if new concert or is different from current playing
@@ -152,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT);
+                    Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             });
@@ -165,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         }
-         else {
+        else {
             //initialize
             mCurrentSongIndex = 0;
             mMediaPlayerConcert = c;
@@ -184,18 +188,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-
-    //Player + MediaPlayer methods
-    ////////////////////////////////////////////////////
     @Override
     public String getConcertName() {
         return mMediaPlayerConcert.getEventName();
     }
-    //go to concert fragment
-    // on concert name click?
+
     @Override
     public void onConcertClick() {
-
+        //TODO: go to concert fragment on concert name click?
     }
 
     @Override
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     AsyncHttpClient client;
     // Fetch
     public void fetchConcerts() {
-        if (readyToPopulate && apiConnected) { //////////// should be && --> onConnected()
+        if (readyToPopulate && apiConnected) {
             // url: includes api key and music classification
             String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
             // the parameter(s)
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     Log.d("client calls", "TicketMaster client GET error: " + statusCode);
-                    Toast.makeText(MainActivity.this, "Could not display concerts. Pleas wait and try again later.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Could not display concerts. Please wait and try again later.", Toast.LENGTH_LONG).show();
                 }
             });
         }
@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void populateConcerts(SearchFragment fragment, String query) {
         // set ready flag
         readyToPopulate = true;
-        // set queryText
+        // set queryText for use in concerts GET method
         queryText = query;
         // fetch
         fetchConcerts();
@@ -402,12 +402,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        //TODO
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        //TODO
     }
 
     @Override
@@ -436,6 +436,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.disconnect();
         super.onStop();
     }
+
     //Playerbar
     ////////////////////////////////////////////////////
     @Override

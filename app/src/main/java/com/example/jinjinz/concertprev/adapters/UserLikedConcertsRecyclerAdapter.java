@@ -50,8 +50,6 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
 
     public interface UserLikedConcertsRecyclerAdapterListener {
         void onConcertTap(Concert concert);
-        // pass to fragment
-        // open concert details(concert)
     }
 
     UserLikedConcertsRecyclerAdapterListener mUserLikedConcertsRecyclerAdapterListener;
