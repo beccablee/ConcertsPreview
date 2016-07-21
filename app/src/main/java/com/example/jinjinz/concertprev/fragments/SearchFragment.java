@@ -1,6 +1,7 @@
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,9 +18,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
 
-import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -114,6 +117,11 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         final SearchView searchView = new SearchView(getActivity());
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, searchView);
+
+        //change searchview styling
+        ((EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text)).setTextColor(Color.WHITE);
+        ((ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn)).setImageResource(R.drawable.ic_close);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

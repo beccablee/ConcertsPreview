@@ -42,42 +42,7 @@ public class UserFragment extends Fragment {
         setHasOptionsMenu(true);
         tb = (Toolbar) v.findViewById(R.id.userBar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(tb);
-      /**  ViewPager viewPager = (ViewPager) v.findViewById(R.id.viewpager);
-        viewPager.setAdapter(new UserFragmentPagerAdapter(getFragmentManager(), getContext()));
-        TabLayout tabLayout = (TabLayout) v.findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);*/
         return v;
     }
-
-    /**public class UserFragmentPagerAdapter extends FragmentPagerAdapter {
-        final int PAGE_COUNT = 2;
-        private String tabTitles[] = new String[] { "Concerts", "Songs" };
-        private Context context;
-
-        public UserFragmentPagerAdapter(FragmentManager fm, Context context) {
-            super(fm);
-            this.context = context;
-        }
-
-        @Override
-        public int getCount() {
-            return PAGE_COUNT;
-        }
-        //Implement Fragments after
-        @Override
-        public Fragment getItem(int position) {
-           if (position == 0) {
-                return new UserConcertsFragment();
-            }
-            else if (position == 1) return new UserSongsFragment();
-            return null;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            // Generate title based on item position
-            return tabTitles[position];
-        }
-    } */
 
 }
