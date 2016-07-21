@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,9 +108,11 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Adds songs to the ArrayList and populates the RecyclerView */
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
-        if (getView().findViewById(R.id.llLoading) != null) {
+        try {
             llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
             llLoading.setVisibility(View.GONE);
+        } catch (Exception e) {
+            Log.i("no loading screen", "0");
         }
         rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
         songs.addAll(songsArrayList);
