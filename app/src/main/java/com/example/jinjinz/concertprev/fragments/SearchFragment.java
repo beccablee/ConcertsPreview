@@ -25,7 +25,7 @@ import com.example.jinjinz.concertprev.models.Concert;
 import java.util.ArrayList;
 
 
-public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener, SwipeRefreshLayout.OnRefreshListener {
+public class SearchFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener, SwipeRefreshLayout.OnRefreshListener {
     // , SearchSuggestionsAdapter.SearchSuggestionsAdapterListener
     /*  @Override
     public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
@@ -33,7 +33,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
     }
 */
     public interface ConcertsFragmentListener {
-        void populateConcerts(ConcertsFragment fragment, String query);
+        void populateConcerts(SearchFragment fragment, String query);
         void onConcertTap(Concert concert);
     }
 
@@ -49,15 +49,15 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
         concertsFragmentListener.onConcertTap(concert);
     }
 
-    public ConcertsFragment() {
+    public SearchFragment() {
         // Required empty public constructor
     }
 
     /**
-     * @return A new instance of fragment ConcertsFragment.
+     * @return A new instance of fragment SearchFragment.
      */
-    public static ConcertsFragment newInstance() {
-        ConcertsFragment fragment = new ConcertsFragment();
+    public static SearchFragment newInstance() {
+        SearchFragment fragment = new SearchFragment();
         return fragment;
     }
 
@@ -118,7 +118,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
             @Override
             public boolean onQueryTextSubmit(String query) {
                 queryText = query;
-                concertsFragmentListener.populateConcerts(ConcertsFragment.this, query);
+                concertsFragmentListener.populateConcerts(SearchFragment.this, query);
                 return false;
             }
 
@@ -139,7 +139,7 @@ public class ConcertsFragment extends Fragment implements SearchRecyclerAdapter.
 
     @Override
     public void onRefresh() {
-        concertsFragmentListener.populateConcerts(ConcertsFragment.this, null);
+        concertsFragmentListener.populateConcerts(SearchFragment.this, null);
 
     }
 
