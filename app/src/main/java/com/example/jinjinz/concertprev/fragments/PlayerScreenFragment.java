@@ -3,10 +3,8 @@ package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
@@ -23,26 +21,35 @@ import com.example.jinjinz.concertprev.models.Song;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.parceler.Parcels;
-
 /**
  * A simple {@link Fragment} subclass.
+ * Use the {@link PlayerScreenFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ * A fragment which allows for control of a media player
  */
 public class PlayerScreenFragment extends Fragment {
+    //UI elements
     private ImageView albumImg;
     private TextView concertTitle;
-    private Button backBtn;
-    private TextView songTitle;
-    private TextView artistTitle;
-    private Button playBtn;
-    private View view;
-    private Button prevBtn;
-    private Button nextBtn;
-    private ProgressBar progressBar;
-    private final int TOTAL = 30000;
-    private PlayerScreenFragmentListener listener;
-    private Song initialSong;
 
+    private Button btnBack;
+    private TextView tvSongTitle;
+    private TextView tvArtistTitle;
+    private Button btnPlay;
+    private View view;
+    private Button btnPrev;
+    private Button btnNext;
+    private ProgressBar progressBar;
+
+    //total time of song
+    private final int TOTAL = 30000;
+
+    //listener
+    private PlayerScreenFragmentListener listener;
+
+    /**
+     * Interface to be implemented by parent activity
+     */
     public interface PlayerScreenFragmentListener {
         String getConcertName(); //get concert name
         void onConcertClick(); //on concert name click
@@ -53,31 +60,36 @@ public class PlayerScreenFragment extends Fragment {
         void onOpenPlayer(); //on Player open (change ui)
         void backInStack(); //go back
     }
-    public static PlayerScreenFragment newInstance(Song song) {
+
+    /**
+     * @return A new instance of fragment PlayerBarFragment.
+     */
+    public static PlayerScreenFragment newInstance() {
         PlayerScreenFragment fragment = new PlayerScreenFragment();
-        Bundle args = new Bundle();
-        args.putParcelable("song", Parcels.wrap(song));
-        fragment.initialSong = song;
-        fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Empty constructor
+     * Should never be called
+     */
     public PlayerScreenFragment() {
-        // Required empty public constructor
     }
 
+    /**
+     * Update interface on start
+     * Used whenever this fragment is opened
+     * Overrides onStart()
+     */
     @Override
     public void onStart() {
         super.onStart();
         listener.onOpenPlayer();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initialSong = Parcels.unwrap(getArguments().getParcelable("song"));
-    }
-
+    /**
+     * Get listener from context
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -88,65 +100,75 @@ public class PlayerScreenFragment extends Fragment {
         }
     }
 
+    /**
+     * Set UI variables and onClick listeners
+     * Overrides onCreateView
+     * @param inflater same as super param
+     * @param container same as super param
+     * @param savedInstanceState same as super param
+     * @return current view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_player, container, false);
-        //initialize values
+
+        //Initialize values
         albumImg = (ImageView) view.findViewById(R.id.albumImg);
         concertTitle = (TextView) view.findViewById(R.id.concertTitle);
-        songTitle = (TextView) view.findViewById(R.id.songTitle);
-        playBtn = (Button) view.findViewById(R.id.playBtn);
-        artistTitle = (TextView) view.findViewById(R.id.artistTitle);
-        //view = v.findViewById(R.id.background);
-        prevBtn = (Button) view.findViewById(R.id.prevBtn);
-        nextBtn = (Button) view.findViewById(R.id.nextBtn);
+        tvSongTitle = (TextView) view.findViewById(R.id.songTitle);
+        btnPlay = (Button) view.findViewById(R.id.playBtn);
+        tvArtistTitle = (TextView) view.findViewById(R.id.artistTitle);
+        btnPrev = (Button) view.findViewById(R.id.prevBtn);
+        btnNext = (Button) view.findViewById(R.id.nextBtn);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        backBtn = (Button) view.findViewById(R.id.backBtn);
+        btnBack = (Button) view.findViewById(R.id.backBtn);
+        progressBar.setMax(TOTAL);
 
-        concertTitle.setText(listener.getConcertName());
+        //set onClickListeners for buttons
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.backInStack();
+            }
+        });
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.playPauseSong();
+            }
+        });
+        btnPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.skipPrev();
+            }
+        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.skipNext();
+            }
+        });
         concertTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onConcertClick();
             }
         });
-        //initialize interface
-        updateInterface(initialSong);
-        //set onClickListeners for buttons
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.backInStack();
-            }
-        });
-        playBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.playPauseSong();
-            }
-        });
-        prevBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.skipPrev();
-            }
-        });
-        nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.skipNext();
-            }
-        });
-        progressBar.setMax(TOTAL);
         return view;
     }
-    //update interface
+
+    /**
+     * update the player's interface
+     * @param song current song playing
+     */
     public void updateInterface(Song song) {
-        //Picasso.with(this).load(song.getAlbumArtUrl()).fit().into(albumImg);
+        //set text
         concertTitle.setText(listener.getConcertName());
-        songTitle.setText(song.getName());
-        artistTitle.setText(song.getArtists().get(0));
+        tvSongTitle.setText(song.getName());
+        tvArtistTitle.setText(song.getArtists().get(0));
+
         // Define a listener for image loading
         Target target = new Target() {
             // Fires when Picasso finishes loading the bitmap for the target
@@ -163,9 +185,8 @@ public class PlayerScreenFragment extends Fragment {
                     if (swatch != null)
                         view.setBackgroundColor(swatch.getRgb());
                     else
-                        view.setBackgroundColor(Color.parseColor("#404040"));
+                        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
                 }
-                // Set the result as the background color for `R.id.vPalette` view containing the contact's name.
             }
 
             // Fires if bitmap fails to load
@@ -178,28 +199,41 @@ public class PlayerScreenFragment extends Fragment {
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
         };
+        //clear images
         albumImg.setBackgroundResource(0);
-        view.setBackgroundResource(0);
+        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
+
         // Store the target into the tag for the profile to ensure target isn't garbage collected prematurely
         albumImg.setTag(target);
         // Instruct Picasso to load the bitmap into the target defined above
         Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
     }
-    //call by activity
+
+    /**
+     * Update the play button
+     * @param isPlaying if MediaPlayer is playing
+     */
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
-            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            playBtn.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 
-    //call by activity
+    /**
+     * Update the progress bar
+     * @param time time in milliseconds of player
+     */
     public void setProgressBar(int time) {
         progressBar.setProgress(time);
     }
 
+    /**
+     * Let activity perform action onPause() of fragment
+     * calls onClosePlayer()
+     */
     @Override
     public void onPause() {
         listener.onClosePlayer();

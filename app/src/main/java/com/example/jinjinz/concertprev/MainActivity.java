@@ -542,7 +542,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void launchSongView(Song song, ArrayList<Parcelable> tempSongs){
         if (playerFragment == null) {
-            playerFragment = playerFragment.newInstance(song);
+            playerFragment = playerFragment.newInstance();
         }
         ArrayList<Song> pSongs2 = new ArrayList<>();
         for (int i = 0; i < tempSongs.size(); i++) {

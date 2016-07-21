@@ -18,20 +18,30 @@ import com.example.jinjinz.concertprev.models.Song;
  * A simple {@link Fragment} subclass.
  * Use the {@link PlayerBarFragment#newInstance} factory method to
  * create an instance of this fragment.
+ * The bottom playerbar of a music player
  */
 public class PlayerBarFragment extends Fragment {
-    private TextView songTitle2;
-    private TextView artistTitle2;
-    private Button playBtn2;
-    private PlayerBarFragmentListener listener;
+    //UI variables
+    private TextView tvSongTitle;
+    private TextView tvArtistTitle;
+    private Button btnPlay;
 
+    //listener
+    private PlayerBarFragmentListener listener;
+    /**
+     * Interface to be implemented by activities which contains this fragment
+     */
     public interface PlayerBarFragmentListener {
         void openPlayer();
         void playPauseBarBtn();
         void onOpenBar();
     }
+
+    /**
+     * Empty constructor
+     * Should never be called, use newInstance() instead
+     */
     public PlayerBarFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -41,32 +51,47 @@ public class PlayerBarFragment extends Fragment {
         PlayerBarFragment fragment = new PlayerBarFragment();
         return fragment;
     }
+
+    /**
+     * Refreshes UI to current song on resume
+     */
     @Override
     public void onResume() {
         super.onResume();
         listener.onOpenBar();
     }
+
+    /**
+     * Create listener onAttach
+     */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        listener = (PlayerBarFragmentListener) context;
+        try {
+            listener = (PlayerBarFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement PlayerBarFragmentListener");
+        }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
+    /**
+     * Initialize UI variables and sets onClickListeners
+     * Overrides onCreateView
+     * @param inflater same as super param
+     * @param container same as super param
+     * @param savedInstanceState same as super param
+     * @return view inflated in fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_player_bar, container, false);
-        songTitle2 = (TextView) v.findViewById(R.id.songTitle2);
-        artistTitle2 = (TextView) v.findViewById(R.id.artistTitle2);
-        playBtn2 = (Button) v.findViewById(R.id.playBtn2);
+        tvSongTitle = (TextView) v.findViewById(R.id.songTitle2);
+        tvArtistTitle = (TextView) v.findViewById(R.id.artistTitle2);
+        btnPlay = (Button) v.findViewById(R.id.playBtn2);
         listener.onOpenBar();
-        playBtn2.setOnClickListener(new View.OnClickListener() {
+        btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.playPauseBarBtn();
@@ -82,19 +107,22 @@ public class PlayerBarFragment extends Fragment {
         return v;
     }
 
-    //set play button visuals
+    /**
+     * update the play button
+     * @param isPlaying whether the MediaPlayer is playing
+     */
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
-            playBtn2.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            playBtn2.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 
     public void updateInterface(Song song) {
-        songTitle2.setText(song.getName());
-        artistTitle2.setText(song.getArtists().get(0));
+        tvSongTitle.setText(song.getName());
+        tvArtistTitle.setText(song.getArtists().get(0));
     }
 
 }

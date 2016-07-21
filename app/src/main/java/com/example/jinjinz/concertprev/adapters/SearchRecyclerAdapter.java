@@ -114,11 +114,4 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         mConcerts.clear();
         notifyDataSetChanged();
     }
-
-    // Add a list of items
-    //TODO: do we still need this
-    public void addAll(ArrayList<Concert> concerts) {
-        mConcerts.addAll(concerts);
-        notifyDataSetChanged();
-    }
 }
