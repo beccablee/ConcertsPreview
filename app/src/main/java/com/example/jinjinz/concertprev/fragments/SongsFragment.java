@@ -36,7 +36,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
-        void setUpArtistSearch(SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist);
+        void setUpArtistSearch(SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist, ArrayList<String> artists);
         void launchSongView(Song song, ArrayList<Parcelable> songs);
     }
 
@@ -70,9 +70,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         int numberOfArtists = concert.getArtists().size();
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
-        for (int i = 0; i < numberOfArtists; i++){
-            listener.setUpArtistSearch(this, concert, i, songsPerArtist);
-        }
+        listener.setUpArtistSearch(this, concert, 0, songsPerArtist, concert.getArtists());
 
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
@@ -106,19 +104,20 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
-    /* Adds songs to the ArrayList and populates the RecyclerView */
+    /* Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load*/
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
-        try {
-            llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
-            llLoading.setVisibility(View.GONE);
-            rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
-            rlRecyclerView.setVisibility(View.VISIBLE);
-        } catch (Exception e) {
-            Log.i("no loading screen", "0");
+        if (songs.size() > 5 || concert.getArtists().size() < 3) {
+            try {
+                llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
+                llLoading.setVisibility(View.GONE);
+                rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
+                rlRecyclerView.setVisibility(View.VISIBLE);
+            } catch (NullPointerException e) {
+                Log.i("no loading screen", "0");
+            }
         }
         songs.addAll(songsArrayList);
         adapter.notifyDataSetChanged();
-
     }
 
     public void onSongClicked(Song song){
@@ -127,14 +126,12 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Returns the number of songs each artist will have in the playlist */
     public static int computeSongsPerArtist(int numberOfArtists){
-        int songsPerPlaylist = 70;
+        int maxSongsPerPlaylist = 80;
         int songsPerArtist;
-        if (numberOfArtists > 70){
-            songsPerArtist = 1;
-        } else if (numberOfArtists > 8){
-            songsPerArtist = songsPerPlaylist / numberOfArtists;
+        if (numberOfArtists > 40){
+            songsPerArtist = 2;
         } else if (numberOfArtists > 4){
-            songsPerArtist = 7;
+            songsPerArtist = maxSongsPerPlaylist / numberOfArtists;
         } else {
             songsPerArtist = 8;
         }
