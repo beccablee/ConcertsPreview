@@ -51,7 +51,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     }
 
     public SearchFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -150,12 +149,9 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         searchAdapter.notifyDataSetChanged();
     }
 
-
     @Override
     public void onRefresh() {
         searchFragmentListener.populateConcerts(null);
 
     }
-
-
 }

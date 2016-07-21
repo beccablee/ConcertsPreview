@@ -32,7 +32,7 @@ public class PlayerBarFragment extends Fragment {
      * Interface to be implemented by activities which contains this fragment
      */
     public interface PlayerBarFragmentListener {
-        void openPlayer();
+        void showPlayer();
         void playPauseBarBtn();
         void onOpenBar();
     }
@@ -100,7 +100,7 @@ public class PlayerBarFragment extends Fragment {
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.openPlayer();
+                listener.showPlayer();
             }
         });
         v.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));

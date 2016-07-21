@@ -57,7 +57,7 @@ public class PlayerScreenFragment extends Fragment {
         void skipNext(); //on skip next click
         void skipPrev(); //on skip previous click
         void onClosePlayer(); //on Player close (add playbar)
-        void onOpenPlayer(); //on Player open (change ui)
+        void onOpenPlayer(); //on Player open
         void backInStack(); //go back
     }
 

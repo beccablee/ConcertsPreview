@@ -23,7 +23,4 @@
         android:icon="@android:drawable/btn_star"
         android:onClick="getLikes"/>
 
-
-
-
 </menu>
