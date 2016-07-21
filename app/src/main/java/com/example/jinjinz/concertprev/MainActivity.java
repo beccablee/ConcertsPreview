@@ -45,7 +45,7 @@ import java.util.Collections;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
-        SearchFragment.ConcertsFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
+        SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
         ConcertDetailsFragment.ConcertDetailsFragmentListener {
 
@@ -324,7 +324,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
             params.put("radius", "50");
-            params.put("size", "100");
+            params.put("size", "15");
+            params.put("page", 0);
 
             // call client
             client = new AsyncHttpClient();
@@ -337,7 +338,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     JSONArray eventsArray = null;
                     try {
                         eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
-                        mSearchFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                        SearchFragment.searchAdapter.clear();
+                        mSearchFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray));
                         SearchFragment.mSwipeRefreshLayout.setRefreshing(false);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -363,8 +365,61 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
+    public void fetchMoreConcerts(int page) {
+        // url: includes api key and music classification
+        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+        // the parameter(s)
+        RequestParams params = new RequestParams();
+        if (queryText != null) {
+            params.put("keyword", queryText);
+        }
+        String latlong;
+        if (lastLocation != null) {
+            latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
+            // getLastLocation()
+        } else {
+            latlong = null;
+        }
+
+        params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
+        params.put("radius", "50");
+        params.put("size", "15");
+        params.put("page", page);
+
+        // call client
+        client = new AsyncHttpClient();
+        client.get(eventsURL, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
+                // DESERIALIZE JSON
+                // CREATE MODELS AND ADD TO ADAPTER
+                // LOAD MODEL INTO LIST VIEW
+                JSONArray eventsArray = null;
+                try {
+                    eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
+                    mSearchFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("client calls", "error adding concerts: " + statusCode);
+                    if(queryText != null) {
+                        Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + "in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                    } else {
+                        Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("client calls", "TicketMaster client GET error: " + statusCode);
+                Toast.makeText(MainActivity.this, "Could not display concerts. Please wait and try again later.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     @Override
-    public void populateConcerts(SearchFragment fragment, String query) {
+    public void populateConcerts(String query) {
         // set ready flag
         fIsReadyToPopulate = true;
         // set queryText for use in concerts GET method
@@ -372,6 +427,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // fetch
         fetchConcerts();
     }
+
+    @Override
+    public void loadMoreConcerts(String query, int page) {
+        // load more concerts from that page num
+        fetchMoreConcerts(page);
+    }
+
     //TODO figure out what's up
     @Override
     public void onConcertTap(Concert concert) {
@@ -382,6 +444,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.addToBackStack("concerts");
         ft.commit();
     }
+
 
     ///// Google api methods /////
     @Override

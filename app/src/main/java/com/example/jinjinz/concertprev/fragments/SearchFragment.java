@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+
+import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
@@ -29,15 +31,11 @@ import java.util.ArrayList;
 
 
 public class SearchFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener, SwipeRefreshLayout.OnRefreshListener {
-    // , SearchSuggestionsAdapter.SearchSuggestionsAdapterListener
-    /*  @Override
-    public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-        return new SuggestionsCursor(constraint);
-    }
-*/
-    public interface ConcertsFragmentListener {
-        void populateConcerts(SearchFragment fragment, String query);
+
+    public interface SearchFragmentListener {
+        void populateConcerts(String query);
         void onConcertTap(Concert concert);
+        void loadMoreConcerts(String query, int page);
     }
 
     public static SwipeRefreshLayout mSwipeRefreshLayout;
@@ -45,11 +43,11 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
 
     private String queryText;
     private ArrayList<Concert> concerts;
-    private ConcertsFragmentListener concertsFragmentListener;
+    private SearchFragmentListener searchFragmentListener;
 
     @Override
     public void onConcertTap(Concert concert) {
-        concertsFragmentListener.onConcertTap(concert);
+        searchFragmentListener.onConcertTap(concert);
     }
 
     public SearchFragment() {
@@ -68,7 +66,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            concertsFragmentListener = (ConcertsFragmentListener) context;
+            searchFragmentListener = (SearchFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement OnConcertsFragmentListener");
         }
@@ -81,7 +79,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
-        concertsFragmentListener.populateConcerts(this, queryText);
+        searchFragmentListener.populateConcerts(queryText);
     }
 
     @Override
@@ -97,7 +95,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // connect adapter to recyclerview
         rvConcerts.setAdapter(searchAdapter);
         // Set layout manager to position the items
-        rvConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        rvConcerts.setLayoutManager(linearLayoutManager);
         // Find the toolbar view inside the activity layout
         setHasOptionsMenu(true);
 
@@ -107,6 +106,14 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // swipe refresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setOnRefreshListener(this);
+        // EndlessScroll
+        rvConcerts.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                //TODO: call more concerts
+                searchFragmentListener.loadMoreConcerts(queryText, page);
+            }
+        });
         return view;
     }
 
@@ -126,7 +133,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
             @Override
             public boolean onQueryTextSubmit(String query) {
                 queryText = query;
-                concertsFragmentListener.populateConcerts(SearchFragment.this, query);
+                searchFragmentListener.populateConcerts(query);
                 return false;
             }
 
@@ -139,7 +146,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
 
     /** Adds an array list of Concert objects to the custom adapter */
     public void addConcerts(ArrayList<Concert> concertArrayList) {
-        concerts.clear();
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
@@ -147,7 +153,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
 
     @Override
     public void onRefresh() {
-        concertsFragmentListener.populateConcerts(SearchFragment.this, null);
+        searchFragmentListener.populateConcerts(null);
 
     }
 
