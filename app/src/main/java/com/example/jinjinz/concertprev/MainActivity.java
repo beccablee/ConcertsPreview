@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private int mCurrentSongIndex;
     protected PlayerBarFragment barFragment;
     protected PlayerScreenFragment playerFragment;
-    //TODO: make only one instance of player and playerBar run after the navigation works
 
     // Search Fragment variables
     protected SearchFragment mSearchFragment;
@@ -65,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean apiConnected = false;
 
     // Concerts details variables
-    private ArrayList<Parcelable> mParcelableSongs; //I need this now
     protected ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
 
     // Location variables
@@ -104,13 +102,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         userDataSource.openDB();
 
     }
-
     //Player + MediaPlayer methods
     ////////////////////////////////////////////////////
 
     private void onNewConcert(Concert c, ArrayList<Song> s) {
         //only play if new concert or is different from current playing
-        if (mMediaPlayerConcert == null) {
+        if (mediaPlayer == null) {
             mCurrentSongIndex = 0;
             mMediaPlayerConcert = c;
             mSongs = s;
@@ -195,7 +192,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onConcertClick() {
-        //TODO: go to concert fragment on concert name click
+        ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mMediaPlayerConcert));
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
+        ft.addToBackStack("details");
+        ft.commit();
     }
 
     @Override
@@ -431,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mGoogleApiClient.connect();
         super.onStart();
     }
-
+    @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
@@ -484,7 +485,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
-        mParcelableSongs = new ArrayList<>();
         mConcert = concert;
         RequestParams params = new RequestParams();
         params.put("q", concert.getArtists().get(artistIndex));

@@ -107,11 +107,12 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Adds songs to the ArrayList and populates the RecyclerView */
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
-        llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
+        if (getView().findViewById(R.id.llLoading) != null) {
+            llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
+            llLoading.setVisibility(View.GONE);
+        }
         rlRecyclerView = (RelativeLayout) getView().findViewById(R.id.rlRecyclerView);
-
         songs.addAll(songsArrayList);
-        llLoading.setVisibility(View.GONE);
         rlRecyclerView.setVisibility(View.VISIBLE);
         adapter.notifyDataSetChanged();
     }
