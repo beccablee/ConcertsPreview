@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +38,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     private Button btnUnlikeConcert;
 
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
+    SongsFragment songsFragment;
 
     /** Required empty public constructor */
     public ConcertDetailsFragment() {
@@ -65,9 +65,10 @@ public class ConcertDetailsFragment extends SongsFragment {
         super.onCreate(savedInstanceState);
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
         if (savedInstanceState == null) {
-            SongsFragment songsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
+            songsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             transaction.add(R.id.songContainer, songsFragment).commit();
+
         }
     }
 
@@ -76,6 +77,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_concert_details, container, false);
         setUpViews(view);
+
         return view;
     }
 
@@ -154,13 +156,16 @@ public class ConcertDetailsFragment extends SongsFragment {
         });
     }
 
+
     /** Destroys fragment on close, to allow all songs to load when opened again */
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Fragment fragment = getFragmentManager().findFragmentById(R.id.mainFragment);
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.remove(fragment);
-        ft.commit();
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        Fragment fragment = getFragmentManager().findFragmentById(R.id.mainFragment);
+//        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+//        ft.remove(fragment);
+//        ft.commit();
+//    }
+
+
 }
