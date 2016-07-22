@@ -698,7 +698,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onUnlikeConcert(Concert concert) {
-        userDataSource.deleteLikedConcert(concert);
+        userDataSource.deleteAllConcerts();
     }
 
     public void getLikes(MenuItem item) {

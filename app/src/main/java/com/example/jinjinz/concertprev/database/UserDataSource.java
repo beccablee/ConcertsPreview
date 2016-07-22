@@ -194,6 +194,12 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return likedSongs;
     }
 
+    public void deleteAllConcerts() {
+        database.delete(ConcertsTable.TABLE_NAME, null, null);
+
+    }
+
+
     /**
      * Creates and returns a Song object from the cursor
      * @param cursor the cursor of the database query
@@ -251,5 +257,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         return false;
     }
+
 
 }
