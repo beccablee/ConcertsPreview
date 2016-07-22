@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,19 +25,19 @@ import org.parceler.Parcels;
  */
 public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
-    public String artists;
+    private String artists;
+    private String date;
 
-    public AppBarLayout appBar;
-    public CollapsingToolbarLayout collapsingToolbarLayout;
-    public ImageView ivHeader;
-    public Toolbar toolbar;
-    public TextView tvEvent;
-    public TextView tvDate;
-    public TextView tvVenue;
-    public TextView tvArtists;
-    public Button btnLikeConcert;
-    public Button btnUnlikeConcert;
-    
+    private AppBarLayout appBar;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
+    private ImageView ivHeader;
+    private TextView tvEvent;
+    private TextView tvDate;
+    private TextView tvVenue;
+    private TextView tvArtists;
+    private Button btnLikeConcert;
+    private Button btnUnlikeConcert;
+
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
 
     /** Required empty public constructor */
@@ -71,6 +71,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         }
     }
 
+    /** Inflate the layout and call setUpViews */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_concert_details, container, false);
@@ -89,7 +90,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         appBar = (AppBarLayout) view.findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
         ivHeader = (ImageView) view.findViewById(R.id.ivHeader);
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         tvEvent = (TextView) view.findViewById(R.id.tvEvent);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvVenue = (TextView) view.findViewById(R.id.tvVenue);
@@ -99,7 +99,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         setUpListeners();
 
         artists = concert.getArtistsString();
-        String date = concert.getEventDate();
+        date = concert.getEventDate();
 
         ivHeader.setTag(concert);
         tvEvent.setText(concert.getEventName());
@@ -152,5 +152,15 @@ public class ConcertDetailsFragment extends SongsFragment {
                 }
             }
         });
+    }
+
+    /** Destroys fragment on close, to allow all songs to load when opened again */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.mainFragment);
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.remove(fragment);
+        ft.commit();
     }
 }

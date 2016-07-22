@@ -651,7 +651,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 JSONArray songsJsonResult;
                 try {
-                    // Search add artist's tracks to fragment
+                    // Search for and add a specific number of artist's tracks to fragment
                     songsJsonResult = response.getJSONArray("tracks");
                     fragment.addSongs(Song.fromJSONArray(songsJsonResult, songsPerArtist));
                 } catch (JSONException e){

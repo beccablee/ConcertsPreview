@@ -109,7 +109,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
-    /** Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load */
+    /** Adds songs to the ArrayList and populates the RecyclerView after more than 6 songs load */
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
         songs.addAll(songsArrayList);
         if (songs.size() > 6) {
