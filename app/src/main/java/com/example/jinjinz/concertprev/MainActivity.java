@@ -618,12 +618,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 String artistJSONResult;
                 try {
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
+                    // if Spotify has the artist, search for the artist's top tracks
                     searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists);
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "could not retrieve artist id: " + statusCode);
-                    if (currentArtistIndex + 1 < artists.size()) {
+                    // if Spotify doesn't have the next artist, search for the next artist in the ArrayList
+                    if (currentArtistIndex < artists.size() - 1) {
                         searchArtistOnSpotify(fragment, mConcert, currentArtistIndex + 1, songsPerArtist, artists);
+                    }
+                    // check if all artists have been searched for and if no songs have loaded
+                    else if (currentArtistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
+                        // no songs available for the artist
+                        // change status
                     }
                 }
             }

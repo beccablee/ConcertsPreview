@@ -33,6 +33,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     public Toolbar toolbar;
     public TextView tvEvent;
     public TextView tvDate;
+    public TextView tvVenue;
     public TextView tvArtists;
     public Button btnLikeConcert;
     public Button btnUnlikeConcert;
@@ -84,7 +85,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         concertDetailsFragmentListener = (ConcertDetailsFragmentListener) context;
     }
 
-    /* Finds and populates views for the fragment */
+    /** Finds and populates views for the fragment */
     public void setUpViews(View view){
         appBar = (AppBarLayout) view.findViewById(R.id.appbar);
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
@@ -92,6 +93,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         tvEvent = (TextView) view.findViewById(R.id.tvEvent);
         tvDate = (TextView) view.findViewById(R.id.tvDate);
+        tvVenue = (TextView) view.findViewById(R.id.tvVenue);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
         btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
@@ -103,16 +105,15 @@ public class ConcertDetailsFragment extends SongsFragment {
         ivHeader.setTag(concert);
         tvEvent.setText(concert.getEventName());
         tvDate.setText(date);
-        if (concert.getVenue() == null) {
-            tvArtists.setText(artists);
+        if (concert.getVenue() != null) {
+            tvVenue.setText(concert.getVenue());
         }
-        else {
-            tvArtists.setText(artists + " at " + concert.getVenue());
-        }
+        tvArtists.setText(artists);
         Picasso.with(getContext()).load(concert.getBackdropImage()).into(ivHeader);
+
     }
 
-    /* Sets up 'like' button and makes title appear in the AppBar when collapsed */
+    /** Sets up 'like' button and makes title appear in the AppBar when collapsed */
     public void setUpListeners(){
 
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {

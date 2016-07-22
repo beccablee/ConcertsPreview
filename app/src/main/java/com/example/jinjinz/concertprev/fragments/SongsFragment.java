@@ -40,11 +40,11 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         void launchSongPlayer(Song song, ArrayList<Parcelable> songs);
     }
 
-    /* Required empty public constructor */
+    /** Required empty public constructor */
     public SongsFragment() {
     }
 
-    /* Creates a new instance of the SongsFragment and gets concert Object (Parcelable) */
+    /** Creates a new instance of the SongsFragment and gets concert Object (Parcelable) */
     public static SongsFragment newInstance(Parcelable concert) {
         SongsFragment fragment = new SongsFragment();
         Bundle args = new Bundle();
@@ -104,7 +104,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
-    /* Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load*/
+    /** Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load*/
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
         if (songs.size() > 5 || concert.getArtists().size() < 3) {
             try {
@@ -124,7 +124,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         listener.launchSongPlayer(song, songs);
     }
 
-    /* Returns the number of songs each artist will have in the playlist */
+    /** Returns the number of songs each artist will have in the playlist */
     public static int computeSongsPerArtist(int numberOfArtists){
         int maxSongsPerPlaylist = 80;
         int songsPerArtist;
@@ -136,6 +136,10 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
             songsPerArtist = 8;
         }
         return songsPerArtist;
+    }
+
+    public int getSongsCount(){
+        return songs.size();
     }
 
 }
