@@ -22,9 +22,9 @@ import com.example.jinjinz.concertprev.models.Song;
  */
 public class PlayerBarFragment extends Fragment {
     //UI variables
-    private TextView tvSongTitle;
-    private TextView tvArtistTitle;
-    private Button btnPlay;
+    private TextView mTvSongTitle;
+    private TextView mTvArtistTitle;
+    private Button mBtnPlay;
 
     //listener
     private PlayerBarFragmentListener listener;
@@ -87,11 +87,11 @@ public class PlayerBarFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_player_bar, container, false);
-        tvSongTitle = (TextView) v.findViewById(R.id.songTitle2);
-        tvArtistTitle = (TextView) v.findViewById(R.id.artistTitle2);
-        btnPlay = (Button) v.findViewById(R.id.playBtn2);
+        mTvSongTitle = (TextView) v.findViewById(R.id.songTitle2);
+        mTvArtistTitle = (TextView) v.findViewById(R.id.artistTitle2);
+        mBtnPlay = (Button) v.findViewById(R.id.playBtn2);
         listener.onOpenBar();
-        btnPlay.setOnClickListener(new View.OnClickListener() {
+        mBtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.playPauseBarBtn();
@@ -113,16 +113,16 @@ public class PlayerBarFragment extends Fragment {
      */
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
-            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 
     public void updateInterface(Song song) {
-        tvSongTitle.setText(song.getName());
-        tvArtistTitle.setText(song.getArtists().get(0));
+        mTvSongTitle.setText(song.getName());
+        mTvArtistTitle.setText(song.getArtists().get(0));
     }
 
 }

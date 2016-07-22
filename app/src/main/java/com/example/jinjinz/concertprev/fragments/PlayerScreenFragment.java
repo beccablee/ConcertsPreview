@@ -29,17 +29,17 @@ import com.squareup.picasso.Target;
  */
 public class PlayerScreenFragment extends Fragment {
     //UI elements
-    private ImageView albumImg;
-    private TextView concertTitle;
+    private ImageView mAlbumImg;
+    private TextView mConcertTitle;
 
-    private Button btnBack;
-    private TextView tvSongTitle;
-    private TextView tvArtistTitle;
-    private Button btnPlay;
+    private Button mBtnBack;
+    private TextView mTvSongTitle;
+    private TextView mTvArtistTitle;
+    private Button mBtnPlay;
     private View view;
-    private Button btnPrev;
-    private Button btnNext;
-    private ProgressBar progressBar;
+    private Button mBtnPrev;
+    private Button mBtnNext;
+    private ProgressBar mProgressBar;
 
     //total time of song
     private final int TOTAL = 30000;
@@ -114,43 +114,43 @@ public class PlayerScreenFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_player, container, false);
 
         //Initialize values
-        albumImg = (ImageView) view.findViewById(R.id.albumImg);
-        concertTitle = (TextView) view.findViewById(R.id.concertTitle);
-        tvSongTitle = (TextView) view.findViewById(R.id.songTitle);
-        btnPlay = (Button) view.findViewById(R.id.playBtn);
-        tvArtistTitle = (TextView) view.findViewById(R.id.artistTitle);
-        btnPrev = (Button) view.findViewById(R.id.prevBtn);
-        btnNext = (Button) view.findViewById(R.id.nextBtn);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        btnBack = (Button) view.findViewById(R.id.backBtn);
-        progressBar.setMax(TOTAL);
+        mAlbumImg = (ImageView) view.findViewById(R.id.albumImg);
+        mConcertTitle = (TextView) view.findViewById(R.id.concertTitle);
+        mTvSongTitle = (TextView) view.findViewById(R.id.songTitle);
+        mBtnPlay = (Button) view.findViewById(R.id.playBtn);
+        mTvArtistTitle = (TextView) view.findViewById(R.id.artistTitle);
+        mBtnPrev = (Button) view.findViewById(R.id.prevBtn);
+        mBtnNext = (Button) view.findViewById(R.id.nextBtn);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        mBtnBack = (Button) view.findViewById(R.id.backBtn);
+        mProgressBar.setMax(TOTAL);
 
         //set onClickListeners for buttons
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        mBtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.backInStack();
             }
         });
-        btnPlay.setOnClickListener(new View.OnClickListener() {
+        mBtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.playPauseSong();
             }
         });
-        btnPrev.setOnClickListener(new View.OnClickListener() {
+        mBtnPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.skipPrev();
             }
         });
-        btnNext.setOnClickListener(new View.OnClickListener() {
+        mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.skipNext();
             }
         });
-        concertTitle.setOnClickListener(new View.OnClickListener() {
+        mConcertTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onConcertClick();
@@ -165,16 +165,16 @@ public class PlayerScreenFragment extends Fragment {
      */
     public void updateInterface(Song song) {
         //set text
-        concertTitle.setText(listener.getConcertName());
-        tvSongTitle.setText(song.getName());
-        tvArtistTitle.setText(song.getArtists().get(0));
+        mConcertTitle.setText(listener.getConcertName());
+        mTvSongTitle.setText(song.getName());
+        mTvArtistTitle.setText(song.getArtists().get(0));
 
         // Define a listener for image loading
         Target target = new Target() {
             // Fires when Picasso finishes loading the bitmap for the target
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                albumImg.setImageBitmap(bitmap);
+                mAlbumImg.setImageBitmap(bitmap);
                 Palette backgrd = Palette.from(bitmap).generate();
                 Palette.Swatch swatch = backgrd.getDarkVibrantSwatch();
                 if (swatch != null) {
@@ -200,11 +200,11 @@ public class PlayerScreenFragment extends Fragment {
             }
         };
         //clear images
-        albumImg.setBackgroundResource(0);
+        mAlbumImg.setBackgroundResource(0);
         view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
 
         // Store the target into the tag for the profile to ensure target isn't garbage collected prematurely
-        albumImg.setTag(target);
+        mAlbumImg.setTag(target);
         // Instruct Picasso to load the bitmap into the target defined above
         Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
     }
@@ -215,10 +215,10 @@ public class PlayerScreenFragment extends Fragment {
      */
     public void updatePlay(boolean isPlaying) {
         if (isPlaying) {
-            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
         }
         else {
-            btnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
         }
     }
 
@@ -227,7 +227,7 @@ public class PlayerScreenFragment extends Fragment {
      * @param time time in milliseconds of player
      */
     public void setProgressBar(int time) {
-        progressBar.setProgress(time);
+        mProgressBar.setProgress(time);
     }
 
     /**
