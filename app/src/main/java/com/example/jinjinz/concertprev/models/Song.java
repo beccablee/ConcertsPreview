@@ -16,14 +16,14 @@ import java.util.ArrayList;
 @Parcel
 public class Song {
 
-    public long dbID;
-    public String name;
-    public String spotifyID;
-    public ArrayList<String> artists; //names
-    public String artistsString; // formatted for details view and db
-    public String previewUrl;
-    public String albumArtUrl;
-    public int songsPerArtist;
+    private long dbID;
+    private String name;
+    private String spotifyID;
+    private ArrayList<String> artists; //names
+    private String artistsString; // formatted for details view and db
+    private String previewUrl;
+    private String albumArtUrl;
+    private int songsPerArtist;
 
     public void setDbID(int dbID) {
         this.dbID = dbID;
@@ -42,6 +42,15 @@ public class Song {
     }
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
+    }
+    public void setSongsPerArtist(int songsPerArtist) {
+        this.songsPerArtist = songsPerArtist;
+    }
+    public void setArtists(ArrayList<String> artists) {
+        this.artists = artists;
+    }
+    public void setDbID(long dbID) {
+        this.dbID = dbID;
     }
 
     public String getArtistsString() {
@@ -64,6 +73,13 @@ public class Song {
     }
     public String getAlbumArtUrl() {
         return albumArtUrl;
+    }
+
+    public int getSongsPerArtist() {
+        return songsPerArtist;
+    }
+    public String getSpotifyID() {
+        return spotifyID;
     }
 
     /* Adds songs to the tracks ArrayList from JSON */

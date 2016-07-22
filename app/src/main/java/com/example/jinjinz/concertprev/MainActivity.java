@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
         ConcertDetailsFragment.ConcertDetailsFragmentListener {
 
+    private AsyncHttpClient client;
+
     // Media player variables
     private ArrayList<Song> mSongs;
     private Concert mMediaPlayerConcert;
@@ -72,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
     private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
-    AsyncHttpClient client;
 
     // database variables
     public static UserDataSource userDataSource;
@@ -103,9 +104,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // open data source
         userDataSource = new UserDataSource(MainActivity.this);
         userDataSource.openDB();
-
     }
 
+
+    //Player + MediaPlayer methods
+    ////////////////////////////////////////////////////
     /**
      * Method to start playing a new concert
      * @param c current Concert
@@ -344,9 +347,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }).start();
     }
 
+
+    // Search Fragment methods
+    ////////////////////////////////////////////////////
+
+    // Fragment methods
+
+    /** Packages parameters and calls the client to retrieve concerts from Ticketmaster
+     * Checks if the fragment is ready to be populated and if the google api client has connected and attempted to access location */
     public void fetchConcerts() {
         if (fIsReadyToPopulate && fIsApiConnected) {
-            // url: includes api key and music classification
+            // url includes api key and music classification
             String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
             // the parameter(s)
             RequestParams params = new RequestParams();
@@ -356,12 +367,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             String latlong;
             if (lastLocation != null) {
                 latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
-                // getLastLocation()
             } else {
                 latlong = null;
             }
 
-            params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
+            params.put("latlong", latlong); // must be N, E
             params.put("radius", "50");
             params.put("size", "15");
             params.put("page", 0);
@@ -404,10 +414,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
+    /** Calls the next page of concerts from Ticketmaster to allow for endless scrolling
+     * @param page the page number to fetch from  */
+    @Override
     public void fetchMoreConcerts(int page) {
-        // url: includes api key and music classification
+        // url includes api key and music classification
         String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
-        // the parameter(s)
+        // the parameters
         RequestParams params = new RequestParams();
         if (queryText != null) {
             params.put("keyword", queryText);
@@ -415,12 +428,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String latlong;
         if (lastLocation != null) {
             latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
-            // getLastLocation()
         } else {
             latlong = null;
         }
 
-        params.put("latlong", latlong); // must be N, E (in the us the last should def be -) that num + is W
+        params.put("latlong", latlong); // must be N, E
         params.put("radius", "50");
         params.put("size", "15");
         params.put("page", page);
@@ -429,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         client = new AsyncHttpClient();
         client.get(eventsURL, params, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success will return the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
                 // DESERIALIZE JSON
                 // CREATE MODELS AND ADD TO ADAPTER
                 // LOAD MODEL INTO LIST VIEW
@@ -441,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     e.printStackTrace();
                     Log.d("client calls", "error adding concerts: " + statusCode);
                     if(queryText != null) {
-                        Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + "in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                        Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
                     } else {
                         Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
                     }
@@ -457,23 +469,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
+    /** Flags that the search fragment is ready to be populated and calls the fetch concerts method
+     * @param query passes the query value to the fetch method. Null until user searches in toolbar */
     @Override
     public void populateConcerts(String query) {
         // set ready flag
         fIsReadyToPopulate = true;
-        // set queryText for use in concerts GET method
+        // set queryText for use in concerts fetch method
         queryText = query;
-        // fetch
         fetchConcerts();
     }
 
-    @Override
-    public void loadMoreConcerts(String query, int page) {
-        // load more concerts from that page num
-        fetchMoreConcerts(page);
-    }
-
     //TODO figure out what's up
+    /** Replaces the search fragment with the concert details fragment when a concert is tapped
+     * @param concert the concert that was tapped */
     @Override
     public void onConcertTap(Concert concert) {
         // open songs fragment --> needs more stuff from songsfrag
@@ -501,6 +510,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+
     @Override
     public void onConnectionSuspended(int i) {
         //TODO
@@ -522,6 +532,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 } else {
                     Log.d("requestlocation", "Permissions Denied");
+                    //TODO: toast message about needing location to show concerts in the area, add snackbar or dialogue box to open settings or ask again
                 }
 
             }

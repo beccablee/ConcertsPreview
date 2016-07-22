@@ -19,18 +19,18 @@ public class Concert {
     //root url: https://app.ticketmaster.com/discovery/v2/
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
-    public long dbId;
-    public String backdropImage;
-    public String headliner;
-    public String venue; // may be null (tba)
-    public String artistsString;
-    public String eventName;
-    public String eventTime; // may be null (tba)
-    public String eventDate; // may be null (tba)
-    public String city;
-    public String stateCode;
-    public String countryCode;
-    public ArrayList<String> artists;
+    private long dbId;
+    private String backdropImage;
+    private String headliner;
+    private String venue; // may be null (tba)
+    private String artistsString;
+    private String eventName;
+    private String eventTime; // may be null (tba)
+    private String eventDate; // may be null (tba)
+    private String city;
+    private String stateCode;
+    private String countryCode;
+    private ArrayList<String> artists;
 
 
     public void setDbId(int dbId) {
@@ -128,7 +128,11 @@ public class Concert {
 
     }
 
-    /** Builds and returns an ArrayList of Concerts from the supplied JSONArray from the Ticketmaster API */
+    /**
+     * Builds and returns an ArrayList of Concerts from the supplied JSONArray from the Ticketmaster API
+     * @param jsonArray the events array from the ticketmaster client call
+     * @return arraylist of concerts built from the client call
+     * */
     public static ArrayList<Concert> concertsFromJsonArray(JSONArray jsonArray) { // looking for the "events" array --> { _embedded: { events: [ {0, 1, 2, ..} ] } } within the larger "_embedded" array and the largest object that you get from the client response
         ArrayList<Concert> concert = new ArrayList<>();
         // iterate
@@ -157,7 +161,11 @@ public class Concert {
         return concert;
     }
 
-    /** Builds and returns an ArrayList of artist names with the supplied artist(attractions) JSONArray from the Ticketmaster API */
+    /**
+     * Builds and returns an ArrayList of artist names with the supplied artist(attractions) JSONArray from the Ticketmaster API
+     * @param attractions the json array of the artists of one concert
+     * @return arraylist of artist names
+     * */
     private static ArrayList<String> artistsFromJsonArray(JSONArray attractions) { // the attractions array: { _embedded:{ events:[ { ..., _embedded:{ venues:[...], attractions:[ list of at least one artist ] } } ] } }
         ArrayList<String> array = new ArrayList<>();
         // iterate
@@ -172,7 +180,11 @@ public class Concert {
     }
 
     // get a wide image that's large enough to be pretty
-    /** Finds and returns a backdrop image for a concert with a ratio made to fit cleanly into the concert ImageView and a size large enough to appear crisp onscreen */
+    /**
+     * Finds and returns a backdrop image for a concert with a ratio made to fit cleanly into the concert ImageView and a size large enough to appear crisp onscreen
+     * @param event the event json object representing one concert
+     * @return the url of the desired image
+     * */
     private static String ratioImg(JSONObject event) { //takes an event obj --> { events:[ {0}, {1}, ...]} needs: 0:{images:[ {0}, {1}, ... ]}
         // start with event obj
 

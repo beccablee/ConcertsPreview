@@ -102,7 +102,7 @@ public class ConcertDetailsFragment extends SongsFragment {
             }
         });
 
-        artists = concert.artistsString;
+        artists = concert.getArtistsString();
         String date = concert.getEventDate();
 
         ivHeader.setTag(concert);
@@ -114,7 +114,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         else {
             tvArtists.setText(artists + " at " + concert.getVenue());
         }
-        Picasso.with(getContext()).load(concert.backdropImage).into(ivHeader);
+        Picasso.with(getContext()).load(concert.getBackdropImage()).into(ivHeader);
     }
 
     /* Sets up 'like' button and makes title appear in the AppBar when collapsed */

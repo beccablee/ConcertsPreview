@@ -35,7 +35,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public interface SearchFragmentListener {
         void populateConcerts(String query);
         void onConcertTap(Concert concert);
-        void loadMoreConcerts(String query, int page);
+        void fetchMoreConcerts(int page);
     }
 
     public static SwipeRefreshLayout mSwipeRefreshLayout;
@@ -109,13 +109,17 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         rvConcerts.addOnScrollListener(new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                //TODO: call more concerts
-                searchFragmentListener.loadMoreConcerts(queryText, page);
+                searchFragmentListener.fetchMoreConcerts(page);
             }
         });
         return view;
     }
 
+    /**
+     * Inflates options menu in search fragment toolbar
+     * @param inflater used to instantiate menu XML files into Menu objects
+     * @param menu the menu to inflate into
+     */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search, menu);
@@ -124,7 +128,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW | MenuItemCompat.SHOW_AS_ACTION_IF_ROOM);
         MenuItemCompat.setActionView(item, searchView);
 
-        //change searchview styling
+        // searchview styling
         ((EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text)).setTextColor(Color.WHITE);
         ((ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn)).setImageResource(R.drawable.ic_close);
 
@@ -143,15 +147,21 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         });
     }
 
-    /** Adds an array list of Concert objects to the custom adapter */
+    /**
+     * Adds an array list of Concert objects to the custom adapter
+     * @param concertArrayList an arraylist of concerts
+     * */
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Refreshes search fragment screen
+     * Called when user swipes down at the top of the list
+     * */
     @Override
     public void onRefresh() {
         searchFragmentListener.populateConcerts(null);
-
     }
 }
