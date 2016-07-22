@@ -4,7 +4,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@color/darkGrey">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -83,6 +84,10 @@
                     android:layout_below="@+id/tvDate"
                     android:textColor="@android:color/white"
                     android:layout_alignParentEnd="true"
+                    android:gravity="right"
+                    android:layout_marginLeft="100dp"
+                    android:ellipsize="end"
+                    android:maxLines="3"
                     android:shadowColor="@android:color/black"
                     android:shadowDx="0"
                     android:shadowDy="0"
@@ -95,7 +100,7 @@
                     android:paddingBottom="28dp"
                     android:paddingLeft="8dp"
                     android:text="Artists"
-                    android:textColor="@color/lightGrey"
+                    android:textColor="@android:color/white"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
                     android:shadowColor="@android:color/black"
@@ -103,7 +108,7 @@
                     android:shadowDy="0"
                     android:shadowRadius="25"
                     android:ellipsize="end"
-                    android:maxLines="6"/>
+                    android:maxLines="5"/>
             </RelativeLayout>
 
             <RelativeLayout

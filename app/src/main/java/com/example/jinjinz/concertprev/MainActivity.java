@@ -599,13 +599,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    /* Searches for an artist on Spotify and gets their ID from the first search result */
+    /** Searches for an artist on Spotify and gets their ID from the first search result */
     public void searchArtistOnSpotify(final SongsFragment fragment, Concert concert, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
         mConcert = concert;
-        //int currentArtistIndex = artistIndex;
         RequestParams params = new RequestParams();
         params.put("q", concert.getArtists().get(artistIndex));
         params.put("type", "artist");
@@ -616,21 +615,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 String artistJSONResult;
                 try {
+                    // Search for the artist's top tracks
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
-                    // if Spotify has the artist, search for the artist's top tracks
                     searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists, artistIndex);
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "could not retrieve artist id: " + statusCode);
-                    // if Spotify doesn't have the next artist, search for the next artist in the ArrayList
-                    Log.d("DEBUG", artistIndex + "");
+                    // Search for the next artist in the ArrayList, if Spotify doesn't have current artist
                     if (artistIndex + 1 < artists.size()) {
                         searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                     }
-                    // check if all artists have been searched for and if no songs have loaded
+                    // Null state: check if no songs have loaded from any artist
                     else if (artistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
-                        // no songs available for the artist
-                        // change status
+                        fragment.noSongsLoaded();
                     }
                 }
             }
@@ -642,7 +639,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /* Searches for an artist's top tracks on Spotify and adds them to the SongsFragment */
+    /** Searches for an artist's top tracks on Spotify and adds them to the SongsFragment */
     public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists, final int artistIndex){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
@@ -654,17 +651,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 JSONArray songsJsonResult;
                 try {
+                    // Search add artist's tracks to fragment
                     songsJsonResult = response.getJSONArray("tracks");
                     fragment.addSongs(Song.fromJSONArray(songsJsonResult, songsPerArtist));
-                    if (artistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                    }
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "Spotify client tracks GET error: " + statusCode);
-                    if (artistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                    }
+                }
+                // Search for next artist in ArrayList
+                if (artistIndex + 1 < artists.size()) {
+                    searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                 }
             }
             @Override

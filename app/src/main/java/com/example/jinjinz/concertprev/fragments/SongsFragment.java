@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.adapters.SongArrayAdapter;
@@ -53,6 +54,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         return fragment;
     }
 
+    /** Gets the concert data passed into the fragment */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
+    /** Sets up views and listeners for the fragment */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
@@ -70,6 +73,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         int numberOfArtists = concert.getArtists().size();
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
+        // Search for the artists in the ArrayList, starting with the first artist
         listener.searchArtistOnSpotify(this, concert, 0, songsPerArtist, concert.getArtists());
 
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
@@ -83,6 +87,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         return view;
     }
 
+    /** Gets listener from context */
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
@@ -92,7 +97,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
-    /* Removes loading symbol and displays populated RecyclerView when returning to the fragment */
+    /** Removes loading symbol and displays populated RecyclerView when returning to the fragment */
     @Override
     public void onResume() {
         super.onResume();
@@ -104,7 +109,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         }
     }
 
-    /** Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load*/
+    /** Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load */
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
         songs.addAll(songsArrayList);
         if (songs.size() > 6) {
@@ -120,6 +125,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         adapter.notifyDataSetChanged();
     }
 
+    /** Launches the player starting with the selected song */
     public void onSongClicked(Song song){
         listener.launchSongPlayer(song, songs);
     }
@@ -140,6 +146,16 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     public int getSongsCount(){
         return songs.size();
+    }
+
+    /** Tells the user that no songs can load for the artists */
+    public void noSongsLoaded(){
+        TextView tvLoading = (TextView) getView().findViewById(R.id.tvLoading);
+        if (concert.getArtists().size() <= 1){
+            tvLoading.setText("No songs available for artist");
+        } else {
+            tvLoading.setText("No songs available for artists");
+        }
     }
 
 }

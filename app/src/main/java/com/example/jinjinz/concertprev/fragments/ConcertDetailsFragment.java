@@ -37,21 +37,20 @@ public class ConcertDetailsFragment extends SongsFragment {
     public TextView tvArtists;
     public Button btnLikeConcert;
     public Button btnUnlikeConcert;
-
-    SongsFragment mSongsFragment;
+    
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
 
-    // Required empty public constructor
+    /** Required empty public constructor */
     public ConcertDetailsFragment() {
     }
 
-    /* Communicates between ConcertDetailsFragment and MainActivity */
+    /** Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
         void onLikeConcert(Concert concert);
         void onUnlikeConcert(Concert concert);
     }
 
-    /* Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
+    /** Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
     public static ConcertDetailsFragment newInstance(Parcelable concert) {
         ConcertDetailsFragment fragment = new ConcertDetailsFragment();
         Bundle args = new Bundle();
@@ -60,12 +59,11 @@ public class ConcertDetailsFragment extends SongsFragment {
         return fragment;
     }
 
-    /* Creates a SongsFragment nested in the ConcertDetailsFragment */
+    /** Creates a SongsFragment nested in the ConcertDetailsFragment */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         concert = Parcels.unwrap(getArguments().getParcelable("concert"));
-
         if (savedInstanceState == null) {
             SongsFragment songsFragment = SongsFragment.newInstance(Parcels.wrap(concert));
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -80,6 +78,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         return view;
     }
 
+    /** Gets listener from context */
     public void onAttach(Context context) {
         super.onAttach(context);
         concertDetailsFragmentListener = (ConcertDetailsFragmentListener) context;

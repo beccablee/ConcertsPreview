@@ -82,7 +82,7 @@ public class Song {
         return spotifyID;
     }
 
-    /* Adds songs to the tracks ArrayList from JSON */
+    /** Adds songs to the tracks ArrayList from JSON */
     public static ArrayList<Parcelable> fromJSONArray(JSONArray jsonArray, int songsPerArtist) {
         ArrayList<Parcelable> tracks = new ArrayList<>();
         try {
@@ -95,7 +95,7 @@ public class Song {
         return tracks;
     }
 
-    /* Gets song details from JSON */
+    /** Gets song details from JSON */
     public static Song fromJSON(JSONObject jsonObject){
         Song song = new Song();
         JSONArray artist_list;
