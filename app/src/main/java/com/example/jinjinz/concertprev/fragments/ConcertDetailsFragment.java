@@ -35,6 +35,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     public TextView tvDate;
     public TextView tvArtists;
     public Button btnLikeConcert;
+    public Button btnUnlikeConcert;
 
     SongsFragment mSongsFragment;
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
@@ -46,6 +47,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     /* Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
         void onLikeConcert(Concert concert);
+        void onUnlikeConcert(Concert concert);
     }
 
     /* Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
@@ -92,15 +94,8 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvDate = (TextView) view.findViewById(R.id.tvDate);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
+        btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
         setUpListeners();
-        btnLikeConcert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Concert concertToLike;
-                concertToLike = concert;
-                concertDetailsFragmentListener.onLikeConcert(concertToLike);
-            }
-        });
 
         artists = concert.getArtistsString();
         String date = concert.getEventDate();
@@ -119,12 +114,20 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     /* Sets up 'like' button and makes title appear in the AppBar when collapsed */
     public void setUpListeners(){
+
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Concert concertToLike = new Concert();
-                concertToLike = concert;
+                Concert concertToLike = concert;
                 concertDetailsFragmentListener.onLikeConcert(concertToLike);
+            }
+        });
+
+        btnUnlikeConcert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Concert concertToUnlike = concert;
+                concertDetailsFragmentListener.onUnlikeConcert(concertToUnlike);
             }
         });
 

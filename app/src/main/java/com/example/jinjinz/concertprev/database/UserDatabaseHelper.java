@@ -17,7 +17,8 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /** Calls to table methods of creation
-     * Called when database is being created */
+     * Called when database is being created
+     * @param sqLiteDatabase the SQLite database being created */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // SQL for creating the tables
@@ -26,7 +27,10 @@ public class UserDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /** Calls to table methods of upgrading
-     * Called when database is being upgraded */
+     * Called when database is being upgraded
+     * @param sqLiteDatabase the SQLite database created
+     * @param oldVersion the version of the database before updating
+     * @param newVersion the version of the database after updating */
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // SQL for updating the tables

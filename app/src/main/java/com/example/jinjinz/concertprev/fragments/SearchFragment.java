@@ -67,7 +67,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         try {
             searchFragmentListener = (SearchFragmentListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnConcertsFragmentListener");
+            throw new ClassCastException(context.toString() + " must implement SearchFragmentListener");
         }
     }
 
@@ -135,7 +135,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                queryText = query;
+//                queryText = query;
                 searchFragmentListener.populateConcerts(query);
                 return false;
             }

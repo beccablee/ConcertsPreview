@@ -53,7 +53,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * Inserts the liked concert into the database after checking for the possibility of duplication
      * @param concert the concert to be liked
      * @return the liked concert*/
-    public Concert insertLikedConcert(Concert concert) { //gets concert from like button click
+    public Concert likeConcert(Concert concert) { //gets concert from like button click
 
         // set key-value pairs for columns of concert table
         ContentValues values = new ContentValues();
@@ -69,13 +69,15 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
-            Log.d("dbCommands", "already liked this concert");
+           // deleteLikedConcert(concert);
+            Log.d("dbCommands", "concert unliked");
         } else {
-            long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert) and returns the row id of the inserted concert ( or -1 if an error occurred)
-            if (insertId != -1) {
+            long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert)
+                                                                                                                  // and returns the row id of the inserted concert ( or -1 if an error occurred)
+            if (insertId != -1L) { // setdbid
                 Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                         ConcertsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
-                cursor.moveToFirst(); // move to the first row if the query results (whatever was queried) the single liked concert in this case
+                cursor.moveToFirst();
                 Concert myConcert = cursorToConcert(cursor); // turn row into concert
                 cursor.close();
                 Log.d("dbCommands", "liked a concert");
@@ -95,9 +97,23 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param concert the concert to be deleted
      * */
     public void deleteLikedConcert(Concert concert) {
-        long deleteId = concert.getDbId(); // the db id of the concert
-        database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
-        Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
+        long rowId;
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                rowId = cursor.getPosition();
+                database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + rowId, null);
+                Log.d("dbCommands", "Concert deleted with id: " + rowId);
+                cursor.moveToNext();
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        //Log.d("dbCommands", "No concert deleted");
+
     }
 
     /**
@@ -204,7 +220,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setDbId(cursor.getInt(0));
         concert.setEventName(cursor.getString(1));
         concert.setCity(cursor.getString(2));
-        concert.setStateCode(cursor.getString(3)); // null for intl concerts
+        concert.setStateCode(cursor.getString(3)); // null for international concerts
         concert.setCountryCode(cursor.getString(4));
         concert.setVenue(cursor.getString(5));
         concert.setEventTime(cursor.getString(6));
@@ -217,21 +233,21 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     /**
      * Checks if a certain concert is already in the database
+     * @param concert the concert to check for
      * @return true if the concert is already in the database, false otherwise */
     private boolean isConcertAlreadyInDb(Concert concert) {
         Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                 null, null, null, null, null); // query whole table
-        // move cursor to beginning of query
         cursor.moveToFirst();
-        // while not after last
         while(!cursor.isAfterLast()) {
-            // if cursor.name == concert.name
             if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                cursor.close();
                 return true;
             } else {
                 cursor.moveToNext();
             }
         }
+        cursor.close();
 
         return false;
     }

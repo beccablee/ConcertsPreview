@@ -33,7 +33,7 @@ public class Concert {
     private ArrayList<String> artists;
 
 
-    public void setDbId(int dbId) {
+    public void setDbId(long dbId) {
         this.dbId = dbId;
     }
     public void setEventName(String eventName) {

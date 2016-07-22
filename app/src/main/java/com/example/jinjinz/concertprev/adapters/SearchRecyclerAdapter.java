@@ -33,8 +33,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
 
         public ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
             super(itemView);
             tvEventName = (TextView) itemView.findViewById(R.id.tvEventName);
             tvEventLocation = (TextView) itemView.findViewById(R.id.tvEventLocation);
@@ -53,7 +51,6 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     private ArrayList<Concert> mConcerts;
     private Context mContext;
 
-    // Pass the concert array into the recycler constructor
     public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts, SearchRecyclerAdapterListener searchRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
@@ -97,19 +94,19 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
             eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getCountryCode()));
 
         }
-        // set background programatically with image
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
         Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
         viewHolder.ivBackgroundImage.setTag(concert);
     }
 
-    // Returns the total count of items in the list
     @Override
     public int getItemCount() {
         return mConcerts.size();
     }
 
-    /** Clears and notifies the adapter */
+    /**
+     * Clears the concerts array and notifies the adapter
+     * */
     public void clear() {
         mConcerts.clear();
         notifyDataSetChanged();

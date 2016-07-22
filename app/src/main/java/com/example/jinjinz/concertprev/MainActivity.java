@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private boolean fIsApiConnected = false;
 
     // Concerts details variables
-    protected ConcertDetailsFragment mConcertDetailsFragment; // songs fragment
+    protected ConcertDetailsFragment mConcertDetailsFragment;
     protected int currentArtistIndex;
 
     private String queryText;
@@ -693,7 +693,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onLikeConcert(Concert concert) {
-        userDataSource.insertLikedConcert(concert);
+        userDataSource.likeConcert(concert);
+    }
+
+    @Override
+    public void onUnlikeConcert(Concert concert) {
+        userDataSource.deleteLikedConcert(concert);
     }
 
     public void getLikes(MenuItem item) {
