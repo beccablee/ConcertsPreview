@@ -106,7 +106,8 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /** Adds songs to the ArrayList and populates the RecyclerView after moer than 5 songs load*/
     public void addSongs(ArrayList<Parcelable> songsArrayList) {
-        if (songs.size() > 5 || concert.getArtists().size() < 3) {
+        songs.addAll(songsArrayList);
+        if (songs.size() > 6) {
             try {
                 llLoading = (RelativeLayout) getView().findViewById(R.id.llLoading);
                 llLoading.setVisibility(View.GONE);
@@ -116,7 +117,6 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
                 Log.i("no loading screen", "0");
             }
         }
-        songs.addAll(songsArrayList);
         adapter.notifyDataSetChanged();
     }
 

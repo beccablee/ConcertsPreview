@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // Concerts details variables
     protected ConcertDetailsFragment mConcertDetailsFragment;
-    protected int currentArtistIndex;
 
     private String queryText;
     private static final int LOCATION_PERMISSIONS = 10;
@@ -600,13 +599,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    /* Searches for an artist on Spofity and gets their ID from the first search result */
-    public void searchArtistOnSpotify(final SongsFragment fragment, Concert concert, int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
+    /* Searches for an artist on Spotify and gets their ID from the first search result */
+    public void searchArtistOnSpotify(final SongsFragment fragment, Concert concert, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
         mConcert = concert;
-        currentArtistIndex = artistIndex;
+        //int currentArtistIndex = artistIndex;
         RequestParams params = new RequestParams();
         params.put("q", concert.getArtists().get(artistIndex));
         params.put("type", "artist");
@@ -619,16 +618,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 try {
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
                     // if Spotify has the artist, search for the artist's top tracks
-                    searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists);
+                    searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists, artistIndex);
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "could not retrieve artist id: " + statusCode);
                     // if Spotify doesn't have the next artist, search for the next artist in the ArrayList
-                    if (currentArtistIndex < artists.size() - 1) {
-                        searchArtistOnSpotify(fragment, mConcert, currentArtistIndex + 1, songsPerArtist, artists);
+                    Log.d("DEBUG", artistIndex + "");
+                    if (artistIndex + 1 < artists.size()) {
+                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                     }
                     // check if all artists have been searched for and if no songs have loaded
-                    else if (currentArtistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
+                    else if (artistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
                         // no songs available for the artist
                         // change status
                     }
@@ -643,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     /* Searches for an artist's top tracks on Spotify and adds them to the SongsFragment */
-    public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists){
+    public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists, final int artistIndex){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
@@ -656,21 +656,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 try {
                     songsJsonResult = response.getJSONArray("tracks");
                     fragment.addSongs(Song.fromJSONArray(songsJsonResult, songsPerArtist));
-                    if (currentArtistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, currentArtistIndex + 1, songsPerArtist, artists);
+                    if (artistIndex + 1 < artists.size()) {
+                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                     }
                 } catch (JSONException e){
                     e.printStackTrace();
                     Log.d("client calls", "Spotify client tracks GET error: " + statusCode);
-                    if (currentArtistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, currentArtistIndex + 1, songsPerArtist, artists);
+                    if (artistIndex + 1 < artists.size()) {
+                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                     }
                 }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Toast.makeText(getApplicationContext(), "songs failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Songs failed to load", Toast.LENGTH_SHORT).show();
             }
         });
     }
