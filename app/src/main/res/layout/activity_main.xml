@@ -4,23 +4,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.jinjinz.concertprev.MainActivity"
-    android:background="@color/grey">
+    android:background="@color/grey"
+    android:id="@+id/mainActivity">
+    <!--android:layout_above="@id/playerFragment"-->
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
         android:id="@+id/mainFragment">
-
     </FrameLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
         android:id="@+id/playerFragment"
-        android:layout_above="@id/mainFragment">
-
+        >
     </FrameLayout>
 </RelativeLayout>

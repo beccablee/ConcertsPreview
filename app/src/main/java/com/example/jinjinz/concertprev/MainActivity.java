@@ -7,21 +7,25 @@ import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.database.UserDataSource;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
-import com.example.jinjinz.concertprev.fragments.SearchFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
+import com.example.jinjinz.concertprev.fragments.SearchFragment;
 import com.example.jinjinz.concertprev.fragments.SongsFragment;
 import com.example.jinjinz.concertprev.fragments.UserFragment;
 import com.example.jinjinz.concertprev.models.Concert;
@@ -59,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private int iCurrentSongIndex;
     private PlayerBarFragment mBarFragment;
     private PlayerScreenFragment mPlayerFragment;
+    private View mBarFragmentHolder;
+    private Handler mHandler;
+    private View mActivityRoot;
 
     // Search Fragment variables
     private SearchFragment mSearchFragment;
@@ -72,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static final int LOCATION_PERMISSIONS = 10;
     private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
-    private String[] locationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
+    private String[] mLocationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     // database variables
     public static UserDataSource userDataSource;
@@ -94,10 +101,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Search fragment should always show first
         if (savedInstanceState == null) {
+            mBarFragmentHolder = findViewById(R.id.playerFragment);
+            mBarFragmentHolder.setVisibility(View.GONE);
             mSearchFragment = mSearchFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainFragment, mSearchFragment);
+            mBarFragment = PlayerBarFragment.newInstance();
+            ft.replace(R.id.playerFragment, mBarFragment, "bar");
             ft.commit();
+            mHandler = new Handler(Looper.getMainLooper());
+            mActivityRoot =  findViewById(R.id.mainActivity);
+
+            getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mBarFragmentHolder.getVisibility() == View.VISIBLE) {
+                                mActivityRoot.requestLayout();
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         // open data source
@@ -130,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         mPlayerFragment.updateInterface(mSongs.get(iCurrentSongIndex));
                         mPlayerFragment.updatePlay(true);
                     }
-                    if (mBarFragment != null && mBarFragment.isVisible()) {
+                    if (mBarFragment != null && mBarFragmentHolder.getVisibility() == View.VISIBLE) {
                         mBarFragment.updatePlay(true);
                         mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
                     }
@@ -162,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
                 @Override
                 public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    Toast.makeText(MainActivity.this, "No music playing", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Music still loading...please wait", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             });
@@ -262,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("music player", "unknown error: skipNext");
+            Log.i("music player", "unknown error: skipNext");
 
         }
     }
@@ -272,8 +299,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void skipPrev() {
-        mediaPlayer.stop();
-        mediaPlayer.reset();
+            mediaPlayer.stop();
+            mediaPlayer.reset();
         if (iCurrentSongIndex >= 1) {
             iCurrentSongIndex = iCurrentSongIndex - 1;
         }
@@ -285,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("music player", "unknown error: skipPrev");
+            Log.i("music player", "unknown error: skipPrev");
         }
     }
 
@@ -295,18 +322,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onClosePlayer() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        if (mBarFragment == null) {
-            mBarFragment = PlayerBarFragment.newInstance();
-            ft.replace(R.id.playerFragment, mBarFragment, "bar");
-            ft.commit();
-        }
-        else {
-            ft.show(mBarFragment);
-            ft.commit();
-            onOpenBar();
-        }
-
+        mBarFragmentHolder.setVisibility(View.VISIBLE);
+        onOpenBar();
     }
 
     /**
@@ -505,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(MainActivity.this, locationPermissions, LOCATION_PERMISSIONS);
+            ActivityCompat.requestPermissions(MainActivity.this, mLocationPermissions, LOCATION_PERMISSIONS);
 
         } else {
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -564,7 +581,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
         if (mBarFragment != null) {
-            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
+//            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
+            mBarFragmentHolder.setVisibility(View.GONE);
         }
         ft.addToBackStack("player");
         ft.commit();
@@ -593,14 +611,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onOpenBar() {
-        mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
-        if (mediaPlayer.isPlaying()) {
-            mBarFragment.updatePlay(true);
+        if (mBarFragmentHolder.getVisibility() == View.VISIBLE) {
+            mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
+            if (mediaPlayer.isPlaying()) {
+                mBarFragment.updatePlay(true);
+            } else {
+                mBarFragment.updatePlay(false);
+            }
         }
-        else {
-            mBarFragment.updatePlay(false);
-        }
-
     }
 
     // Concert + Songs Fragment
@@ -687,17 +705,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (mPlayerFragment == null) {
             mPlayerFragment = PlayerScreenFragment.newInstance();
         }
-        ArrayList<Song> pSongs2 = new ArrayList<>();
+        ArrayList<Song> pSongs = new ArrayList<>();
         for (int i = 0; i < tempSongs.size(); i++) {
-            pSongs2.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
+            pSongs.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
         }
-        Collections.shuffle(pSongs2);
-        pSongs2.add(0, song);
-        onNewConcert(mConcert, pSongs2);
+        Collections.shuffle(pSongs);
+        pSongs.add(0, song);
+        onNewConcert(mConcert, pSongs);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
         if (mBarFragment != null) {
-            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
+            mBarFragmentHolder.setVisibility(View.GONE);
         }
 
         ft.addToBackStack("player");
