@@ -352,8 +352,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // Fragment methods
 
-    /** Packages parameters and calls the client to retrieve concerts from Ticketmaster
-     * Checks if the fragment is ready to be populated and if the google api client has connected and attempted to access location */
+    /**
+     * Packages parameters and calls the client to retrieve concerts from Ticketmaster
+     * Checks if the fragment is ready to be populated and if the google api client has connected and attempted to access location
+     * */
     public void fetchConcerts() {
         if (fIsReadyToPopulate && fIsApiConnected) {
             // url includes api key and music classification
@@ -468,8 +470,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /** Flags that the search fragment is ready to be populated and calls the fetch concerts method
-     * @param query passes the query value to the fetch method. Null until user searches in toolbar */
+    /**
+     * Flags that the search fragment is ready to be populated and calls the fetch concerts method
+     * @param query passes the query value to the fetch method. Null until user searches in toolbar
+     * */
     @Override
     public void populateConcerts(String query) {
         // set ready flag
@@ -480,8 +484,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     //TODO figure out what's up
-    /** Replaces the search fragment with the concert details fragment when a concert is tapped
-     * @param concert the concert that was tapped */
+    /**
+     * Replaces the search fragment with the concert details fragment when a concert is tapped
+     * @param concert the concert that was tapped
+     * */
     @Override
     public void onConcertTap(Concert concert) {
         // open songs fragment --> needs more stuff from songsfrag
@@ -531,7 +537,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 } else {
                     Log.d("requestlocation", "Permissions Denied");
-                    //TODO: toast message about needing location to show concerts in the area, add snackbar or dialogue box to open settings or ask again
+                    Toast.makeText(MainActivity.this, "Location is necessary to fnd concerts in your area", Toast.LENGTH_LONG).show();
+                    //TODO: add snackbar or dialogue box to ask them to allow location
                 }
 
             }
@@ -672,7 +679,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /** Launches song player with a specific song in a playlist */
+    /**
+     * Launches song player with a specific song in a playlist
+     * */
     @Override
     public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs){
         if (mPlayerFragment == null) {
@@ -695,11 +704,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
 
+    /**
+     *  "Likes" a concert by calling to the datasource to add it to the database
+     *  @param concert the concert to be liked
+     *  */
     @Override
     public void onLikeConcert(Concert concert) {
         userDataSource.likeConcert(concert);
     }
 
+ /////   /**
+ /////     * For now, it deletes all liked concerts
+ ////    * */
     @Override
     public void onUnlikeConcert(Concert concert) {
         userDataSource.deleteAllConcerts();
@@ -714,6 +730,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     ////////////////////////////////////////////////////
 
+
+    /** Switches to user fragment when user menu button is clicked
+     * @param item the user button */
     public void getProfile(MenuItem item) {
         UserFragment userFragment = UserFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
