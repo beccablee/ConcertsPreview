@@ -606,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         client = new AsyncHttpClient();
         mConcert = concert;
         RequestParams params = new RequestParams();
-        params.put("q", concert.getArtists().get(artistIndex));
+        params.put("q", artists.get(artistIndex));
         params.put("type", "artist");
         params.put("limit", 1);
 
@@ -623,7 +623,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     Log.d("client calls", "could not retrieve artist id: " + statusCode);
                     // Search for the next artist in the ArrayList, if Spotify doesn't have current artist
                     if (artistIndex + 1 < artists.size()) {
-                        Log.d("DEBUG", artistIndex + " :::index" + artists.size() + " :::arraySize");
                         searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
                     }
                     // Null state: check if no songs have loaded from any artist
