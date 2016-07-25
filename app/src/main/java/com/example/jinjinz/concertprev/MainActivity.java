@@ -625,11 +625,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     ////////////////////////////////////////////////////
 
     /** Searches for an artist on Spotify and gets their ID from the first search result */
-    public void searchArtistOnSpotify(final SongsFragment fragment, Concert concert, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
+    public void searchArtistOnSpotify(final SongsFragment fragment, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
-        mConcert = concert;
         RequestParams params = new RequestParams();
         params.put("q", artists.get(artistIndex));
         params.put("type", "artist");
@@ -645,21 +644,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists, artistIndex);
                 } catch (JSONException e){
                     e.printStackTrace();
-                    Log.d("client calls", "could not retrieve artist id: " + statusCode);
-                    // Search for the next artist in the ArrayList, if Spotify doesn't have current artist
-                    if (artistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                    }
-                    // Null state: check if no songs have loaded from any artist
-                    else if (artistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
-                        fragment.noSongsLoaded();
-                    }
+                    Log.d("client calls", "could not retrieve artist id: " + statusCode + artistIndex + ' ' + artists.size());
+                    searchForNextArtist(artistIndex, artists, fragment, songsPerArtist);
                 }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.d("client calls", "Spotify client GET error: " + statusCode);
+                Log.d("client calls", "Spotify client GET error: " + statusCode + artistIndex + ' ' + artists.size());
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist);
             }
         });
     }
@@ -683,18 +676,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     e.printStackTrace();
                     Log.d("client calls", "Spotify client tracks GET error: " + statusCode);
                 }
-                // Search for next artist in ArrayList
-                if (artistIndex + 1 < artists.size()) {
-                    Log.d("DEBUG", artistIndex + " :::index" + artists.size() + " :::arraySize");
-                    searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                }
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Toast.makeText(getApplicationContext(), "Songs failed to load", Toast.LENGTH_SHORT).show();
+                Log.d("client calls", "Songs failed to load");
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist);
             }
         });
+    }
+
+    /** Search for the next artist in the ArrayList or check for null state for playlist */
+    public void searchForNextArtist(int artistIndex, ArrayList<String> artists, SongsFragment fragment, int songsPerArtist){
+        // Search for next artist in ArrayList
+        if (artistIndex + 1 < artists.size()) {
+            searchArtistOnSpotify(fragment, artistIndex + 1, songsPerArtist, artists);
+        }
+        // Null state: check if no songs have loaded from any artist
+        else if (artistIndex + 1 >= artists.size() && fragment.getSongsCount() == 0){
+            fragment.noSongsLoaded();
+        }
     }
 
     /**

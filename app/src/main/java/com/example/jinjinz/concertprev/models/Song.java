@@ -1,6 +1,7 @@
 package com.example.jinjinz.concertprev.models;
 
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -91,6 +92,7 @@ public class Song {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.d("song calls", "couldn't get at least one song");
         }
         return tracks;
     }
