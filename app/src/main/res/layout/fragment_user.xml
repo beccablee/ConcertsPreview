@@ -35,7 +35,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"></FrameLayout>
+        android:layout_height="50dp"
+        android:id="@+id/concertContainer"></FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,6 +46,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"></FrameLayout>
+        android:layout_height="fill_parent"
+        android:id="@+id/songContainer"></FrameLayout>
 
 </LinearLayout>

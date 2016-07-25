@@ -37,7 +37,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
-        void searchArtistOnSpotify(SongsFragment fragment, int artistIndex, int songsPerArtist, ArrayList<String> artists);
+        void searchArtistOnSpotify(SongsFragment fragment, int artistIndex, int songsPerArtist, ArrayList<String> artists, Concert concert);
         void launchSongPlayer(Song song, ArrayList<Parcelable> songs);
     }
 
@@ -74,7 +74,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
         // Search for the artists in the ArrayList, starting with the first artist
-        listener.searchArtistOnSpotify(this, 0, songsPerArtist, concert.getArtists());
+        listener.searchArtistOnSpotify(this, 0, songsPerArtist, concert.getArtists(), concert);
 
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
