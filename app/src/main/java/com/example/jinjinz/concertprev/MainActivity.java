@@ -1,13 +1,16 @@
 package com.example.jinjinz.concertprev;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -19,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.database.UserDataSource;
@@ -66,6 +70,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private View mBarFragmentHolder;
     private Handler mHandler;
     private View mActivityRoot;
+
+    //testing service
+    private Button testBtn;
+    MediaPlayerService mediaPlayerService;
+    boolean mBounded;
+    private Button testBtn2;
 
     // Search Fragment variables
     private SearchFragment mSearchFragment;
@@ -130,6 +140,79 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // open data source
         userDataSource = new UserDataSource(MainActivity.this);
         userDataSource.openDB();
+
+        testBtn = (Button) findViewById(R.id.button);
+
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                testPlayer();
+            }
+        });
+
+
+        testBtn2 = (Button) findViewById(R.id.button2);
+
+        testBtn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mediaPlayerService.skipPrev();
+            }
+        });
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        Intent i = new Intent(this, MediaPlayerService.class);
+        bindService(i, mConnection, BIND_AUTO_CREATE);
+        super.onStart();
+    }
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        if(mBounded) {
+            unbindService(mConnection);
+            mBounded = false;
+        }
+        super.onStop();
+
+    }
+
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Toast.makeText(MainActivity.this, "Service is connected", Toast.LENGTH_SHORT).show();
+            mBounded = true;
+            MediaPlayerService.LocalBinder mLocalBinder = (MediaPlayerService.LocalBinder)iBinder;
+            mediaPlayerService = mLocalBinder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Toast.makeText(MainActivity.this, "Service is disconnected", Toast.LENGTH_SHORT).show();
+            mBounded = false;
+            mediaPlayerService = null;
+        }
+    };
+    private void testPlayer() {
+        //testing code
+        //create dummy songs and concerts
+        Concert dummy_c = new Concert();
+        Song dummy_ss = new Song();
+        dummy_c.setEventName("TESTING");
+        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
+        ArrayList<String> artist = new ArrayList<>();
+        artist.add("Elvis Presley");
+        dummy_ss.setArtists(artist);
+        dummy_ss.setName("Suspicious Minds");
+        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
+        ArrayList<Parcelable> dummy_s = new ArrayList<>();
+        dummy_s.add(Parcels.wrap(dummy_ss));
+
+        Intent i = new Intent(this, MediaPlayerService.class);
+        i.putExtra("concert", Parcels.wrap(dummy_c));
+        i.putExtra("songs", dummy_s);
+        startService(i);
     }
 
 
@@ -219,7 +302,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.d("music player", "unknown error");
-
             }
         }
     }
@@ -562,15 +644,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-    @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
 
     /**
      * Override PlayerBarFragmentListener
