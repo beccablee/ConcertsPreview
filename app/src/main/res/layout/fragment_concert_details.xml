@@ -122,13 +122,6 @@
                     android:id="@+id/btnLikeConcert"
                     android:clickable="true" />
 
-                <Button
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="x"
-                    android:id="@+id/btnUnlikeConcert"
-                    android:clickable="true"
-                    android:layout_toRightOf="@+id/btnLikeConcert"/>
             </RelativeLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>

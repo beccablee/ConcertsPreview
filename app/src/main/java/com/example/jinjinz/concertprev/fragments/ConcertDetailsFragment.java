@@ -97,7 +97,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvVenue = (TextView) view.findViewById(R.id.tvVenue);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
-        btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
+        //btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -125,13 +125,13 @@ public class ConcertDetailsFragment extends SongsFragment {
             }
         });
 
-        btnUnlikeConcert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Concert concertToUnlike = concert;
-                concertDetailsFragmentListener.onUnlikeConcert(concertToUnlike);
-            }
-        });
+//        btnUnlikeConcert.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Concert concertToUnlike = concert;
+//                concertDetailsFragmentListener.onUnlikeConcert(concertToUnlike);
+//            }
+//        });
 
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;

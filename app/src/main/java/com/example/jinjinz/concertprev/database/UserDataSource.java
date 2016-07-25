@@ -78,10 +78,10 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                         ConcertsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
                 cursor.moveToFirst();
-                Concert myConcert = cursorToConcert(cursor); // turn row into concert
+                concert = cursorToConcert(cursor); // turn row into concert
                 cursor.close();
                 Log.d("dbCommands", "liked a concert");
-                return myConcert; // return it for UI
+                return concert; // return it for UI
             } else {
                 Log.d("dbCommands", "error liking concert");
             }
@@ -97,21 +97,21 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param concert the concert to be deleted
      * */
     public void deleteLikedConcert(Concert concert) {
-        long rowId;
+/*        long rowId;
         Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                 null, null, null, null, null); // query whole table
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
             if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
-                rowId = cursor.getPosition();
-                database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + rowId, null);
-                Log.d("dbCommands", "Concert deleted with id: " + rowId);
-                cursor.moveToNext();
+                rowId = cursor.getPosition();*/
+                database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + concert.getDbId(), null);
+                Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
+/*                cursor.moveToNext();
             } else {
                 cursor.moveToNext();
             }
         }
-        cursor.close();
+        cursor.close();*/
         //Log.d("dbCommands", "No concert deleted");
 
     }

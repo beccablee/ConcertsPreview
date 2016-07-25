@@ -31,18 +31,6 @@ public class DBTestActivity extends AppCompatActivity implements UserLikedConcer
         likedConcertsRecyclerAdapter.notifyDataSetChanged();
         rvLikedConcerts.setAdapter(likedConcertsRecyclerAdapter); // set adapter to custom recycler adapter
         rvLikedConcerts.setLayoutManager(new LinearLayoutManager(DBTestActivity.this));
-
-
-
-//        likedConcertsRecyclerAdapter.notifyDataSetChanged();
-
-
-
-
-        // show concerts
-        // Concert likedConcert = new Concert();
-
-
     }
 
     @Override
@@ -53,5 +41,10 @@ public class DBTestActivity extends AppCompatActivity implements UserLikedConcer
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
         ft.commit();*/
+    }
+
+    @Override
+    public void onUnlike(Concert concert) {
+        MainActivity.userDataSource.deleteLikedConcert(concert);
     }
 }

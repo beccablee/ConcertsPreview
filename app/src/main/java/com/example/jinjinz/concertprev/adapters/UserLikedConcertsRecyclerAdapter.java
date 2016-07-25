@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,12 +24,12 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
         ImageView ivBackgroundImage = (ImageView) view.findViewById(R.id.ivBackgroundImage);
         Concert concert = (Concert) ivBackgroundImage.getTag();
         mUserLikedConcertsRecyclerAdapterListener.onConcertTap(concert);
-
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private final Context context;
+        public Button btnUnlike;
         public TextView tvEventName;
         public TextView tvEventLocation;
         public RelativeLayout rlConcert;
@@ -40,6 +41,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
             // to access the context from any ViewHolder instance.
             super(itemView);
             context = itemView.getContext();
+            btnUnlike = (Button) itemView.findViewById(R.id.btnUnlikeConcert);
             tvEventName = (TextView) itemView.findViewById(R.id.tvEventName);
             tvEventLocation = (TextView) itemView.findViewById(R.id.tvEventLocation);
             rlConcert = (RelativeLayout) itemView.findViewById(R.id.rlConcert);
@@ -50,6 +52,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
 
     public interface UserLikedConcertsRecyclerAdapterListener {
         void onConcertTap(Concert concert);
+        void onUnlike(Concert concert);
     }
 
     UserLikedConcertsRecyclerAdapterListener mUserLikedConcertsRecyclerAdapterListener;
@@ -79,7 +82,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View concertView = layoutInflater.inflate(R.layout.item_concert, parent, false);
+        View concertView = layoutInflater.inflate(R.layout.item_user_concert, parent, false);
 
         //Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(concertView);
@@ -91,7 +94,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
         //Get concert based on position
-        Concert concert = mConcerts.get(position);
+        final Concert concert = mConcerts.get(position);
 
         // Set item views based on your views and data model
         TextView eventName = viewHolder.tvEventName;
@@ -103,6 +106,13 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
             eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getCountryCode()));
 
         }
+        Button unlike = viewHolder.btnUnlike;
+        unlike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mUserLikedConcertsRecyclerAdapterListener.onUnlike(concert);
+            }
+        });
         // set background programatically with image
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
         Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);
