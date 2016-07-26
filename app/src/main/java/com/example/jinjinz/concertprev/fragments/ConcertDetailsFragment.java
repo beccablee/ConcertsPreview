@@ -15,6 +15,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.jinjinz.concertprev.R;
@@ -40,7 +41,9 @@ public class ConcertDetailsFragment extends SongsFragment {
     private TextView tvArtists;
     private Button btnLikeConcert;
     private Button btnPurchaseTickets;
+    private Button btnLeaveWebView;
     private WebView webView;
+    private RelativeLayout webLayout;
 
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
     SongsFragment songsFragment;
@@ -102,13 +105,16 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
         btnPurchaseTickets = (Button) view.findViewById(R.id.btnPurchaseTickets);
+        btnLeaveWebView = (Button) view.findViewById(R.id.btnLeaveWebView);
         webView = (WebView) view.findViewById(R.id.webView);
-        webView.setVisibility(View.GONE);
+        webLayout = (RelativeLayout) view.findViewById(R.id.webLayout);
+        webLayout.setVisibility(View.GONE);
         if(concert.getDbId() == -1L) { // not in db
             btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);
         } else {
             btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
         }
+
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -141,7 +147,7 @@ public class ConcertDetailsFragment extends SongsFragment {
                 }
             });
             webView.loadUrl(concert.getEventUrl());
-            webView.setVisibility(View.VISIBLE);
+            webLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -201,12 +207,19 @@ public class ConcertDetailsFragment extends SongsFragment {
                                 webView.goBack();
                                 return true;
                             } else {
-                                webView.setVisibility(View.GONE);
+                                webLayout.setVisibility(View.GONE);
                             }
                             return true;
                     }
                 }
                 return false;
+            }
+        });
+        // Allows user to exit WebView at any time
+        btnLeaveWebView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                webLayout.setVisibility(View.GONE);
             }
         });
     }

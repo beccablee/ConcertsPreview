@@ -150,9 +150,26 @@
 
     </FrameLayout>
 
-    <WebView
-        android:id="@+id/webView"
+    <RelativeLayout
+        android:id="@+id/webLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btnLeaveWebView"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:text="Return to Working Title"
+            android:gravity="center"
+            android:textSize="11sp"
+            android:textColor="@color/lightGrey"
+            android:background="@color/darkGrey"
+            android:clickable="true"/>
+        <WebView
+            android:id="@+id/webView"
+            android:layout_below="@id/btnLeaveWebView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
