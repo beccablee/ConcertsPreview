@@ -1,11 +1,15 @@
 package com.example.jinjinz.concertprev.adapters;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import com.example.jinjinz.concertprev.fragments.UserFragment;
+
 /**
  * Created by noradiegwu on 7/26/16.
  */
-/*public class UserPagerAdapter extends FragmentPagerAdapter {
-    private LikedConcertsFragment mLikedConcertsFragment;
-    private LikedSongsFragment mLikedSongsFragment;
+public class UserPagerAdapter extends FragmentPagerAdapter {
     private static String tabTitles[] = {"Concerts", "Songs"};
 
     // Adapter gets the manager in order to insert or remove fragment from activity
@@ -16,9 +20,9 @@ package com.example.jinjinz.concertprev.adapters;
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return mLikedConcertsFragment;
+            return UserFragment.getLikedConcertsFragment();
         } else if (position == 1) {
-            return mLikedSongsFragment;
+            return UserFragment.getLikedSongsFragment();
         } else {
             return null;
         }
@@ -34,4 +38,4 @@ package com.example.jinjinz.concertprev.adapters;
     public CharSequence getPageTitle(int position) {
         return tabTitles[position];
     }
-}*/
+}

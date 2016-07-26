@@ -4,8 +4,6 @@ package com.example.jinjinz.concertprev.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.UserPagerAdapter;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -29,13 +28,13 @@ public class UserFragment extends Fragment {
     private static LikedConcertsFragment mLikedConcertsFragment;
     private static LikedSongsFragment mLikedSongsFragment;
 
- /*   public static LikedConcertsFragment getLikedConcertsFragment() {
+    public static LikedConcertsFragment getLikedConcertsFragment() {
         return mLikedConcertsFragment;
     }
 
     public static LikedSongsFragment getLikedSongsFragment() {
         return mLikedSongsFragment;
-    }*/
+    }
 
     public interface UserFragmentListener {
         //void onUnlike(Concert concert);
@@ -77,53 +76,15 @@ public class UserFragment extends Fragment {
         mLikedSongsFragment = LikedSongsFragment.newInstance();
 
         vpUser = (ViewPager) view.findViewById(R.id.vpUser);
-        vpUser.setAdapter(new UserPagerAdapter(getFragmentManager()));
+        vpUser.setAdapter(new UserPagerAdapter(getChildFragmentManager()));
         tsTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tsTabs);
         tsTabs.setViewPager(vpUser);
-
- /*     FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.flConcertContainer, mLikedConcertsFragment);
-        ft.replace(R.id.flSongContainer, mLikedSongsFragment);
-        ft.commit(); */
-
 
         //toolbar
         setHasOptionsMenu(true);
         tb = (Toolbar) view.findViewById(R.id.userBar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(tb);
         return view;
-    }
-
-    public class UserPagerAdapter extends FragmentPagerAdapter {
-        private String tabTitles[] = {"Concerts", "Songs"};
-
-        // Adapter gets the manager in order to insert or remove fragment from activity
-        public UserPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 0) {
-                return mLikedConcertsFragment;
-            } else if (position == 1) {
-                return mLikedSongsFragment;
-            } else {
-                return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return tabTitles.length;
-        }
-
-        // returns tab title
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return tabTitles[position];
-        }
     }
 
 

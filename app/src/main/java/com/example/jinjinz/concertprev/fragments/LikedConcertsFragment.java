@@ -64,7 +64,6 @@ public class LikedConcertsFragment extends Fragment implements LikedConcertsAdap
         ArrayList<Concert> concerts = MainActivity.getLikedConcerts();
         myConcerts.addAll(concerts);
         userLikedConcertsRecyclerAdapter.notifyDataSetChanged();
-
     }
 
     @Override
