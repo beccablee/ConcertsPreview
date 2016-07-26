@@ -1,5 +1,6 @@
 package com.example.jinjinz.concertprev.models;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -259,8 +260,16 @@ public class Concert {
                     .getJSONObject(0).getJSONObject("city").getString("name");
             concert.venue = event.getJSONObject("_embedded").getJSONArray("venues")
                     .getJSONObject(0).getString("name");
-            concert.stateCode = event.getJSONObject("_embedded").getJSONArray("venues")
-                    .getJSONObject(0).optJSONObject("state").optString("stateCode"); // changed to optJSONObject and optString to avoid catch issues
+            String state = event.getJSONObject("_embedded").getJSONArray("venues")
+                    .getJSONObject(0).optJSONObject("state").optString("stateCode");
+            if (state.equals("")) {
+                concert.stateCode = null;
+            } else {
+                concert.stateCode = state;
+            }
+
+//            concert.stateCode = event.getJSONObject("_embedded").getJSONArray("venues")
+//                    .getJSONObject(0).optJSONObject("state").optString("stateCode"); // changed to optJSONObject and optString to avoid catch issues
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -280,6 +289,15 @@ public class Concert {
 
 
         return concert;
+    }
+
+    public ArrayList<String> artistListToArray(String artistList) {
+        ArrayList<String> artists = new ArrayList<>();
+        String[] artistArray = TextUtils.split(artistList, ", ");
+        for(int i = 0; i < artistArray.length; i++) {
+            artists.add(artistArray[i]);
+        }
+        return artists;
     }
 
 

@@ -22,7 +22,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
     }
 
     // all the columns in the song table
-    String[] allSongColumns = {SongsTable.COLUMN_ENTRY_ID,
+    String[] allSongColumns =
+            {SongsTable.COLUMN_ENTRY_ID,
             SongsTable.COLUMN_SPOTIFY_ID,
             SongsTable.COLUMN_SONG_NAME,
             SongsTable.COLUMN_SONG_ARTISTS,
@@ -30,7 +31,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             SongsTable.COLUMN_ALBUM_ART_URL};
 
     // all the columns in the concert table
-    String [] allConcertColumns = {ConcertsTable.COLUMN_ENTRY_ID,
+    String [] allConcertColumns =
+            {ConcertsTable.COLUMN_ENTRY_ID,
             ConcertsTable.COLUMN_CONCERT_NAME,
             ConcertsTable.COLUMN_CONCERT_CITY,
             ConcertsTable.COLUMN_CONCERT_STATE,
@@ -55,7 +57,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @return the liked concert*/
     public Concert likeConcert(Concert concert) { //gets concert from like button click
 
-        // set key-value pairs for columns of concert table
+        //ConcertsTable.onUpgrade(database, 1, 2);
+       // set key-value pairs for columns of concert table
         ContentValues values = new ContentValues();
         values.put(ConcertsTable.COLUMN_CONCERT_NAME, concert.getEventName());
         values.put(ConcertsTable.COLUMN_CONCERT_CITY, concert.getCity());
@@ -69,8 +72,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
-           // deleteLikedConcert(concert);
-            Log.d("dbCommands", "concert unliked");
+            Log.d("dbCommands", "already liked concert");
+            return concert;
         } else {
             long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert)
                                                                                                                   // and returns the row id of the inserted concert ( or -1 if an error occurred)
@@ -97,23 +100,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param concert the concert to be deleted
      * */
     public void deleteLikedConcert(Concert concert) {
-/*        long rowId;
-        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
-                null, null, null, null, null); // query whole table
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
-                rowId = cursor.getPosition();*/
-                database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + concert.getDbId(), null);
-                Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
-/*                cursor.moveToNext();
-            } else {
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();*/
-        //Log.d("dbCommands", "No concert deleted");
-
+        database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + concert.getDbId(), null);
+        Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
     }
 
     /**
@@ -135,12 +123,12 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return allConcerts;
     }
 
-    ////////////////////**
-    ///////////////////  * Inserts the liked song into the database after checking for the possibility of duplication
-    ///////////////////  * @param song the song to be liked
-    ///////////////////  * @return the liked song
-    ///////////////////  * */
-    public Song insertLikedSong(Song song) { // gets song from like button click
+    /**
+    * Inserts the liked song into the database after checking for the possibility of duplication
+    * @param song the song to be liked
+    * @return the liked song
+    * */
+    public Song likeSong(Song song) { // gets song from like button click
 
         // set key-value pairs for columns of song table
         ContentValues values = new ContentValues();
@@ -150,16 +138,21 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         values.put(SongsTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
         values.put(SongsTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
 
-        // insert and return the song
-        long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
-        Log.d("dbCommands", "inserted liked song at row: " + insertId);
-        if (insertId != -1) { // if an error did not occur
-            Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
-                    SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null); // get the whole liked song
-            cursor.moveToFirst(); // move to the beginning of the query (in this case just the one row)
-            Song mySong = cursorToSong(cursor); // turn the row into a song
-            cursor.close(); // close the cursor
-            return mySong; // return the song
+        if(isSongAlreadyInDb(song)) {
+            Log.d("dbCommands", "already liked song");
+            return song;
+        } else{ // insert and return the song
+            long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
+            Log.d("dbCommands", "inserted liked song at row: " + insertId);
+            if (insertId != -1L) {
+                Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
+                        SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null ,null);
+                cursor.moveToFirst();
+                song = cursorToSong(cursor);
+                cursor.close();
+                Log.d("dbCommands", "liked a song");
+                return song;
+            }
         }
         return null; // return null for error handling
         // in parent activity: if insertLikedSong(..) returns null, toast error message
@@ -170,7 +163,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * Removes liked song from database
      * @param song the song to be deleted
      * */
-    public void deleteLikedSongs(Song song) {
+    public void deleteLikedSong(Song song) {
         long deleteId = song.getDbID();
         database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
         Log.d("dbCommands", "Song deleted with: " + song.getDbID());
@@ -196,7 +189,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     public void deleteAllConcerts() {
         database.delete(ConcertsTable.TABLE_NAME, null, null);
-
     }
 
 
@@ -213,6 +205,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         song.setArtistsString(cursor.getString(3));
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
+        song.setArtists(song.artistListToArray(song.getArtistsString()));
 
         return song;
     }
@@ -256,6 +249,23 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         cursor.close();
 
         return false;
+    }
+
+    private boolean isSongAlreadyInDb(Song song){
+        Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
+                null, null, null, null, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(song.getSpotifyID())) {
+                cursor.close();
+                return true;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return false;
+
     }
 
 

@@ -1,7 +1,6 @@
 package com.example.jinjinz.concertprev;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.AudioManager;
@@ -23,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.database.UserDataSource;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
+import com.example.jinjinz.concertprev.fragments.LikedConcertsFragment;
+import com.example.jinjinz.concertprev.fragments.LikedSongsFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
 import com.example.jinjinz.concertprev.fragments.SearchFragment;
@@ -51,7 +52,8 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
-        ConcertDetailsFragment.ConcertDetailsFragmentListener {
+        ConcertDetailsFragment.ConcertDetailsFragmentListener, UserFragment.UserFragmentListener,
+        LikedConcertsFragment.LikedConcertsFragmentListener, LikedSongsFragment.LikedSongsFragmentListener {
 
     private AsyncHttpClient client;
 
@@ -82,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String[] mLocationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     // database variables
+    private static ArrayList<Concert> likedConcerts;
+    private static ArrayList<Song> likedSongs;
+    private LikedConcertsFragment mLikedConcertsFragment;
     public static UserDataSource userDataSource;
 
     /**
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (savedInstanceState == null) {
             mBarFragmentHolder = findViewById(R.id.playerFragment);
             mBarFragmentHolder.setVisibility(View.GONE);
-            mSearchFragment = mSearchFragment.newInstance();
+            mSearchFragment = SearchFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainFragment, mSearchFragment);
             mBarFragment = PlayerBarFragment.newInstance();
@@ -230,7 +235,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public String getConcertName() {
-        return mMediaPlayerConcert.getEventName();
+        if(mMediaPlayerConcert != null) {
+            return mMediaPlayerConcert.getEventName();
+        } else {
+            return "My Songs";
+        }
     }
 
     /**
@@ -239,10 +248,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void onConcertClick() {
-        ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mMediaPlayerConcert));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
-        ft.addToBackStack("details");
+        if(getConcertName().equals("My Songs")) {
+            UserFragment userFragment = UserFragment.newInstance();
+            ft.replace(R.id.mainFragment, userFragment);
+            ft.addToBackStack("my music");
+        } else {
+            ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mMediaPlayerConcert));
+            ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
+            ft.addToBackStack("details");
+        }
         ft.commit();
     }
 
@@ -271,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void backInStack() {
         super.onBackPressed();
     }
+
 
     /**
      * Override PlayerScreenFragmentListener
@@ -724,36 +740,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
 
-    /**
-     *  "Likes" a concert by calling to the datasource to add it to the database
-     *  @param concert the concert to be liked
-     *  */
-    @Override
-    public void onLikeConcert(Concert concert) {
-        userDataSource.likeConcert(concert);
-    }
 
- /////   /**
- /////     * For now, it deletes all liked concerts
- ////    * */
-    @Override
-    public void onUnlikeConcert(Concert concert) {
-        userDataSource.deleteAllConcerts();
-    }
-
-    public void getLikes(MenuItem item) {
-        Intent intent = new Intent(MainActivity.this, DBTestActivity.class);
-        ArrayList<Concert> likedConcerts = userDataSource.getAllLikedConcerts();
-        intent.putExtra("concerts", Parcels.wrap(likedConcerts));
-        startActivity(intent);
-    }
-
+    // User Profile Methods
     ////////////////////////////////////////////////////
-
 
     /** Switches to user fragment when user menu button is clicked
      * @param item the user button */
     public void getProfile(MenuItem item) {
+        likedConcerts = userDataSource.getAllLikedConcerts();
+        likedSongs = userDataSource.getAllLikedSongs();
         UserFragment userFragment = UserFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, userFragment, "user");
@@ -761,5 +756,44 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
 
+    /**
+     *  "Likes" a concert by calling to the datasource to add it to the database
+     *  @param concert the concert to be liked
+     *  */
+    @Override
+    public void likeConcert(Concert concert) {
+        Concert liked;
+        liked = userDataSource.likeConcert(concert);
+        if (liked == null) {
+            Toast.makeText(MainActivity.this, "Error adding " + concert.getEventName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, concert.getEventName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void unlikeConcert(Concert concert) {
+        userDataSource.deleteLikedConcert(concert);
+    }
+
+    public static ArrayList<Concert> getLikedConcerts() {
+        return likedConcerts;
+    }
+
+
+    @Override
+    public void likeSong(Song song) {
+        Song liked;
+        liked = userDataSource.likeSong(song);
+        if (liked == null) {
+            Toast.makeText(MainActivity.this, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static ArrayList<Song> getLikedSongs() {
+        return likedSongs;
+    }
 
 }

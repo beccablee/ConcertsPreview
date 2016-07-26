@@ -52,7 +52,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
 
     public interface UserLikedConcertsRecyclerAdapterListener {
         void onConcertTap(Concert concert);
-        void onUnlike(Concert concert);
+        void unlikeConcert(Concert concert);
     }
 
     UserLikedConcertsRecyclerAdapterListener mUserLikedConcertsRecyclerAdapterListener;
@@ -82,7 +82,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         // Inflate the custom layout
-        View concertView = layoutInflater.inflate(R.layout.item_user_concert, parent, false);
+        View concertView = layoutInflater.inflate(R.layout.item_liked_concert, parent, false);
 
         //Return a new holder instance
         ViewHolder viewHolder = new ViewHolder(concertView);
@@ -110,7 +110,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
         unlike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mUserLikedConcertsRecyclerAdapterListener.onUnlike(concert);
+                mUserLikedConcertsRecyclerAdapterListener.unlikeConcert(concert);
             }
         });
         // set background programatically with image

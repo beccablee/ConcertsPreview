@@ -35,7 +35,6 @@ public class ConcertDetailsFragment extends SongsFragment {
     private TextView tvVenue;
     private TextView tvArtists;
     private Button btnLikeConcert;
-    private Button btnUnlikeConcert;
 
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
     SongsFragment songsFragment;
@@ -46,8 +45,7 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     /** Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
-        void onLikeConcert(Concert concert);
-        void onUnlikeConcert(Concert concert);
+        void likeConcert(Concert concert);
     }
 
     /** Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
@@ -121,17 +119,9 @@ public class ConcertDetailsFragment extends SongsFragment {
             @Override
             public void onClick(View view) {
                 Concert concertToLike = concert;
-                concertDetailsFragmentListener.onLikeConcert(concertToLike);
+                concertDetailsFragmentListener.likeConcert(concertToLike);
             }
         });
-
-//        btnUnlikeConcert.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Concert concertToUnlike = concert;
-//                concertDetailsFragmentListener.onUnlikeConcert(concertToUnlike);
-//            }
-//        });
 
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;

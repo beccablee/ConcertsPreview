@@ -31,7 +31,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     private RecyclerView rvSongs;
     private RelativeLayout llLoading;
     private RelativeLayout rlRecyclerView;
-    SongsFragmentListener listener;
+    private SongsFragmentListener listener;
 
     public static SongArrayAdapter adapter;
 

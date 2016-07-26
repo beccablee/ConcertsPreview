@@ -32,14 +32,16 @@ public class PlayerScreenFragment extends Fragment {
     private ImageView mAlbumImg;
     private TextView mConcertTitle;
 
-    private Button mBtnBack;
     private TextView mTvSongTitle;
     private TextView mTvArtistTitle;
     private Button mBtnPlay;
     private View view;
+    private Button mBtnBack;
     private Button mBtnPrev;
     private Button mBtnNext;
+    private Button mBtnLike;
     private ProgressBar mProgressBar;
+    private Song currentSong;
 
     //total time of song
     private final int TOTAL = 30000;
@@ -59,6 +61,7 @@ public class PlayerScreenFragment extends Fragment {
         void onClosePlayer(); //on Player close (add playbar)
         void onOpenPlayer(); //on Player open
         void backInStack(); //go back
+        void likeSong(Song song); // like the song
     }
 
     /**
@@ -117,6 +120,7 @@ public class PlayerScreenFragment extends Fragment {
         mAlbumImg = (ImageView) view.findViewById(R.id.albumImg);
         mConcertTitle = (TextView) view.findViewById(R.id.concertTitle);
         mTvSongTitle = (TextView) view.findViewById(R.id.songTitle);
+        mBtnLike = (Button) view.findViewById(R.id.btnLikeSong);
         mBtnPlay = (Button) view.findViewById(R.id.playBtn);
         mTvArtistTitle = (TextView) view.findViewById(R.id.artistTitle);
         mBtnPrev = (Button) view.findViewById(R.id.prevBtn);
@@ -150,6 +154,12 @@ public class PlayerScreenFragment extends Fragment {
                 listener.skipNext();
             }
         });
+        mBtnLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.likeSong(currentSong);
+            }
+        });
         mConcertTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,6 +174,7 @@ public class PlayerScreenFragment extends Fragment {
      * @param song current song playing
      */
     public void updateInterface(Song song) {
+        currentSong = song;
         //set text
         mConcertTitle.setText(listener.getConcertName());
         mTvSongTitle.setText(song.getName());

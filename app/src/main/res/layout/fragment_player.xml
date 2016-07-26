@@ -97,4 +97,15 @@
         android:layout_alignEnd="@+id/albumImg"
         android:layout_marginTop="20dp"/>
 
+    <Button
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/btnLikeSong"
+        android:background="@drawable/ic_like_song"
+        android:layout_alignBottom="@+id/artistTitle"
+        android:layout_alignEnd="@+id/prevBtn"
+        android:layout_toStartOf="@id/songTitle"
+        android:layout_toLeftOf="@id/songTitle"
+        android:clickable="true" />
+
 </RelativeLayout>
