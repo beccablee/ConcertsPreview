@@ -151,10 +151,14 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     /** Tells the user that no songs can load for the artists */
     public void noSongsLoaded(){
         TextView tvLoading = (TextView) getView().findViewById(R.id.tvLoading);
-        if (concert.getArtists().size() <= 1){
-            tvLoading.setText("No songs available for artist");
-        } else {
-            tvLoading.setText("No songs available for artists");
+        try {
+            if (concert.getArtists().size() <= 1) {
+                tvLoading.setText("No songs available for artist");
+            } else {
+                tvLoading.setText("No songs available for artists");
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
     }
 
