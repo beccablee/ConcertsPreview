@@ -11,6 +11,7 @@ import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -157,6 +158,8 @@ public class PlayerScreenFragment extends Fragment {
         mBtnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
+                mBtnLike.setBackgroundResource(R.drawable.ic_star);
                 listener.likeSong(currentSong);
             }
         });

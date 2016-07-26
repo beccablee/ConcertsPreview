@@ -98,10 +98,10 @@
         android:layout_marginTop="20dp"/>
 
     <Button
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:id="@+id/btnLikeSong"
-        android:background="@drawable/ic_like_song"
+        android:background="@drawable/ic_unstar"
         android:layout_alignBottom="@+id/artistTitle"
         android:layout_alignEnd="@+id/prevBtn"
         android:layout_toStartOf="@id/songTitle"
