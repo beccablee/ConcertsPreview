@@ -17,13 +17,13 @@ import com.squareup.picasso.Picasso;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserLikedConcertsRecyclerAdapter.ViewHolder> implements View.OnClickListener {
+public class LikedConcertsAdapter extends RecyclerView.Adapter<LikedConcertsAdapter.ViewHolder> implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
         ImageView ivBackgroundImage = (ImageView) view.findViewById(R.id.ivBackgroundImage);
         Concert concert = (Concert) ivBackgroundImage.getTag();
-        mUserLikedConcertsRecyclerAdapterListener.onConcertTap(concert);
+        mLikedConcertsAdapterListener.onConcertTap(concert);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -50,12 +50,12 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
 
     }
 
-    public interface UserLikedConcertsRecyclerAdapterListener {
+    public interface LikedConcertsAdapterListener {
         void onConcertTap(Concert concert);
         void unlikeConcert(Concert concert);
     }
 
-    UserLikedConcertsRecyclerAdapterListener mUserLikedConcertsRecyclerAdapterListener;
+    LikedConcertsAdapterListener mLikedConcertsAdapterListener;
 
     // Store a member variable for the concerts
     private ArrayList<Concert> mConcerts;
@@ -63,10 +63,10 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
     private Context mContext;
 
     // Pass the concert array into the recycler constructor
-    public UserLikedConcertsRecyclerAdapter(Context context, ArrayList<Concert> concerts, UserLikedConcertsRecyclerAdapterListener userLikedConcertsRecyclerAdapterListener) {
+    public LikedConcertsAdapter(Context context, ArrayList<Concert> concerts, LikedConcertsAdapterListener likedConcertsAdapterListener) {
         mConcerts = concerts;
         mContext = context;
-        mUserLikedConcertsRecyclerAdapterListener = userLikedConcertsRecyclerAdapterListener;
+        mLikedConcertsAdapterListener = likedConcertsAdapterListener;
     }
 
     private Context getContext() {
@@ -77,7 +77,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
 
     // Usually involves inflating a layout from XML and returning the holder
     @Override
-    public UserLikedConcertsRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public LikedConcertsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
@@ -110,7 +110,7 @@ public class UserLikedConcertsRecyclerAdapter extends RecyclerView.Adapter<UserL
         unlike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mUserLikedConcertsRecyclerAdapterListener.unlikeConcert(concert);
+                mLikedConcertsAdapterListener.unlikeConcert(concert);
             }
         });
         // set background programatically with image

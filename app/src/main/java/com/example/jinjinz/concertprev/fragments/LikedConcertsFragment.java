@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
-import com.example.jinjinz.concertprev.adapters.UserLikedConcertsRecyclerAdapter;
+import com.example.jinjinz.concertprev.adapters.LikedConcertsAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * Use the {@link LikedConcertsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LikedConcertsFragment extends Fragment implements UserLikedConcertsRecyclerAdapter.UserLikedConcertsRecyclerAdapterListener {
+public class LikedConcertsFragment extends Fragment implements LikedConcertsAdapter.LikedConcertsAdapterListener {
 
 
     public interface LikedConcertsFragmentListener {
@@ -37,7 +37,7 @@ public class LikedConcertsFragment extends Fragment implements UserLikedConcerts
     private static final String ARG_LIKED_CONCERTS = "concerts";
 
     private ArrayList<Concert> myConcerts;
-    private UserLikedConcertsRecyclerAdapter userLikedConcertsRecyclerAdapter;
+    private LikedConcertsAdapter userLikedConcertsRecyclerAdapter;
     private LikedConcertsFragmentListener mLikedConcertsFragmentListener;
 
     public LikedConcertsFragment() {
@@ -60,7 +60,7 @@ public class LikedConcertsFragment extends Fragment implements UserLikedConcerts
         super.onCreate(savedInstanceState);
 
         myConcerts = new ArrayList<>();
-        userLikedConcertsRecyclerAdapter = new UserLikedConcertsRecyclerAdapter(getActivity(), myConcerts, this);
+        userLikedConcertsRecyclerAdapter = new LikedConcertsAdapter(getActivity(), myConcerts, this);
         ArrayList<Concert> concerts = MainActivity.getLikedConcerts();
         myConcerts.addAll(concerts);
         userLikedConcertsRecyclerAdapter.notifyDataSetChanged();
@@ -103,7 +103,7 @@ public class LikedConcertsFragment extends Fragment implements UserLikedConcerts
 
     @Override
     public void onConcertTap(Concert concert) {
-        //mLikedConcertsFragmentListener.onConcertTap(concert);
+        mLikedConcertsFragmentListener.onConcertTap(concert);
     }
 
     @Override

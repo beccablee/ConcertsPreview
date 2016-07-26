@@ -226,6 +226,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setEventDate(cursor.getString(7));
         concert.setArtistsString(cursor.getString(8));
         concert.setBackdropImage(cursor.getString(9));
+        concert.setArtists(concert.artistListToArray(concert.getArtistsString()));
 
         return concert;
     }

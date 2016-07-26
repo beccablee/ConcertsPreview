@@ -178,6 +178,7 @@ public class PlayerScreenFragment extends Fragment {
         //set text
         mConcertTitle.setText(listener.getConcertName());
         mTvSongTitle.setText(song.getName());
+
         mTvArtistTitle.setText(song.getArtists().get(0));
 
         // Define a listener for image loading

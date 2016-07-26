@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jinjinz.concertprev.R;
-import com.example.jinjinz.concertprev.adapters.UserLikedConcertsRecyclerAdapter;
+import com.example.jinjinz.concertprev.adapters.LikedConcertsAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class UserFragment extends Fragment {
     private LikedConcertsFragment mLikedConcertsFragment;
     private LikedSongsFragment mLikedSongsFragment;
     private ArrayList<Concert> myConcerts;
-    private UserLikedConcertsRecyclerAdapter userLikedConcertsRecyclerAdapter;
+    private LikedConcertsAdapter userLikedConcertsRecyclerAdapter;
 
 
     public interface UserFragmentListener {

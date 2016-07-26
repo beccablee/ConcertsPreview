@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             return mMediaPlayerConcert.getEventName();
         } else {
             return "My Songs";
-        }
+        } // need to make sure that title always says My Songs when going back to profile
     }
 
     /**
