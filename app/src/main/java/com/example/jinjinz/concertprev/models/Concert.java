@@ -31,6 +31,7 @@ public class Concert {
     private String city;
     private String stateCode;
     private String countryCode;
+    private String eventUrl;
     private ArrayList<String> artists;
 
 
@@ -40,86 +41,73 @@ public class Concert {
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
-
     public void setBackdropImage(String backdropImage) {
         this.backdropImage = backdropImage;
     }
-
     public void setArtists(ArrayList<String> artists) {
         this.artists = artists;
     }
-
     public void setVenue(String venue) {
         this.venue = venue;
     }
-
     public void setEventTime(String eventTime) {
         this.eventTime = eventTime;
     }
-
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
-
     public void setCity(String city) {
         this.city = city;
     }
-
     public void setStateCode(String stateCode) {
         this.stateCode = stateCode;
     }
     public void setHeadliner(String headliner) {
         this.headliner = headliner;
     }
-
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
     }
+
     public String getArtistsString() {
         return artistsString;
     }
-
     public long getDbId() {
         return dbId;
     }
     public String getCountryCode() {
         return countryCode;
     }
-
     public String getStateCode() {
         return stateCode;
     }
     public String getHeadliner() {
         return headliner;
     }
-
     public String getCity() {
         return city;
     }
-
     public String getEventDate() {
         return eventDate;
     }
-
     public String getEventTime() {
         return eventTime;
     }
-
     public String getEventName() {
         return eventName;
     }
-
     public String getVenue() {
         return venue;
     }
-
+    public String getEventUrl() {
+        return eventUrl;
+    }
     public ArrayList<String> getArtists() {
         return artists;
     }
-
     public String getBackdropImage() {
         return backdropImage;
     }
@@ -286,7 +274,11 @@ public class Concert {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        try {
+            concert.eventUrl = event.getString("url");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return concert;
     }

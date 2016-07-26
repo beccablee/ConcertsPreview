@@ -6,10 +6,13 @@ import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,6 +39,8 @@ public class ConcertDetailsFragment extends SongsFragment {
     private TextView tvVenue;
     private TextView tvArtists;
     private Button btnLikeConcert;
+    private Button btnPurchaseTickets;
+    private WebView webView;
 
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
     SongsFragment songsFragment;
@@ -96,6 +101,9 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvVenue = (TextView) view.findViewById(R.id.tvVenue);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
+        btnPurchaseTickets = (Button) view.findViewById(R.id.btnPurchaseTickets);
+        webView = (WebView) view.findViewById(R.id.webView);
+        webView.setVisibility(View.GONE);
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -112,9 +120,29 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     }
 
-    /** Sets up 'like' button and makes title appear in the AppBar when collapsed */
-    public void setUpListeners(){
+    /** Sets up and opens WebView for ticket purchasing */
+    public void openWebView(){
+        if (webView != null) {
+            webView.getSettings().setLoadsImagesAutomatically(true);
+            webView.getSettings().setSupportZoom(true);
+            webView.getSettings().setBuiltInZoomControls(true);
+            webView.getSettings().setDisplayZoomControls(false);
+            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    return true;
+                }
+            });
+            webView.loadUrl(concert.getEventUrl());
+            webView.setVisibility(View.VISIBLE);
+        }
+    }
 
+    /** Sets up button and AppBar listeners for details view*/
+    public void setUpListeners(){
+        // Allows user to 'like' a concert
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,7 +152,14 @@ public class ConcertDetailsFragment extends SongsFragment {
                 btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
             }
         });
-
+        // Takes user to WebView of Ticketmaster event details
+        btnPurchaseTickets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openWebView();
+            }
+        });
+        // Makes title appear in the AppBar when collapsed
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -144,6 +179,25 @@ public class ConcertDetailsFragment extends SongsFragment {
                     tvEvent.setVisibility(View.VISIBLE);
                     tvArtists.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+        // Sets up back button functionality for WebView when launched
+        webView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(keyEvent.getAction() == KeyEvent.ACTION_DOWN && webView.getVisibility() == View.VISIBLE){
+                    switch(i) {
+                        case KeyEvent.KEYCODE_BACK:
+                            if (webView.canGoBack()) {
+                                webView.goBack();
+                                return true;
+                            } else {
+                                webView.setVisibility(View.GONE);
+                            }
+                            return true;
+                    }
+                }
+                return false;
             }
         });
     }
