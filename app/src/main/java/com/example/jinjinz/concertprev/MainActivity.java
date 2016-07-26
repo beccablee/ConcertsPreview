@@ -86,9 +86,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // database variables
     private static ArrayList<Concert> likedConcerts;
     private static ArrayList<Song> likedSongs;
+    private static int wherePlayerLaunched = 0;
+    public static int fromLikedSongs = 1;
+    public static int fromConcert = 2;
     private LikedConcertsFragment mLikedConcertsFragment;
     public static UserDataSource userDataSource;
-
+    public static int getWherePlayerLaunched() {
+        return wherePlayerLaunched;
+    }
+    public static void setWherePlayerLaunched(int wherePlayerLaunched) {
+        MainActivity.wherePlayerLaunched = wherePlayerLaunched;
+    }
     /**
      * Overides super variable
      * Show search fragment first and creates an instance of GoogleApiClient
@@ -235,11 +243,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public String getConcertName() {
-        if(mMediaPlayerConcert != null) {
+        if(wherePlayerLaunched == fromConcert) {
             return mMediaPlayerConcert.getEventName();
-        } else {
+        } else if (wherePlayerLaunched == fromLikedSongs){
             return "My Songs";
-        } // need to make sure that title always says My Songs when going back to profile
+        } else {
+            return "";// need to make sure that title always says My Songs when going back to profile
+        }
     }
 
     /**

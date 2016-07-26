@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Song;
 
@@ -40,6 +41,7 @@ public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAd
     public void onClick(View view) {
         TextView tvSongName = (TextView) view.findViewById(R.id.tvSongName);
         Song song = (Song) tvSongName.getTag();
+        MainActivity.setWherePlayerLaunched(MainActivity.fromLikedSongs);
         listener.onSongClicked(song);
     }
 
