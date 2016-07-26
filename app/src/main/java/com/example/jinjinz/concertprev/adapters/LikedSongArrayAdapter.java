@@ -54,7 +54,7 @@ public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAd
     @Override
     public LikedSongArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        View songView = LayoutInflater.from(context).inflate(R.layout.item_liked_song, parent, false);
+        View songView = LayoutInflater.from(context).inflate(R.layout.item_song, parent, false);
         songView.setOnClickListener(this);
 
         ViewHolder viewHolder = new ViewHolder(songView);

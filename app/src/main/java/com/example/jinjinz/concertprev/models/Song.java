@@ -121,7 +121,7 @@ public class Song {
             for (int i = 0; i < artist_list.length(); i++) {
                 song.artists.add(artist_list.getJSONObject(i).getString("name"));
             }
-            song.artistsString = android.text.TextUtils.join(", ", song.artists);
+            song.artistsString = android.text.TextUtils.join(" & ", song.artists);
         } catch (JSONException e){
             e.printStackTrace();
         }

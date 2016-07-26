@@ -51,7 +51,7 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     /** Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
-        void likeConcert(Concert concert);
+        Concert likeConcert(Concert concert);
     }
 
     /** Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
@@ -104,6 +104,11 @@ public class ConcertDetailsFragment extends SongsFragment {
         btnPurchaseTickets = (Button) view.findViewById(R.id.btnPurchaseTickets);
         webView = (WebView) view.findViewById(R.id.webView);
         webView.setVisibility(View.GONE);
+        if(concert.getDbId() == -1L) { // not in db
+            btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);
+        } else {
+            btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
+        }
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -147,9 +152,13 @@ public class ConcertDetailsFragment extends SongsFragment {
             @Override
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
-                Concert concertToLike = concert;
-                concertDetailsFragmentListener.likeConcert(concertToLike);
-                btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
+                Concert likedConcert = concertDetailsFragmentListener.likeConcert(concert);
+                if(likedConcert.getDbId() == -1L) {
+                    btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);
+                } else {
+                    btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
+                }
+
             }
         });
         // Takes user to WebView of Ticketmaster event details

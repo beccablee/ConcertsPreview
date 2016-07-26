@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
-import com.example.jinjinz.concertprev.adapters.LikedConcertsAdapter;
+import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
 import java.util.ArrayList;
@@ -25,19 +25,16 @@ import java.util.ArrayList;
  * Use the {@link LikedConcertsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LikedConcertsFragment extends Fragment implements LikedConcertsAdapter.LikedConcertsAdapterListener {
+public class LikedConcertsFragment extends Fragment implements SearchRecyclerAdapter.SearchRecyclerAdapterListener {
 
 
     public interface LikedConcertsFragmentListener {
-        void unlikeConcert(Concert concert);
         void onConcertTap(Concert concert);
 
     }
 
-    private static final String ARG_LIKED_CONCERTS = "concerts";
-
     private ArrayList<Concert> myConcerts;
-    private LikedConcertsAdapter userLikedConcertsRecyclerAdapter;
+    private SearchRecyclerAdapter mSearchRecyclerAdapter;
     private LikedConcertsFragmentListener mLikedConcertsFragmentListener;
 
     public LikedConcertsFragment() {
@@ -60,10 +57,10 @@ public class LikedConcertsFragment extends Fragment implements LikedConcertsAdap
         super.onCreate(savedInstanceState);
 
         myConcerts = new ArrayList<>();
-        userLikedConcertsRecyclerAdapter = new LikedConcertsAdapter(getActivity(), myConcerts, this);
+        mSearchRecyclerAdapter = new SearchRecyclerAdapter(getActivity(), myConcerts, this);
         ArrayList<Concert> concerts = MainActivity.getLikedConcerts();
         myConcerts.addAll(concerts);
-        userLikedConcertsRecyclerAdapter.notifyDataSetChanged();
+        mSearchRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -72,7 +69,7 @@ public class LikedConcertsFragment extends Fragment implements LikedConcertsAdap
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liked_concerts, container, false);
         RecyclerView rvMyConcerts = (RecyclerView) view.findViewById(R.id.rvLikedConcerts);
-        rvMyConcerts.setAdapter(userLikedConcertsRecyclerAdapter);
+        rvMyConcerts.setAdapter(mSearchRecyclerAdapter);
         rvMyConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));
         return view;
     }
@@ -80,36 +77,17 @@ public class LikedConcertsFragment extends Fragment implements LikedConcertsAdap
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof LikedConcertsFragmentListener) {
+        try {
             mLikedConcertsFragmentListener = (LikedConcertsFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement LikedConcertsFragmentListener");
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement LikedConcertsFragmentListener");
         }
     }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mLikedConcertsFragmentListener = null;
-    }
-
-    public void addConcerts(ArrayList<Concert> concerts) {
-        myConcerts.addAll(concerts);
-        userLikedConcertsRecyclerAdapter.notifyDataSetChanged();
-    }
-
 
     @Override
     public void onConcertTap(Concert concert) {
         mLikedConcertsFragmentListener.onConcertTap(concert);
     }
-
-    @Override
-    public void unlikeConcert(Concert concert) {
-        mLikedConcertsFragmentListener.unlikeConcert(concert);
-    }
-
 
 
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
@@ -16,8 +17,10 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     private SQLiteDatabase database;
     private UserDatabaseHelper dbHelper;
+    private Context c;
 
     public UserDataSource(Context context) {
+        c = context;
         dbHelper = new UserDatabaseHelper(context);
     }
 
@@ -72,7 +75,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
-            Log.d("dbCommands", "already liked concert");
+            deleteLikedConcert(concert);
+            Toast.makeText(c, concert.getEventName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
             return concert;
         } else {
             long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert)
@@ -83,16 +87,14 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 cursor.moveToFirst();
                 concert = cursorToConcert(cursor); // turn row into concert
                 cursor.close();
-                Log.d("dbCommands", "liked a concert");
+                Toast.makeText(c, concert.getEventName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Log.d("dbCommands", "inserted liked concert with id " + insertId);
                 return concert; // return it for UI
             } else {
-                Log.d("dbCommands", "error liking concert");
+                Toast.makeText(c, "Error adding " + concert.getEventName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
             }
         }
-
         return null; // return null for error handling
-        // in parent activity: if insertLikedConcert(..) returns null, toast error message
-        // Toast.makeText(MainActivity.this, "Error adding liked concert, try again later", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -101,7 +103,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * */
     public void deleteLikedConcert(Concert concert) {
         database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + concert.getDbId(), null);
-        Log.d("dbCommands", "Concert deleted with id: " + concert.getDbId());
+        concert.setDbId(-1L);
+        Log.d("dbCommands", "Concert deleted with id " + concert.getDbId());
     }
 
     /**
@@ -138,25 +141,26 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         values.put(SongsTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
         values.put(SongsTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
 
-        if(isSongAlreadyInDb(song)) {
-            Log.d("dbCommands", "already liked song");
+        if (isSongAlreadyInDb(song)) {
+            deleteLikedSong(song);
+            Toast.makeText(c, song.getName() + " removed form Favorites", Toast.LENGTH_SHORT).show();
             return song;
-        } else{ // insert and return the song
+        } else { // insert and return the song
             long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
             Log.d("dbCommands", "inserted liked song at row: " + insertId);
             if (insertId != -1L) {
                 Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
-                        SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null ,null);
+                        SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
                 cursor.moveToFirst();
                 song = cursorToSong(cursor);
                 cursor.close();
-                Log.d("dbCommands", "liked a song");
+                Toast.makeText(c, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
                 return song;
+            } else {
+                Toast.makeText(c, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
             }
         }
         return null; // return null for error handling
-        // in parent activity: if insertLikedSong(..) returns null, toast error message
-        // Toast.makeText(MainActivity.this, "Error adding liked song, try again later", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -164,9 +168,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param song the song to be deleted
      * */
     public void deleteLikedSong(Song song) {
-        long deleteId = song.getDbID();
-        database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
-        Log.d("dbCommands", "Song deleted with: " + song.getDbID());
+        database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + song.getDbID(), null);
+        Log.d("dbCommands", "Song deleted with id " + song.getDbID());
     }
 
     /**
@@ -199,7 +202,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * */
     public static Song cursorToSong(Cursor cursor) {
         Song song = new Song();
-        song.setDbID(cursor.getInt(0));
+        song.setDbID(cursor.getLong(0));
         song.setSpotifyID(cursor.getString(1));
         song.setName(cursor.getString(2));
         song.setArtistsString(cursor.getString(3));
@@ -216,7 +219,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @return returns the concert */
     public static Concert cursorToConcert(Cursor cursor) {
         Concert concert = new Concert();
-        concert.setDbId(cursor.getInt(0));
+        concert.setDbId(cursor.getLong(0));
         concert.setEventName(cursor.getString(1));
         concert.setCity(cursor.getString(2));
         concert.setStateCode(cursor.getString(3)); // null for international concerts
@@ -241,6 +244,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
             if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                concert.setDbId(cursor.getLong(0));
                 cursor.close();
                 return true;
             } else {

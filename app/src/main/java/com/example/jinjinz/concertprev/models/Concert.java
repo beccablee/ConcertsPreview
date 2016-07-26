@@ -20,7 +20,7 @@ public class Concert {
     //root url: https://app.ticketmaster.com/discovery/v2/
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
-    private long dbId;
+    private long dbId = -1L;
     private String backdropImage;
     private String headliner;
     private String venue; // may be null (tba)
@@ -256,8 +256,6 @@ public class Concert {
                 concert.stateCode = state;
             }
 
-//            concert.stateCode = event.getJSONObject("_embedded").getJSONArray("venues")
-//                    .getJSONObject(0).optJSONObject("state").optString("stateCode"); // changed to optJSONObject and optString to avoid catch issues
 
         } catch (JSONException e) {
             e.printStackTrace();

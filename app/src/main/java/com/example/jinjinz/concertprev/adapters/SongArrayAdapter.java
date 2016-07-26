@@ -75,7 +75,7 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         tvSongName.setText(song.getName());
         tvSongName.setTag(song);
         TextView tvSongArtist = viewHolder.tvSongArtist;
-        tvSongArtist.setText(artistsToString(song.getArtists()));
+        tvSongArtist.setText(song.getArtistsString());
     }
 
     @Override
@@ -83,17 +83,5 @@ public class SongArrayAdapter extends RecyclerView.Adapter<SongArrayAdapter.View
         return mSongs.size();
     }
 
-    /* Returns a String of artists' names from an ArrayList of artists' names */
-    public static String artistsToString(ArrayList<String> artist_list) {
-        String artistNames = "";
-        for (int i = 0; i < artist_list.size(); i++){
-            if (i == 0) {
-                artistNames += artist_list.get(i);
-            } else {
-                artistNames += " & " + artist_list.get(i);
-            }
-        }
-        return artistNames;
-    }
 
 }

@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
         ConcertDetailsFragment.ConcertDetailsFragmentListener, UserFragment.UserFragmentListener,
-        LikedConcertsFragment.LikedConcertsFragmentListener, LikedSongsFragment.LikedSongsFragmentListener {
+        LikedSongsFragment.LikedSongsFragmentListener, LikedConcertsFragment.LikedConcertsFragmentListener {
 
     private AsyncHttpClient client;
 
@@ -771,19 +771,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      *  @param concert the concert to be liked
      *  */
     @Override
-    public void likeConcert(Concert concert) {
-        Concert liked;
-        liked = userDataSource.likeConcert(concert);
-        if (liked == null) {
-            Toast.makeText(MainActivity.this, "Error adding " + concert.getEventName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(MainActivity.this, concert.getEventName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void unlikeConcert(Concert concert) {
-        userDataSource.deleteLikedConcert(concert);
+    public Concert likeConcert(Concert concert) {
+        Concert likedConcert = userDataSource.likeConcert(concert); // right here the dbid is still -1L
+        return likedConcert;
     }
 
     public static ArrayList<Concert> getLikedConcerts() {
@@ -793,13 +783,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void likeSong(Song song) {
-        Song liked;
-        liked = userDataSource.likeSong(song);
-        if (liked == null) {
-            Toast.makeText(MainActivity.this, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(MainActivity.this, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
-        }
+        userDataSource.likeSong(song);
+
     }
 
     public static ArrayList<Song> getLikedSongs() {
