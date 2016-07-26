@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -95,7 +96,6 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvVenue = (TextView) view.findViewById(R.id.tvVenue);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
-        //btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -118,8 +118,10 @@ public class ConcertDetailsFragment extends SongsFragment {
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
                 Concert concertToLike = concert;
                 concertDetailsFragmentListener.likeConcert(concertToLike);
+                btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
             }
         });
 
@@ -145,17 +147,5 @@ public class ConcertDetailsFragment extends SongsFragment {
             }
         });
     }
-
-
-    /** Destroys fragment on close, to allow all songs to load when opened again */
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        Fragment fragment = getFragmentManager().findFragmentById(R.id.mainFragment);
-//        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-//        ft.remove(fragment);
-//        ft.commit();
-//    }
-
 
 }

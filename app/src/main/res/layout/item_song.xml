@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
-        android:layout_height="2px"
+        android:layout_height="1dp"
         android:background="@color/midDarkGrey"
         android:id="@+id/view" />
 </RelativeLayout>
