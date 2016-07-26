@@ -4,19 +4,16 @@ package com.example.jinjinz.concertprev.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.example.jinjinz.concertprev.R;
-import com.example.jinjinz.concertprev.adapters.LikedConcertsAdapter;
-import com.example.jinjinz.concertprev.models.Concert;
-
-import java.util.ArrayList;
+import com.example.jinjinz.concertprev.adapters.UserPagerAdapter;
 
 /*
  * A simple {@link Fragment} subclass.
@@ -25,12 +22,20 @@ import java.util.ArrayList;
  */
 public class UserFragment extends Fragment {
     private Toolbar tb;
+    private ViewPager vpUser;
+    private PagerSlidingTabStrip tsTabs;
+//    private UserPagerAdapter mUserPagerAdapter;
     private UserFragmentListener userFragmentListener;
-    private LikedConcertsFragment mLikedConcertsFragment;
-    private LikedSongsFragment mLikedSongsFragment;
-    private ArrayList<Concert> myConcerts;
-    private LikedConcertsAdapter userLikedConcertsRecyclerAdapter;
+    private static LikedConcertsFragment mLikedConcertsFragment;
+    private static LikedSongsFragment mLikedSongsFragment;
 
+    public static LikedConcertsFragment getmLikedConcertsFragment() {
+        return mLikedConcertsFragment;
+    }
+
+    public static LikedSongsFragment getmLikedSongsFragment() {
+        return mLikedSongsFragment;
+    }
 
     public interface UserFragmentListener {
         //void onUnlike(Concert concert);
@@ -59,6 +64,9 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLikedConcertsFragment = LikedConcertsFragment.newInstance();
+        mLikedSongsFragment = LikedSongsFragment.newInstance();
+        // viewpager and tabs
     }
 
     @Override
@@ -67,20 +75,18 @@ public class UserFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
-        // liked concerts
-        mLikedConcertsFragment = LikedConcertsFragment.newInstance();
-        mLikedSongsFragment = LikedSongsFragment.newInstance();
-        FragmentManager fm = getFragmentManager();
+        // user favorites
+        vpUser = (ViewPager) view.findViewById(R.id.vpUser);
+        vpUser.setAdapter(new UserPagerAdapter(getFragmentManager()));
+        tsTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tsTabs);
+        tsTabs.setViewPager(vpUser);
+
+ /*       FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.flConcertContainer, mLikedConcertsFragment);
         ft.replace(R.id.flSongContainer, mLikedSongsFragment);
-        ft.commit();
+        ft.commit();*/
 
-
- /*       RecyclerView rvMyConcerts = (RecyclerView) view.findViewById(R.id.rvMyConcerts);
-        myConcerts = MainActivity.getLikedConcerts();
-        rvMyConcerts.setAdapter(userLikedConcertsRecyclerAdapter);
-        rvMyConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));*/
 
         //toolbar
         setHasOptionsMenu(true);

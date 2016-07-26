@@ -26,12 +26,28 @@
         </android.support.v7.widget.Toolbar>
     </FrameLayout>
 
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tsTabs"
+        app:pstsShouldExpand="true"
+        app:pstsTextAllCaps="true"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpUser"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Concerts"
-        android:id="@+id/likedConcerts" />
+        android:background="@color/darkGrey"/>
+
+<!--        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Concerts"
+            android:id="@+id/likedConcerts"
+            android:textStyle="bold"
+            android:textSize="18dp" />
+
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -39,16 +55,21 @@
         android:layout_weight="1"
         android:id="@+id/flConcertContainer"></FrameLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Songs"
-        android:id="@+id/textView2" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Songs"
+            android:id="@+id/textView2"
+            android:textStyle="bold"
+            android:textSize="18dp" />
+
+
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/flSongContainer"></FrameLayout>
+        android:id="@+id/flSongContainer"></FrameLayout>-->
 
 </LinearLayout>
