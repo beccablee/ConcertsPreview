@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         testBtn2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerService.skipPrev();
+                mediaPlayerService.skipNext();
             }
         });
     }

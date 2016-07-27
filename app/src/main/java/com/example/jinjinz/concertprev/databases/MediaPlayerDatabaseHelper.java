@@ -17,15 +17,15 @@ public class MediaPlayerDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        CurrentConcertTable.onCreate(db);
-        CurrentSongTable.onCreate(db);
-        PlaylistTable.onCreate(db);
+        MediaContract.CurrentConcertTable.onCreate(db);
+        MediaContract.CurrentSongTable.onCreate(db);
+        MediaContract.PlaylistTable.onCreate(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        CurrentConcertTable.onUpgrade(db, oldVersion, newVersion);
-        CurrentSongTable.onUpgrade(db, oldVersion, newVersion);
-        PlaylistTable.onUpgrade(db, oldVersion, newVersion);
+        MediaContract.CurrentConcertTable.onUpgrade(db, oldVersion, newVersion);
+        MediaContract.CurrentSongTable.onUpgrade(db, oldVersion, newVersion);
+        MediaContract.PlaylistTable.onUpgrade(db, oldVersion, newVersion);
     }
 }

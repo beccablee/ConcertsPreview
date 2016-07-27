@@ -51,17 +51,17 @@ public class SongProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
-                return CurrentConcertTable.CONTENT_TYPE;
+                return MediaContract.CurrentConcertTable.CONTENT_TYPE;
             case CURRENT_CONCERT_ID:
-                return CurrentConcertTable.CONTENT_ITEM_TYPE;
+                return MediaContract.CurrentConcertTable.CONTENT_ITEM_TYPE;
             case CURRENT_SONG:
-                return CurrentSongTable.CONTENT_TYPE;
+                return MediaContract.CurrentSongTable.CONTENT_TYPE;
             case CURRENT_SONG_ID:
-                return CurrentSongTable.CONTENT_ITEM_TYPE;
+                return MediaContract.CurrentSongTable.CONTENT_ITEM_TYPE;
             case PLAYLIST:
-                return PlaylistTable.CONTENT_ITEM_TYPE;
+                return MediaContract.PlaylistTable.CONTENT_ITEM_TYPE;
             case PLAYLIST_ID:
-                return PlaylistTable.CONTENT_ITEM_TYPE;
+                return MediaContract.PlaylistTable.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -74,7 +74,7 @@ public class SongProvider extends ContentProvider {
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
                 retCursor = db.query(
-                        CurrentConcertTable.TABLE_NAME,
+                        MediaContract.CurrentConcertTable.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -86,9 +86,9 @@ public class SongProvider extends ContentProvider {
             case CURRENT_CONCERT_ID:
                 long _id = ContentUris.parseId(uri);
                 retCursor = db.query(
-                        CurrentConcertTable.TABLE_NAME,
+                        MediaContract.CurrentConcertTable.TABLE_NAME,
                         projection,
-                        CurrentConcertTable._ID + " = ?",
+                        MediaContract.CurrentConcertTable._ID + " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -97,7 +97,7 @@ public class SongProvider extends ContentProvider {
                 break;
             case CURRENT_SONG:
                 retCursor = db.query(
-                        CurrentSongTable.TABLE_NAME,
+                        MediaContract.CurrentSongTable.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -109,9 +109,9 @@ public class SongProvider extends ContentProvider {
             case CURRENT_SONG_ID:
                 _id = ContentUris.parseId(uri);
                 retCursor = db.query(
-                        CurrentSongTable.TABLE_NAME,
+                        MediaContract.CurrentSongTable.TABLE_NAME,
                         projection,
-                        CurrentSongTable._ID+ " = ?",
+                        MediaContract.CurrentSongTable._ID+ " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -120,7 +120,7 @@ public class SongProvider extends ContentProvider {
                 break;
             case PLAYLIST:
                 retCursor = db.query(
-                        PlaylistTable.TABLE_NAME,
+                        MediaContract.PlaylistTable.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
@@ -132,9 +132,9 @@ public class SongProvider extends ContentProvider {
             case PLAYLIST_ID:
                 _id = ContentUris.parseId(uri);
                 retCursor = db.query(
-                        PlaylistTable.TABLE_NAME,
+                        MediaContract.PlaylistTable.TABLE_NAME,
                         projection,
-                        PlaylistTable._ID + " = ?",
+                        MediaContract.PlaylistTable._ID + " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -158,28 +158,27 @@ public class SongProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long _id;
         Uri returnUri;
-
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
-                _id = db.insert(CurrentConcertTable.TABLE_NAME, CurrentConcertTable.COLUMN_CONCERT_NAME, values);
+                _id = db.insert(MediaContract.CurrentConcertTable.TABLE_NAME, MediaContract.CurrentConcertTable.COLUMN_CONCERT_NAME, values);
                 if(_id > 0){
-                    returnUri =  CurrentConcertTable.buildCurrConcertUri(_id);
+                    returnUri =  MediaContract.CurrentConcertTable.buildCurrConcertUri(_id);
                 } else{
                     throw new UnsupportedOperationException("Unable to insert rows into: " + uri);
                 }
                 break;
             case CURRENT_SONG:
-                _id = db.insert(CurrentSongTable.TABLE_NAME, null, values);
+                _id = db.insert(MediaContract.CurrentSongTable.TABLE_NAME, null, values);
                 if(_id > 0){
-                    returnUri = CurrentSongTable.buildCurrentUri(_id);
+                    returnUri = MediaContract.CurrentSongTable.buildCurrentUri(_id);
                 } else{
                     throw new UnsupportedOperationException("Unable to insert rows into: " + uri);
                 }
                 break;
             case PLAYLIST:
-                _id = db.insert(PlaylistTable.TABLE_NAME, null, values);
+                _id = db.insert(MediaContract.PlaylistTable.TABLE_NAME, null, values);
                 if(_id > 0){
-                    returnUri = PlaylistTable.buildPlaylistUri(_id);
+                    returnUri = MediaContract.PlaylistTable.buildPlaylistUri(_id);
                 } else{
                     throw new UnsupportedOperationException("Unable to insert rows into: " + uri);
                 }
@@ -198,16 +197,15 @@ public class SongProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int rows; // Number of rows effected
-
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
-                rows = db.delete(CurrentConcertTable.TABLE_NAME, selection, selectionArgs);
+                rows = db.delete(MediaContract.CurrentConcertTable.TABLE_NAME, selection, selectionArgs);
                 break;
             case CURRENT_SONG:
-                rows = db.delete(CurrentSongTable.TABLE_NAME, selection, selectionArgs);
+                rows = db.delete(MediaContract.CurrentSongTable.TABLE_NAME, selection, selectionArgs);
                 break;
             case PLAYLIST:
-                rows = db.delete(PlaylistTable.TABLE_NAME, selection, selectionArgs);
+                rows = db.delete(MediaContract.PlaylistTable.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -225,16 +223,15 @@ public class SongProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int rows;
-
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
-                rows = db.update(CurrentConcertTable.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(MediaContract.CurrentConcertTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case CURRENT_SONG:
-                rows = db.update(CurrentSongTable.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(MediaContract.CurrentSongTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case PLAYLIST:
-                rows = db.update(PlaylistTable.TABLE_NAME, values, selection, selectionArgs);
+                rows = db.update(MediaContract.PlaylistTable.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -12,9 +12,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.example.jinjinz.concertprev.databases.CurrentConcertTable;
-import com.example.jinjinz.concertprev.databases.CurrentSongTable;
-import com.example.jinjinz.concertprev.databases.PlaylistTable;
+import com.example.jinjinz.concertprev.databases.MediaContract.*;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
@@ -121,7 +119,8 @@ public class MediaPlayerService extends Service {
                             if (currentPosition != lastProgress) {
                                 ContentValues progressValue = new ContentValues();
                                 progressValue.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, currentPosition);
-                                getContentResolver().update(PlaylistTable.CONTENT_URI, progressValue, null, null);
+                                Log.i("processBar", Integer.toString(currentPosition));
+                                getContentResolver().update(CurrentSongTable.CONTENT_URI, progressValue, null, null);
                             }
                         }
                     } catch (InterruptedException e) {
@@ -147,7 +146,7 @@ public class MediaPlayerService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Update Concert
         if (mConcertUri != null) {
-            getContentResolver().delete(mConcertUri, null, null);
+            getContentResolver().delete(CurrentConcertTable.CONTENT_URI, null, null);
         }
         Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
         ContentValues concertValues = new ContentValues();
@@ -160,8 +159,7 @@ public class MediaPlayerService extends Service {
         concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
         concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
         concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
-        //mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI,concertValues);
-        mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI, new ContentValues());
+        mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI,concertValues);
         //Update Songs
         getContentResolver().delete(PlaylistTable.CONTENT_URI, null, null);
         ArrayList<Parcelable> parcelables = intent.getParcelableArrayListExtra("songs");
@@ -201,12 +199,17 @@ public class MediaPlayerService extends Service {
      * play/pause song
      */
     public void playPauseSong() {
+        ContentValues playValue = new ContentValues();
         if (mMediaPlayer.isPlaying()) {
+            playValue.put(CurrentSongTable.COLUMN_IS_PLAYING, 0);
             mMediaPlayer.pause();
         }
         else {
+            playValue.put(CurrentSongTable.COLUMN_IS_PLAYING, 1);
             mMediaPlayer.start();
         }
+        getContentResolver().update(CurrentSongTable.CONTENT_URI, playValue, null, null);
+
     }
 
     public void skipNext() {
