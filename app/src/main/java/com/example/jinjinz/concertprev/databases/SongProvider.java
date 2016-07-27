@@ -88,7 +88,7 @@ public class SongProvider extends ContentProvider {
                 retCursor = db.query(
                         CurrentConcertTable.TABLE_NAME,
                         projection,
-                        CurrentConcertTable.COLUMN_ENTRY_ID + " = ?",
+                        CurrentConcertTable._ID + " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -111,7 +111,7 @@ public class SongProvider extends ContentProvider {
                 retCursor = db.query(
                         CurrentSongTable.TABLE_NAME,
                         projection,
-                        CurrentSongTable.COLUMN_ENTRY_ID+ " = ?",
+                        CurrentSongTable._ID+ " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -134,7 +134,7 @@ public class SongProvider extends ContentProvider {
                 retCursor = db.query(
                         PlaylistTable.TABLE_NAME,
                         projection,
-                        PlaylistTable.COLUMN_ENTRY_ID + " = ?",
+                        PlaylistTable._ID + " = ?",
                         new String[]{String.valueOf(_id)},
                         null,
                         null,
@@ -161,7 +161,7 @@ public class SongProvider extends ContentProvider {
 
         switch(sUriMatcher.match(uri)){
             case CURRENT_CONCERT:
-                _id = db.insert(CurrentConcertTable.TABLE_NAME, null, values);
+                _id = db.insert(CurrentConcertTable.TABLE_NAME, CurrentConcertTable.COLUMN_CONCERT_NAME, values);
                 if(_id > 0){
                     returnUri =  CurrentConcertTable.buildCurrConcertUri(_id);
                 } else{

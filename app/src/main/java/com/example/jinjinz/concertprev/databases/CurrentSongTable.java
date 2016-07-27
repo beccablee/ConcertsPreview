@@ -3,12 +3,13 @@ package com.example.jinjinz.concertprev.databases;
 import android.content.ContentUris;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 /**
  * Created by jinjinz on 7/25/16.
  */
-public final class CurrentSongTable extends MediaContract {
+public final class CurrentSongTable extends MediaContract implements BaseColumns {
     // Content URI represents the base location for the table
     public static final Uri CONTENT_URI =
             BASE_CONTENT_URI.buildUpon().appendPath(PATH_NOW).build();
@@ -22,7 +23,6 @@ public final class CurrentSongTable extends MediaContract {
 
     //Current Song playing name/column
     public static final String TABLE_NAME = "currentStatus";
-    public static final String COLUMN_ENTRY_ID = "_id";
     public static final String COLUMN_CURRENT_SONG_ID = "currSongID";
     public static final String COLUMN_IS_PLAYING = "play";
     //Note: concert is in its own table completely
@@ -34,7 +34,7 @@ public final class CurrentSongTable extends MediaContract {
     }
 
     // Create table SQL string
-    private static final String CREATE_CURRENT_SONG_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CURRENT_SONG_ID + " TEXT NOT NULL, "
+    private static final String CREATE_CURRENT_SONG_TABLE = "CREATE TABLE " + TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CURRENT_SONG_ID + " TEXT NOT NULL, "
             + COLUMN_IS_PLAYING + " INTEGER NOT NULL, " + COLUNM_CURRENT_PROGRESS + " INTEGER NOT NULL" + ")";
 
     // Deletes the entire table (if it exists)

@@ -1,14 +1,20 @@
 package com.example.jinjinz.concertprev;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.jinjinz.concertprev.databases.CurrentConcertTable;
+import com.example.jinjinz.concertprev.databases.CurrentSongTable;
+import com.example.jinjinz.concertprev.databases.PlaylistTable;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
@@ -19,25 +25,57 @@ import java.util.ArrayList;
 
 public class MediaPlayerService extends Service {
     MediaPlayer mMediaPlayer;
-    Concert mConcert;
-    ArrayList<Song> mSongs;
-    int iCurrentSongIndex;
+    //Concert mConcert;
+    //ArrayList<Song> mSongs;
+    int iSize;
+    int lastProgress = 0;
     private IBinder mBinder = new LocalBinder();
+    String[] mSongProjection = {
+            PlaylistTable._ID,
+            PlaylistTable.COLUMN_SPOTIFY_ID,
+            PlaylistTable.COLUMN_SONG_NAME,
+            PlaylistTable.COLUMN_SONG_ARTIST,
+            PlaylistTable.COLUMN_SONG_PREVIEW_URL,
+            PlaylistTable.COLUMN_ALBUM_ART_URL
+    };
+    String[] mConcertProjection = {
+            CurrentConcertTable._ID,
+            CurrentConcertTable.COLUMN_CONCERT_NAME,
+            CurrentConcertTable.COLUMN_CONCERT_CITY,
+            CurrentConcertTable.COLUMN_CONCERT_STATE,
+            CurrentConcertTable.COLUMN_CONCERT_COUNTRY,
+            CurrentConcertTable.COLUMN_CONCERT_TIME,
+            CurrentConcertTable.COLUMN_CONCERT_DATE,
+            CurrentConcertTable.COLUMN_CONCERT_VENUE,
+            CurrentConcertTable.COLUMN_CONCERT_ARTISTS,
+            CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL
+    };
 
+    String[] mCurrentProjection = {
+            CurrentSongTable._ID,
+            CurrentSongTable.COLUMN_CURRENT_SONG_ID,
+            CurrentSongTable.COLUMN_IS_PLAYING,
+            CurrentSongTable.COLUNM_CURRENT_PROGRESS
+    };
+    Cursor mCursor;
     //TODO: stopForground when application is exited
     //TODO: implement database to update ui
     /**
-     * Initialize MediaPlayer
+     * Need to do something about the processbar (If statement to check on it)
      */
     public MediaPlayerService() {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mSongs = new ArrayList<>();
 
         //on prepared listener --> what happens when it is ready to play
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
+                getContentResolver().delete(CurrentSongTable.CONTENT_URI, null, null);
+                ContentValues currentValues = new ContentValues();
+                currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getPosition());
+                currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 1);
+                currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
                 mMediaPlayer.start();
             }
         });
@@ -47,17 +85,18 @@ public class MediaPlayerService extends Service {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mMediaPlayer.reset();
-                iCurrentSongIndex++;
-                if(mSongs != null && iCurrentSongIndex == mSongs.size()) {
-                    iCurrentSongIndex = 0;
+                if (mCursor.isLast()) {
+                    mCursor.moveToFirst();
+                }
+                else {
+                    mCursor.moveToNext();
                 }
                 try {
-                    mMediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
+                    mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
                     mMediaPlayer.prepareAsync();
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.d("music player", "unknown error");
-
                 }
             }
         });
@@ -66,9 +105,32 @@ public class MediaPlayerService extends Service {
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                Log.d("error", "media player");
                 return false;
             }
         });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(100);
+                        if (mMediaPlayer.isPlaying()) {
+                            int currentPosition = mMediaPlayer.getCurrentPosition();
+                            if (currentPosition != lastProgress) {
+                                ContentValues progressValue = new ContentValues();
+                                progressValue.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, currentPosition);
+                                getContentResolver().update(PlaylistTable.CONTENT_URI, progressValue, null, null);
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -77,30 +139,63 @@ public class MediaPlayerService extends Service {
     }
 
     /**
-     * Start new concert
+     *
      */
+
+    Uri mConcertUri;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mConcert = Parcels.unwrap(intent.getParcelableExtra("concert"));
-        ArrayList<Parcelable> parcelables = intent.getParcelableArrayListExtra("songs");
-        for (int i = 0; i < parcelables.size(); i++) {
-            mSongs.add(i, (Song) Parcels.unwrap(parcelables.get(i)));
+        //Update Concert
+        if (mConcertUri != null) {
+            getContentResolver().delete(mConcertUri, null, null);
         }
-        iCurrentSongIndex = 0;
+        Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
+        ContentValues concertValues = new ContentValues();
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_CITY, concert.getCity());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_STATE, concert.getStateCode());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_COUNTRY, concert.getCountryCode());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_TIME, concert.getEventTime());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_DATE, concert.getEventDate());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
+        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
+        //mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI,concertValues);
+        mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI, new ContentValues());
+        //Update Songs
+        getContentResolver().delete(PlaylistTable.CONTENT_URI, null, null);
+        ArrayList<Parcelable> parcelables = intent.getParcelableArrayListExtra("songs");
+        iSize = parcelables.size();
+        for (int i = 0; i < iSize; i++) {
+            Song song = Parcels.unwrap(parcelables.get(i));
+            ContentValues songValues = new ContentValues();
+            songValues.put(PlaylistTable.COLUMN_SPOTIFY_ID, song.getSpotifyID());
+            songValues.put(PlaylistTable.COLUMN_SONG_NAME, song.getName());
+            songValues.put(PlaylistTable.COLUMN_SONG_ARTIST, song.getArtists().get(0));
+            songValues.put(PlaylistTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
+            songValues.put(PlaylistTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
+            getContentResolver().insert(PlaylistTable.CONTENT_URI, songValues);
+        }
+        //Initialize Cursor
+        mCursor = getContentResolver().query(PlaylistTable.CONTENT_URI, mSongProjection, null, null, null);
+        mCursor.moveToFirst();
+        //Initialize Media player
         if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
-            mMediaPlayer.reset();
         }
-        //start with first song
+        mMediaPlayer.reset();
+
+        //set first song
         try {
-            mMediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
+            mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("music player", "unknown error");
         }
         return super.onStartCommand(intent, flags, startId);
     }
+
+
 
     /**
      * play/pause song
@@ -117,35 +212,36 @@ public class MediaPlayerService extends Service {
     public void skipNext() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
+        if (mCursor.isLast()) {
+            mCursor.moveToFirst();
+        }
+        else {
+            mCursor.moveToNext();
+        }
         try {
-            iCurrentSongIndex++;
-            if(iCurrentSongIndex == mSongs.size()) {
-                iCurrentSongIndex = 0;
-            }
-            mMediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
+            mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("music player", "unknown error: skipNext");
-
+            Log.d("music player", "unknown error");
         }
     }
 
     public void skipPrev() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
-        if (iCurrentSongIndex >= 1) {
-            iCurrentSongIndex = iCurrentSongIndex - 1;
+        if (mCursor.isFirst()) {
+            mCursor.moveToLast();
         }
-        else if (iCurrentSongIndex == 0) {
-            iCurrentSongIndex = mSongs.size() - 1;
+        else {
+            mCursor.moveToLast();
         }
         try {
-            mMediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
+            mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
             mMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("music player", "unknown error: skipPrev");
+            Log.d("music player", "unknown error");
         }
     }
 

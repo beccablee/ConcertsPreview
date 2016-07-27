@@ -3,12 +3,13 @@ package com.example.jinjinz.concertprev.databases;
 import android.content.ContentUris;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 /**
  * Created by jinjinz on 7/25/16.
  */
-public final class CurrentConcertTable extends MediaContract {
+public final class CurrentConcertTable extends MediaContract implements BaseColumns {
     // Content URI represents the base location for the table
     public static final Uri CONTENT_URI =
             BASE_CONTENT_URI.buildUpon().appendPath(PATH_CONCERT).build();
@@ -20,8 +21,7 @@ public final class CurrentConcertTable extends MediaContract {
             "vnd.android.cursor.item/" + CONTENT_URI + "/" + PATH_CONCERT;
 
     //Current concerts table name/columns
-    public static final String COLUMN_ENTRY_ID = "_id";
-    public static final String TABLE_NAME = "concerts";
+    public static final String TABLE_NAME = "concertTable";
     public static final String COLUMN_CONCERT_NAME = "name";
     public static final String COLUMN_CONCERT_CITY = "city";
     public static final String COLUMN_CONCERT_STATE = "state";
@@ -38,10 +38,10 @@ public final class CurrentConcertTable extends MediaContract {
     }
 
     // Create table SQL string
-    private static final String createCurrentConcertsTable = "CREATE TABLE " + TABLE_NAME + "(" + COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CONCERT_NAME + " TEXT NOT NULL, "
-            + COLUMN_CONCERT_CITY + " TEXT NOT NULL, " + COLUMN_CONCERT_STATE + " TEXT NOT NULL, " + COLUMN_CONCERT_COUNTRY + " TEXT NOT NULL, "
-            + COLUMN_CONCERT_VENUE + " TEXT NOT NULL, "  + COLUMN_CONCERT_TIME + " TEXT NOT NULL, " + COLUMN_CONCERT_DATE + " TEXT NOT NULL, "
-            + COLUMN_CONCERT_ARTISTS + " TEXT NOT NULL, " + COLUMN_CONCERT_IMAGE_URL + " TEXT NOT NULL" + ")";
+    private static final String createCurrentConcertsTable = "CREATE TABLE " + TABLE_NAME + "(" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CONCERT_NAME + " TEXT, "
+            + COLUMN_CONCERT_CITY + " TEXT, " + COLUMN_CONCERT_STATE + " TEXT, " + COLUMN_CONCERT_COUNTRY + " TEXT, "
+            + COLUMN_CONCERT_VENUE + " TEXT, "  + COLUMN_CONCERT_TIME + " TEXT, " + COLUMN_CONCERT_DATE + " TEXT, "
+            + COLUMN_CONCERT_ARTISTS + " TEXT, " + COLUMN_CONCERT_IMAGE_URL + " TEXT" + ")";
 
     // Deletes the entire table (if it exists)
     private static final String dropCurrentConcertsTable = "DROP IF EXISTS " + TABLE_NAME;
