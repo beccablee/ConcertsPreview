@@ -287,5 +287,9 @@ public class Concert {
         return artists;
     }
 
+    /*public boolean isBeforeCurrentDate(Date) {
+
+    }*/
+
 
 }

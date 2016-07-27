@@ -153,6 +153,11 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
      * */
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.addAll(concertArrayList);
+        for(int i = 0; i < concerts.size(); i++) {
+            /*if(concerts.get(i).getEventDate().isBeforeCurrentDate()) {
+                concerts.remove(i);
+            }*/
+        }
         searchAdapter.notifyDataSetChanged();
     }
 
