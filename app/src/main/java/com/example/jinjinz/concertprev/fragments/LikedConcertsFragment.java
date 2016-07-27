@@ -56,12 +56,9 @@ public class LikedConcertsFragment extends Fragment implements SearchRecyclerAda
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         myConcerts = new ArrayList<>();
         mSearchRecyclerAdapter = new SearchRecyclerAdapter(getActivity(), myConcerts, this);
-        ArrayList<Concert> concerts = MainActivity.getLikedConcerts();
-        myConcerts.addAll(concerts);
-        mSearchRecyclerAdapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -69,6 +66,10 @@ public class LikedConcertsFragment extends Fragment implements SearchRecyclerAda
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liked_concerts, container, false);
+        ArrayList<Concert> concerts = MainActivity.getLikedConcerts();
+        myConcerts.clear();
+        myConcerts.addAll(concerts);
+        mSearchRecyclerAdapter.notifyDataSetChanged();
         RecyclerView rvMyConcerts = (RecyclerView) view.findViewById(R.id.rvLikedConcerts);
         TextView tvNoConcerts = (TextView) view.findViewById(R.id.tvNoConcerts);
         if(myConcerts.size() == 0) {

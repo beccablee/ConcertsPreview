@@ -46,12 +46,9 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mySongs = new ArrayList<>();
         mLikedSongArrayAdapter = new LikedSongArrayAdapter(getActivity(), mySongs, this);
-        ArrayList<Song> songs = MainActivity.getLikedSongs();
-        mySongs.addAll(songs);
-        mLikedSongArrayAdapter.notifyDataSetChanged();
+
     }
 
     /** Sets up views and listeners for the fragment */
@@ -60,6 +57,10 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
         View view = inflater.inflate(R.layout.fragment_liked_songs, container, false);
         RecyclerView rvMySongs = (RecyclerView) view.findViewById(R.id.rvLikedSongs);
         TextView tvNoSongs = (TextView) view.findViewById(R.id.tvNoSongs);
+        mySongs.clear();
+        ArrayList<Song> songs = MainActivity.getLikedSongs();
+        mySongs.addAll(songs);
+        mLikedSongArrayAdapter.notifyDataSetChanged();
         if(mySongs.size() == 0) {
             rvMySongs.setVisibility(View.GONE);
             tvNoSongs.setVisibility(View.VISIBLE);

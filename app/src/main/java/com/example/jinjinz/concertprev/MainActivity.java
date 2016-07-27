@@ -762,8 +762,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /** Switches to user fragment when user menu button is clicked
      * @param item the user button */
     public void getProfile(MenuItem item) {
-        likedConcerts = userDataSource.getAllLikedConcerts();
-        likedSongs = userDataSource.getAllLikedSongs();
         UserFragment userFragment = UserFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, userFragment, "user");
@@ -782,7 +780,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public static ArrayList<Concert> getLikedConcerts() {
-        return likedConcerts;
+        return userDataSource.getAllLikedConcerts();
     }
 
 
@@ -794,7 +792,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public static ArrayList<Song> getLikedSongs() {
-        return likedSongs;
+        return userDataSource.getAllLikedSongs();
     }
 
 }
