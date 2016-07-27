@@ -9,5 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No favorited songs"
+        android:id="@+id/tvNoSongs"
+        android:textColor="#EEEEEE"
+        android:gravity="center" />
 
 </FrameLayout>

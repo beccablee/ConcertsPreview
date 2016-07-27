@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
@@ -58,6 +59,14 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_liked_songs, container, false);
         RecyclerView rvMySongs = (RecyclerView) view.findViewById(R.id.rvLikedSongs);
+        TextView tvNoSongs = (TextView) view.findViewById(R.id.tvNoSongs);
+        if(mySongs.size() == 0) {
+            rvMySongs.setVisibility(View.GONE);
+            tvNoSongs.setVisibility(View.VISIBLE);
+        } else {
+            rvMySongs.setVisibility(View.VISIBLE);
+            tvNoSongs.setVisibility(View.GONE);
+        }
         rvMySongs.setAdapter(mLikedSongArrayAdapter);
         rvMySongs.setLayoutManager(new LinearLayoutManager(getActivity()));
         return view;

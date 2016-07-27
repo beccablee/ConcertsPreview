@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
@@ -69,6 +70,15 @@ public class LikedConcertsFragment extends Fragment implements SearchRecyclerAda
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_liked_concerts, container, false);
         RecyclerView rvMyConcerts = (RecyclerView) view.findViewById(R.id.rvLikedConcerts);
+        TextView tvNoConcerts = (TextView) view.findViewById(R.id.tvNoConcerts);
+        if(myConcerts.size() == 0) {
+            rvMyConcerts.setVisibility(View.GONE);
+            tvNoConcerts.setVisibility(View.VISIBLE);
+        } else {
+            rvMyConcerts.setVisibility(View.VISIBLE);
+            tvNoConcerts.setVisibility(View.GONE);
+        }
+
         rvMyConcerts.setAdapter(mSearchRecyclerAdapter);
         rvMyConcerts.setLayoutManager(new LinearLayoutManager(getActivity()));
         return view;
