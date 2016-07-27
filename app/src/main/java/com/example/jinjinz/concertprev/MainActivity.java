@@ -532,7 +532,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * */
     @Override
     public void onConcertTap(Concert concert) {
-        // open songs fragment --> needs more stuff from songsfrag
+        if(userDataSource.isConcertAlreadyInDb(concert)) {
+           concert = userDataSource.getConcertFromDB(concert);
+        }
         mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);

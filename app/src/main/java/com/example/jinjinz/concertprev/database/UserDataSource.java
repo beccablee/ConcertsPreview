@@ -127,6 +127,70 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
     }
 
     /**
+     * Creates and returns a Concert object from the cursor
+     * @param cursor the cursor of the database query
+     * @return returns the concert */
+    public static Concert cursorToConcert(Cursor cursor) {
+        Concert concert = new Concert();
+        concert.setDbId(cursor.getLong(0));
+        concert.setEventName(cursor.getString(1));
+        concert.setCity(cursor.getString(2));
+        concert.setStateCode(cursor.getString(3)); // null for international concerts
+        concert.setCountryCode(cursor.getString(4));
+        concert.setVenue(cursor.getString(5));
+        concert.setEventTime(cursor.getString(6));
+        concert.setEventDate(cursor.getString(7));
+        concert.setArtistsString(cursor.getString(8));
+        concert.setBackdropImage(cursor.getString(9));
+        concert.setArtists(concert.artistListToArray(concert.getArtistsString()));
+
+        return concert;
+    }
+
+    /**
+     * Checks if a certain concert is already in the database
+     * @param concert the concert to check for
+     * @return true if the concert is already in the database, false otherwise */
+    public boolean isConcertAlreadyInDb(Concert concert) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                concert.setDbId(cursor.getLong(0));
+                cursor.close();
+                return true;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+
+        return false;
+    }
+
+    public Concert getConcertFromDB(Concert concert) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                Concert myConcert = cursorToConcert(cursor);
+                cursor.close();
+                return myConcert;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return null;
+    }
+
+    public void deleteAllConcerts() {
+        database.delete(ConcertsTable.TABLE_NAME, null, null);
+    }
+
+    /**
     * Inserts the liked song into the database after checking for the possibility of duplication
     * @param song the song to be liked
     * @return the liked song
@@ -190,11 +254,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return likedSongs;
     }
 
-    public void deleteAllConcerts() {
-        database.delete(ConcertsTable.TABLE_NAME, null, null);
-    }
-
-
     /**
      * Creates and returns a Song object from the cursor
      * @param cursor the cursor of the database query
@@ -211,49 +270,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         song.setArtists(song.artistListToArray(song.getArtistsString()));
 
         return song;
-    }
-
-    /**
-     * Creates and returns a Concert object from the cursor
-     * @param cursor the cursor of the database query
-     * @return returns the concert */
-    public static Concert cursorToConcert(Cursor cursor) {
-        Concert concert = new Concert();
-        concert.setDbId(cursor.getLong(0));
-        concert.setEventName(cursor.getString(1));
-        concert.setCity(cursor.getString(2));
-        concert.setStateCode(cursor.getString(3)); // null for international concerts
-        concert.setCountryCode(cursor.getString(4));
-        concert.setVenue(cursor.getString(5));
-        concert.setEventTime(cursor.getString(6));
-        concert.setEventDate(cursor.getString(7));
-        concert.setArtistsString(cursor.getString(8));
-        concert.setBackdropImage(cursor.getString(9));
-        concert.setArtists(concert.artistListToArray(concert.getArtistsString()));
-
-        return concert;
-    }
-
-    /**
-     * Checks if a certain concert is already in the database
-     * @param concert the concert to check for
-     * @return true if the concert is already in the database, false otherwise */
-    private boolean isConcertAlreadyInDb(Concert concert) {
-        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
-                null, null, null, null, null); // query whole table
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
-                concert.setDbId(cursor.getLong(0));
-                cursor.close();
-                return true;
-            } else {
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-
-        return false;
     }
 
     private boolean isSongAlreadyInDb(Song song){
@@ -273,5 +289,25 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     }
 
+    public Song getSongFromDB(Song song) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(song.getSpotifyID())) {
+                Song mySong = cursorToSong(cursor);
+                cursor.close();
+                return mySong;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return null;
+    }
+
+    public void deleteAllSongs() {
+        database.delete(SongsTable.TABLE_NAME, null, null);
+    }
 
 }
