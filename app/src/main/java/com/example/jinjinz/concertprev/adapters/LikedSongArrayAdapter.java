@@ -13,9 +13,6 @@ import com.example.jinjinz.concertprev.models.Song;
 
 import java.util.ArrayList;
 
-/**
- * Created by beccalee on 7/13/16.
- */
 public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAdapter.ViewHolder> implements View.OnClickListener {
 
     private ArrayList<Song> mSongs;

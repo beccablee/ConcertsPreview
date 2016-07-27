@@ -207,7 +207,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         if (isSongAlreadyInDb(song)) {
             deleteLikedSong(song);
-            Toast.makeText(c, song.getName() + " removed form Favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(c, song.getName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
             return song;
         } else { // insert and return the song
             long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
@@ -215,10 +215,12 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             if (insertId != -1L) {
                 Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
                         SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
+                song.setDbID(insertId);
                 cursor.moveToFirst();
                 song = cursorToSong(cursor);
                 cursor.close();
                 Toast.makeText(c, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Log.d("dbCommands", "inserted liked song with id " + insertId);
                 return song;
             } else {
                 Toast.makeText(c, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
@@ -233,6 +235,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * */
     public void deleteLikedSong(Song song) {
         database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + song.getDbID(), null);
+       song.setDbID(-1L);
         Log.d("dbCommands", "Song deleted with id " + song.getDbID());
     }
 
@@ -272,7 +275,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return song;
     }
 
-    private boolean isSongAlreadyInDb(Song song){
+    public boolean isSongAlreadyInDb(Song song){
         Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
                 null, null, null, null, null);
         cursor.moveToFirst();
@@ -290,7 +293,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
     }
 
     public Song getSongFromDB(Song song) {
-        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+        Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
                 null, null, null, null, null); // query whole table
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {

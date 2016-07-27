@@ -84,9 +84,6 @@ public class Concert {
     public String getStateCode() {
         return stateCode;
     }
-    public String getHeadliner() {
-        return headliner;
-    }
     public String getCity() {
         return city;
     }

@@ -12,13 +12,10 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-/**
- * Created by jinjinz on 7/7/16.
- */
 @Parcel
 public class Song {
 
-    private long dbID;
+    private long dbID = -1L;
     private String name;
     private String spotifyID;
     private ArrayList<String> artists; //names

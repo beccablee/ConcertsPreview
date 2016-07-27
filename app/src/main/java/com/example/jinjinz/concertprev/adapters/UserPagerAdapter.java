@@ -6,9 +6,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.example.jinjinz.concertprev.fragments.UserFragment;
 
-/**
- * Created by noradiegwu on 7/26/16.
- */
 public class UserPagerAdapter extends FragmentPagerAdapter {
     private static String tabTitles[] = {"Concerts", "Songs"};
 

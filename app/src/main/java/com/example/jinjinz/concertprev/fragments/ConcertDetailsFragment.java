@@ -24,9 +24,6 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
-/**
- * Created by beccalee on 7/18/16.
- */
 public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
     private String artists;

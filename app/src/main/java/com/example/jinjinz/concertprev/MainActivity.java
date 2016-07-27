@@ -740,6 +740,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             pSongs.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
         }
         Collections.shuffle(pSongs);
+        if(userDataSource.isSongAlreadyInDb(song)) {
+            song = userDataSource.getSongFromDB(song);
+        }
         pSongs.add(0, song);
         onNewConcert(mConcert, pSongs);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -784,8 +787,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
 
     @Override
-    public void likeSong(Song song) {
-        userDataSource.likeSong(song);
+    public Song likeSong(Song song) {
+        Song likedSong = userDataSource.likeSong(song);
+        return likedSong;
 
     }
 
