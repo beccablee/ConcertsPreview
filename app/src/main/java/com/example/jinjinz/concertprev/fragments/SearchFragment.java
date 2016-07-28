@@ -21,9 +21,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-
-import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
@@ -153,13 +152,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
      * */
     public void addConcerts(ArrayList<Concert> concertArrayList) {
         concerts.addAll(concertArrayList);
-        for(int i = 0; i < concerts.size(); i++) {
-            /*if(concerts.get(i).getEventDate().isBeforeCurrentDate()) {
-                concerts.remove(i);
-            }*/
-        }
         searchAdapter.notifyDataSetChanged();
     }
+
+
 
     /**
      * Refreshes search fragment screen

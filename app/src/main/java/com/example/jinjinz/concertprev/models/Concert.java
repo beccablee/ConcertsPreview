@@ -203,26 +203,11 @@ public class Concert {
 
     }
 
-    /** Formats given date from the Ticketmaster API into a clean, easily readable format */
-    public static String formatDate(String originalDate){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date newDate = null;
-        try {
-            newDate = format.parse(originalDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        format = new SimpleDateFormat("MMM dd, yyyy");
-        String date = format.format(newDate);
-        return date;
-    }
-
     /** Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API */
     public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
         // extract the values from the json, store them
         try {
-            //concert.backdropImage = ratioImg(event.getJSONArray("images"));
             concert.backdropImage = ratioImg(event);
             concert.eventName = event.getString("name");
             // because I love Chance
@@ -287,9 +272,19 @@ public class Concert {
         return artists;
     }
 
-    /*public boolean isBeforeCurrentDate(Date) {
-
-    }*/
-
+    /** Formats the date from the Ticketmaster API into a clean, easily readable format */
+    public static String formatDate(String originalDate){
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = null;
+        try {
+            newDate = sdFormatter.parse(originalDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        sdFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        sdFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        String date = sdFormatter.format(newDate);
+        return date;
+    }
 
 }

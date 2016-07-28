@@ -44,8 +44,12 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.TimeZone;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -402,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void fetchConcerts() {
         if (fIsReadyToPopulate && fIsApiConnected) {
             // url includes api key and music classification
-            String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+            String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json";
             // the parameter(s)
             RequestParams params = new RequestParams();
             if (queryText != null) {
@@ -415,6 +419,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 latlong = null;
             }
 
+            params.put("apikey", "7elxdku9GGG5k8j0Xm8KWdANDgecHMV0");
+            params.put("classificationName", "Music");
+            params.put("startDateTime", getUtcTime(getCurrentDate()));
+            Log.d("event date", getUtcTime(getCurrentDate()));
             params.put("latlong", latlong); // must be N, E
             params.put("radius", "50");
             params.put("size", "15");
@@ -463,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void fetchMoreConcerts(int page) {
         // url includes api key and music classification
-        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json";
         // the parameters
         RequestParams params = new RequestParams();
         if (queryText != null) {
@@ -476,6 +484,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             latlong = null;
         }
 
+        params.put("apikey", "7elxdku9GGG5k8j0Xm8KWdANDgecHMV0");
+        params.put("classificationName", "Music");
+        params.put("startDateTime", getUtcTime(getCurrentDate()));
+        Log.d("event date", getUtcTime(getCurrentDate()));
         params.put("latlong", latlong); // must be N, E
         params.put("radius", "50");
         params.put("size", "15");
@@ -795,4 +807,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return userDataSource.getAllLikedSongs();
     }
 
+    public static Date getCurrentDate() {
+        Calendar cal = Calendar.getInstance();
+        Date currDate = cal.getTime();
+        return currDate;
+    }
+
+    private String getUtcTime(Date date) {
+        TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        dayFormatter.setTimeZone(utcTimeZone);
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+        timeFormatter.setTimeZone(utcTimeZone);
+        String day = dayFormatter.format(date);
+        String time = timeFormatter.format(date);
+        String apiDate = day + "T" + time + "Z";
+        return apiDate;
+    }
+    
 }
