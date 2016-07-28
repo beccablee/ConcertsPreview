@@ -545,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             item.setIcon(getDrawable(R.drawable.ic_location_deactivated));
             Toast.makeText(this, "Location off", Toast.LENGTH_SHORT).show();
             fetchConcerts();
-        } else if (!MI_LOCATION_FLAG) {
+        } else {
             MI_LOCATION_FLAG = true;
             item.setIcon(getDrawable(R.drawable.ic_location_activated));
             Toast.makeText(this, "Location on", Toast.LENGTH_SHORT).show();
