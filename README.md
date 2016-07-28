@@ -1,4 +1,4 @@
-# *Vibe* - feel the vibe of the concert
+# **Vibe** - *feel the vibe of the concert*
 
 **Vibe** helps users make the most of their concert experience by exposing them to all the artists in a concert. Vibe auto-populates playlists with 30-second song previews of the concert's artists and makes it easy to purchase concert tickets.
 
