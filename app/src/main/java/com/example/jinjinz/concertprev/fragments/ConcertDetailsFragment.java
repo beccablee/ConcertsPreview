@@ -1,6 +1,7 @@
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
@@ -177,7 +178,12 @@ public class ConcertDetailsFragment extends SongsFragment {
         btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String shareBody = "Going to " + concert.getEventName() + "/n" + "Check out: " + concert.getEventUrl();
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, concert.getEventName());
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.app_name)));
             }
         });
         // Makes title appear in the AppBar when collapsed

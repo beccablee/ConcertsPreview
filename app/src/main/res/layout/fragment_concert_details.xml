@@ -136,7 +136,6 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/ic_purchase_tickets"
                     android:clickable="true" />
-
                 <Button
                     android:layout_width="28dp"
                     android:layout_height="28dp"
