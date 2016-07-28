@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SearchFragment mSearchFragment;
     private boolean fIsReadyToPopulate = false;
     private boolean fIsApiConnected = false;
+    private boolean MI_LOCATION_FLAG = true;
 
     // Concerts details variables
     protected ConcertDetailsFragment mConcertDetailsFragment;
@@ -396,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     // Fragment methods
 
-    /**
+    /**f
      * Packages parameters and calls the client to retrieve concerts from Ticketmaster
      * Checks if the fragment is ready to be populated and if the google api client has connected and attempted to access location
      * */
@@ -410,8 +411,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 params.put("keyword", queryText);
             }
             String latlong;
-            if (lastLocation != null) {
-                latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
+            if (lastLocation != null && MI_LOCATION_FLAG) {
+                latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude();
+            } else if (lastLocation == null && !MI_LOCATION_FLAG) {
+                latlong = null;
             } else {
                 latlong = null;
             }
@@ -476,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         String latlong;
         if (lastLocation != null) {
-            latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude(); //(MessageFormat.format("{0},{1}", lastLocation.getLatitude(), lastLocation.getLongitude()));
+            latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude();
         } else {
             latlong = null;
         }
@@ -522,6 +525,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
+
     /**
      * Flags that the search fragment is ready to be populated and calls the fetch concerts method
      * @param query passes the query value to the fetch method. Null until user searches in toolbar
@@ -535,7 +539,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         fetchConcerts();
     }
 
-    public void toggleLocationUse(MenuItem item){
+    public void toggleLocationUse(MenuItem item) {
+        if(MI_LOCATION_FLAG) {
+            MI_LOCATION_FLAG = false;
+            // off color
+            item.setIcon(getDrawable(R.drawable.ic_location));
+            fetchConcerts();
+        } else if (!MI_LOCATION_FLAG) {
+            MI_LOCATION_FLAG = true;
+            // on color
+            fetchConcerts();
+            item.setIcon(getDrawable(R.drawable.ic_location));
+        }
     }
 
     /**
@@ -564,6 +579,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             ActivityCompat.requestPermissions(MainActivity.this, mLocationPermissions, LOCATION_PERMISSIONS);
 
         } else {
+            Log.d("location", String.valueOf(((ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)) != PackageManager.PERMISSION_GRANTED)));
+            Log.d("location", String.valueOf(((ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.INTERNET)) != PackageManager.PERMISSION_GRANTED)));
             lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             fIsApiConnected = true;
             fetchConcerts();
@@ -593,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 } else {
                     Log.d("requestlocation", "Permissions Denied");
-                    Toast.makeText(MainActivity.this, "Location is necessary to fnd concerts in your area", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Location is necessary to find concerts in your area", Toast.LENGTH_LONG).show();
                     //TODO: add snackbar or dialogue box to ask them to allow location
                 }
 
