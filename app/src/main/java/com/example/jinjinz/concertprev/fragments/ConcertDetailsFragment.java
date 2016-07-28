@@ -39,6 +39,7 @@ public class ConcertDetailsFragment extends SongsFragment {
     private Button btnLikeConcert;
     private Button btnPurchaseTickets;
     private Button btnLeaveWebView;
+    private Button btnShare;
     private WebView webView;
     private RelativeLayout webLayout;
 
@@ -103,6 +104,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
         btnPurchaseTickets = (Button) view.findViewById(R.id.btnPurchaseTickets);
         btnLeaveWebView = (Button) view.findViewById(R.id.btnLeaveWebView);
+        btnShare = (Button) view.findViewById(R.id.btnShare);
         webView = (WebView) view.findViewById(R.id.webView);
         webLayout = (RelativeLayout) view.findViewById(R.id.webLayout);
         webLayout.setVisibility(View.GONE);
@@ -169,6 +171,13 @@ public class ConcertDetailsFragment extends SongsFragment {
             @Override
             public void onClick(View view) {
                 openWebView();
+            }
+        });
+
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
         // Makes title appear in the AppBar when collapsed

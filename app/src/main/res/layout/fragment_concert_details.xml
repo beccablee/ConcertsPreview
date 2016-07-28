@@ -137,6 +137,18 @@
                     android:background="@drawable/ic_purchase_tickets"
                     android:clickable="true" />
 
+                <Button
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/btnShare"
+                    android:background="@drawable/ic_share"
+                    android:clickable="true"
+                    android:layout_toRightOf="@id/btnPurchaseTickets"
+                    android:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+
+
             </RelativeLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>
