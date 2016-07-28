@@ -1,3 +1,11 @@
+/**
+ * ConcertDetailsFragment
+ *
+ * Contains concert details including event name, venue, artists, image, and date
+ * in an expandable AppBar
+ * Displays playlist of songs for every artist in the concert
+ */
+
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
@@ -151,7 +159,7 @@ public class ConcertDetailsFragment extends SongsFragment {
         }
     }
 
-    /** Sets up button and AppBar listeners for details view*/
+    /** Sets up button and AppBar listeners for details view */
     public void setUpListeners(){
         // Allows user to 'like' a concert
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
@@ -174,7 +182,7 @@ public class ConcertDetailsFragment extends SongsFragment {
                 openWebView();
             }
         });
-
+        // Launches sharing content options for user and passes in link and concert information
         btnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

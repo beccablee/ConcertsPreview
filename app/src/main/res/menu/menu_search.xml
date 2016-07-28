@@ -9,13 +9,19 @@
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView" />
 
+    <item android:id="@+id/action_location"
+        android:orderInCategory="8"
+        android:title="Location"
+        android:icon="@drawable/ic_location"
+        app:showAsAction="always"
+        android:onClick="toggleLocationUse" />
+
     <item android:id="@+id/userBar"
         android:title="User"
         app:showAsAction="always"
         android:orderInCategory="10"
         android:icon="@drawable/ic_perm_identity"
-        android:onClick="getProfile"
-        />
+        android:onClick="getProfile" />
 
 
 </menu>

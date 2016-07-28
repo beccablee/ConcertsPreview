@@ -1,3 +1,11 @@
+/**
+ * SongArrayAdapter
+ *
+ * Communicates between a View and item to display the information for a song
+ * including songs name and artist
+ * Utilizes ViewHolder to implement RecyclerView
+ */
+
 package com.example.jinjinz.concertprev.adapters;
 
 import android.content.Context;

@@ -535,6 +535,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         fetchConcerts();
     }
 
+    public void toggleLocationUse(MenuItem item){
+        
+    }
+
     /**
      * Replaces the search fragment with the concert details fragment when a concert is tapped
      * @param concert the concert that was tapped

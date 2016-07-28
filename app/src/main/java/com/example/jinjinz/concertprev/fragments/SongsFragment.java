@@ -1,3 +1,10 @@
+/**
+ * SongsFragment
+ *
+ * Communicates with the Main Activity to populate the playlist with songs for all the artists
+ * Displays information in a RecyclerView using the song items and adapter
+ */
+
 package com.example.jinjinz.concertprev.fragments;
 
 import android.content.Context;
