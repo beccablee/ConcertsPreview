@@ -94,7 +94,7 @@
                     android:textColor="@android:color/white"
                     android:layout_alignParentEnd="true"
                     android:gravity="right"
-                    android:layout_marginLeft="65dp"
+                    android:layout_marginLeft="90dp"
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:shadowColor="@android:color/black"

@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.models.Concert;
@@ -179,7 +180,11 @@ public class ConcertDetailsFragment extends SongsFragment {
         btnPurchaseTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openWebView();
+                if (concert.getEventUrl() != null) {
+                    openWebView();
+                } else {
+                    Toast.makeText(getContext(), "Concert web page not available", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         // Launches sharing content options for user and passes in link and concert information
