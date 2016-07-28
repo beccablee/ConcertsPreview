@@ -13,9 +13,7 @@
         android:layout_below="@+id/concertTitle"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:background="@android:color/darker_gray"
-        android:paddingRight="25dp"
-        android:paddingBottom="25dp"/>
+        android:background="@android:color/darker_gray"/>
 
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"

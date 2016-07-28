@@ -536,7 +536,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void toggleLocationUse(MenuItem item){
-        
     }
 
     /**
