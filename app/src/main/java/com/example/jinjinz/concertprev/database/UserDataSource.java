@@ -10,6 +10,7 @@ import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class UserDataSource { // Our DAO (data access object) that is responsible for handling db connection and accessing and modifying the data in the db
     // it also converts the data into objects that our app can be readily used for our ui
@@ -210,10 +211,11 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         song.setDbID(cursor.getInt(0));
         song.setSpotifyID(cursor.getString(1));
         song.setName(cursor.getString(2));
-        song.setArtistsString(cursor.getString(3));
+        String[] artists = cursor.getString(3).split(" & ");
+        ArrayList<String> artistList = new ArrayList<>(Arrays.asList(artists));
+        song.setArtists(artistList);
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
-
         return song;
     }
 
@@ -233,7 +235,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setEventDate(cursor.getString(7));
         concert.setArtistsString(cursor.getString(8));
         concert.setBackdropImage(cursor.getString(9));
-
         return concert;
     }
 

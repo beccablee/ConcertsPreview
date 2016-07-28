@@ -31,9 +31,14 @@
         <service
             android:name=".MediaPlayerService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false"
+            android:grantUriPermissions="true"></service>
 
-        <provider android:name="com.example.jinjinz.concertprev.databases.SongProvider" android:authorities="com.example.jinjinz.concertprev.databases">
+        <provider
+            android:name="com.example.jinjinz.concertprev.databases.SongProvider"
+            android:authorities="com.example.jinjinz.concertprev.databases"
+            android:grantUriPermissions="true"
+            android:exported="true">
         </provider>
     </application>
 

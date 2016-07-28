@@ -40,7 +40,7 @@ public class PlayerScreenFragment extends Fragment {
     private Button mBtnPrev;
     private Button mBtnNext;
     private ProgressBar mProgressBar;
-
+    Boolean play;
     //total time of song
     private final int TOTAL = 30000;
 
@@ -57,7 +57,8 @@ public class PlayerScreenFragment extends Fragment {
         void skipNext(); //on skip next click
         void skipPrev(); //on skip previous click
         void onClosePlayer(); //on Player close (add playbar)
-        void onOpenPlayer(); //on Player open
+        void setUI(); //set UI
+        void onPlayerOpen();
         void backInStack(); //go back
     }
 
@@ -83,8 +84,8 @@ public class PlayerScreenFragment extends Fragment {
      */
     @Override
     public void onStart() {
+        listener.onPlayerOpen();
         super.onStart();
-        listener.onOpenPlayer();
     }
 
     /**
@@ -164,61 +165,64 @@ public class PlayerScreenFragment extends Fragment {
      * @param song current song playing
      */
     public void updateInterface(Song song) {
-        //set text
-        mConcertTitle.setText(listener.getConcertName());
-        mTvSongTitle.setText(song.getName());
-        mTvArtistTitle.setText(song.getArtists().get(0));
+        if (!mTvSongTitle.getText().equals(song.getName())) {
+            //set text
+            mConcertTitle.setText(listener.getConcertName());
+            mTvSongTitle.setText(song.getName());
+            mTvArtistTitle.setText(song.getArtists().get(0));
 
-        // Define a listener for image loading
-        Target target = new Target() {
-            // Fires when Picasso finishes loading the bitmap for the target
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mAlbumImg.setImageBitmap(bitmap);
-                Palette backgrd = Palette.from(bitmap).generate();
-                Palette.Swatch swatch = backgrd.getDarkVibrantSwatch();
-                if (swatch != null) {
-                    view.setBackgroundColor(swatch.getRgb());
-                }
-                else {
-                    swatch = backgrd.getDarkMutedSwatch();
-                    if (swatch != null)
+            // Define a listener for image loading
+            Target target = new Target() {
+                // Fires when Picasso finishes loading the bitmap for the target
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mAlbumImg.setImageBitmap(bitmap);
+                    Palette backgrd = Palette.from(bitmap).generate();
+                    Palette.Swatch swatch = backgrd.getDarkVibrantSwatch();
+                    if (swatch != null) {
                         view.setBackgroundColor(swatch.getRgb());
-                    else
-                        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
+                    } else {
+                        swatch = backgrd.getDarkMutedSwatch();
+                        if (swatch != null)
+                            view.setBackgroundColor(swatch.getRgb());
+                        else
+                            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
+                    }
                 }
-            }
 
-            // Fires if bitmap fails to load
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
-            }
+                // Fires if bitmap fails to load
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                    view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
+                }
 
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-        //clear images
-        mAlbumImg.setBackgroundResource(0);
-        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            //clear images
+            mAlbumImg.setBackgroundResource(0);
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
 
-        // Store the target into the tag for the profile to ensure target isn't garbage collected prematurely
-        mAlbumImg.setTag(target);
-        // Instruct Picasso to load the bitmap into the target defined above
-        Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
+            // Store the target into the tag for the profile to ensure target isn't garbage collected prematurely
+            mAlbumImg.setTag(target);
+            // Instruct Picasso to load the bitmap into the target defined above
+            Picasso.with(getContext()).load(song.getAlbumArtUrl()).into(target);
+        }
     }
 
     /**
      * Update the play button
      * @param isPlaying if MediaPlayer is playing
      */
-    public void updatePlay(boolean isPlaying) {
-        if (isPlaying) {
-            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
-        }
-        else {
-            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+    public void setPlayBtn(boolean isPlaying) {
+        if (play == null || play != (Boolean) isPlaying) {
+            if (isPlaying) {
+                mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            } else {
+                mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            }
+            play = (Boolean) isPlaying;
         }
     }
 

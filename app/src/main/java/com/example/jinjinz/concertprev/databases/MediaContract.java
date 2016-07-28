@@ -88,7 +88,7 @@ public final class MediaContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
         // Create table SQL string
-        private static final String CREATE_CURRENT_SONG_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CURRENT_SONG_ID + " TEXT NOT NULL, "
+        private static final String CREATE_CURRENT_SONG_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CURRENT_SONG_ID + " INTEGER, "
                 + COLUMN_IS_PLAYING + " INTEGER NOT NULL, " + COLUNM_CURRENT_PROGRESS + " INTEGER NOT NULL" + ");";
         // Deletes the entire table (if it exists)
         private static final String DROP_CURRENT_SONG_TABLE = "DROP IF EXISTS " + TABLE_NAME;

@@ -59,7 +59,7 @@ public class MediaPlayerService extends Service {
     //TODO: stopForground when application is exited
     //TODO: implement database to update ui
     /**
-     * Need to do something about the processbar (If statement to check on it)
+     *
      */
     public MediaPlayerService() {
         mMediaPlayer = new MediaPlayer();
@@ -71,9 +71,10 @@ public class MediaPlayerService extends Service {
             public void onPrepared(MediaPlayer mp) {
                 getContentResolver().delete(CurrentSongTable.CONTENT_URI, null, null);
                 ContentValues currentValues = new ContentValues();
-                currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getPosition());
+                currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getInt(mCursor.getColumnIndex(PlaylistTable._ID)));
                 currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 1);
                 currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
+                getContentResolver().insert(CurrentSongTable.CONTENT_URI, currentValues);
                 mMediaPlayer.start();
             }
         });
@@ -119,7 +120,6 @@ public class MediaPlayerService extends Service {
                             if (currentPosition != lastProgress) {
                                 ContentValues progressValue = new ContentValues();
                                 progressValue.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, currentPosition);
-                                Log.i("processBar", Integer.toString(currentPosition));
                                 getContentResolver().update(CurrentSongTable.CONTENT_URI, progressValue, null, null);
                             }
                         }
@@ -145,9 +145,8 @@ public class MediaPlayerService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Update Concert
-        if (mConcertUri != null) {
-            getContentResolver().delete(CurrentConcertTable.CONTENT_URI, null, null);
-        }
+        getContentResolver().delete(CurrentConcertTable.CONTENT_URI, null, null);
+
         Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
         ContentValues concertValues = new ContentValues();
         concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
@@ -176,6 +175,7 @@ public class MediaPlayerService extends Service {
         }
         //Initialize Cursor
         mCursor = getContentResolver().query(PlaylistTable.CONTENT_URI, mSongProjection, null, null, null);
+        assert mCursor != null;
         mCursor.moveToFirst();
         //Initialize Media player
         if (mMediaPlayer.isPlaying()) {
@@ -190,6 +190,13 @@ public class MediaPlayerService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        getContentResolver().delete(CurrentSongTable.CONTENT_URI, null, null);
+        ContentValues currentValues = new ContentValues();
+        Log.i("position", String.valueOf(mCursor.getPosition()));
+        currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getInt(mCursor.getColumnIndex(PlaylistTable._ID)));
+        currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 0);
+        currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
+        getContentResolver().insert(CurrentSongTable.CONTENT_URI, currentValues);
         return super.onStartCommand(intent, flags, startId);
     }
 

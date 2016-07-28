@@ -20,7 +20,6 @@ public class Song {
     private String name;
     private String spotifyID;
     private ArrayList<String> artists; //names
-    private String artistsString; // formatted for details view and db
     private String previewUrl;
     private String albumArtUrl;
     private int songsPerArtist;
@@ -40,9 +39,6 @@ public class Song {
     public void setAlbumArtUrl(String albumArtUrl) {
         this.albumArtUrl = albumArtUrl;
     }
-    public void setArtistsString(String artistsString) {
-        this.artistsString = artistsString;
-    }
     public void setSongsPerArtist(int songsPerArtist) {
         this.songsPerArtist = songsPerArtist;
     }
@@ -54,7 +50,7 @@ public class Song {
     }
 
     public String getArtistsString() {
-        return artistsString;
+        return android.text.TextUtils.join(" & ", artists);
     }
     public long getDbID() {
         return dbID;
@@ -118,7 +114,6 @@ public class Song {
             for (int i = 0; i < artist_list.length(); i++) {
                 song.artists.add(artist_list.getJSONObject(i).getString("name"));
             }
-            song.artistsString = android.text.TextUtils.join(" & ", song.artists);
         } catch (JSONException e){
             e.printStackTrace();
         }
