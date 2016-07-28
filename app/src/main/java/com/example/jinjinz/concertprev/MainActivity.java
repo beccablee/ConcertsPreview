@@ -447,7 +447,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         Log.d("client calls", "error adding concerts: " + statusCode);
                         if(queryText != null) {
                             SearchFragment.searchAdapter.clear();
-                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + "in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
                         } else {
                             Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
                         }
@@ -824,5 +824,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         String apiDate = day + "T" + time + "Z";
         return apiDate;
     }
-    
+
 }
