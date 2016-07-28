@@ -10,22 +10,22 @@ Team members: Rebecca Lee, Nneoma Oradiegwu, Jinjin Zhao
 
 The following **features** were implemented:
 
-* [x] User can search through concerts in their area using the Ticketmaster Database API.
-* [x] For each concert displayed, the user can see the following details:
-  * [x] Details include: event name, location, backdrop image
-* [x] When the user clicks on a concert, the concert details and playlist are shown
-  * [x] Details include: event name, artists, location, backdrop image, date
-* [x] Each concert's playlist contains 30-second song previews of every artist's top tracks from the Spotify API.
-* [x] The user can purchase concert tickets from the concert details page.
-* [x] When the user taps on a song, the app's media player opens up, including navigation controls.
-* [x] The user can like songs and concerts, which are stored in the database.
-* [x] The user can view liked songs and concerts from the user page.
-* [x] T
+- User can search through concerts in their area using the Ticketmaster Database API.
+- For each concert displayed, the user can see the following details:
+  - Details include: event name, location, backdrop image
+- When the user clicks on a concert, the concert details and playlist are shown
+  - Details include: event name, artists, location, backdrop image, date
+- Each concert's playlist contains 30-second song previews of every artist's top tracks from the Spotify API.
+- The user can purchase concert tickets from the concert details page.
+- When the user taps on a song, the app's media player opens up, including navigation controls.
+- The user can like songs and concerts, which are stored in the database.
+- The user can view liked songs and concerts from the user page.
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
+[temp]
 <img src='http://i.imgur.com/ZHcjdQK.gif' title='Vertical' width='' alt='Vertical' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
