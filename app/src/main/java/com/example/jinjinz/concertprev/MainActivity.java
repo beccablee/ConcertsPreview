@@ -542,14 +542,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void toggleLocationUse(MenuItem item) {
         if(MI_LOCATION_FLAG) {
             MI_LOCATION_FLAG = false;
-            // off color
-            item.setIcon(getDrawable(R.drawable.ic_location));
+            item.setIcon(getDrawable(R.drawable.ic_location_deactivated));
+            Toast.makeText(this, "Location off", Toast.LENGTH_SHORT).show();
             fetchConcerts();
         } else if (!MI_LOCATION_FLAG) {
             MI_LOCATION_FLAG = true;
-            // on color
+            item.setIcon(getDrawable(R.drawable.ic_location_activated));
+            Toast.makeText(this, "Location on", Toast.LENGTH_SHORT).show();
             fetchConcerts();
-            item.setIcon(getDrawable(R.drawable.ic_location));
         }
     }
 

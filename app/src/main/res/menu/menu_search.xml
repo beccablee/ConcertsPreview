@@ -12,7 +12,7 @@
     <item android:id="@+id/action_location"
         android:orderInCategory="8"
         android:title="Location"
-        android:icon="@drawable/ic_location"
+        android:icon="@drawable/ic_location_activated"
         app:showAsAction="always"
         android:onClick="toggleLocationUse" />
 
