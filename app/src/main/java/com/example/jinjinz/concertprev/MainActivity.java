@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.ServiceConnection;
+
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -29,6 +30,8 @@ import com.example.jinjinz.concertprev.database.UserDataSource;
 import com.example.jinjinz.concertprev.databases.MediaContract;
 import com.example.jinjinz.concertprev.databases.MediaObserver;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
+import com.example.jinjinz.concertprev.fragments.LikedConcertsFragment;
+import com.example.jinjinz.concertprev.fragments.LikedSongsFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerBarFragment;
 import com.example.jinjinz.concertprev.fragments.PlayerScreenFragment;
 import com.example.jinjinz.concertprev.fragments.SearchFragment;
@@ -49,8 +52,14 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.TimeZone;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -60,7 +69,8 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
-        ConcertDetailsFragment.ConcertDetailsFragmentListener, MediaObserver.ContentObserverCallback {
+        ConcertDetailsFragment.ConcertDetailsFragmentListener, MediaObserver.ContentObserverCallback, UserFragment.UserFragmentListener,
+        LikedSongsFragment.LikedSongsFragmentListener, LikedConcertsFragment.LikedConcertsFragmentListener{
 
     private AsyncHttpClient client;
 
@@ -95,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String[] mLocationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     // database variables
+    private static int wherePlayerLaunched = 0;
+    public static int fromLikedSongs = 1;
+    public static int fromConcert = 2;
     public static UserDataSource userDataSource;
 
     String[] mSongProjection = {
@@ -128,6 +141,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     Cursor mCurrentCursor;
     Cursor mConcertCursor;
     MediaObserver mMediaObserver;
+
+    public static int getWherePlayerLaunched() {
+        return wherePlayerLaunched;
+    }
+    public static void setWherePlayerLaunched(int wherePlayerLaunched) {
+        MainActivity.wherePlayerLaunched = wherePlayerLaunched;
+    }
+
     /**
      * Overides super variable
      * Show search fragment first and creates an instance of GoogleApiClient
@@ -147,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (savedInstanceState == null) {
             mBarFragmentHolder = findViewById(R.id.playerFragment);
             mBarFragmentHolder.setVisibility(View.GONE);
-            mSearchFragment = mSearchFragment.newInstance();
+            mSearchFragment = SearchFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainFragment, mSearchFragment);
             mBarFragment = PlayerBarFragment.newInstance();
@@ -273,7 +294,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     private void onNewConcert(Concert c, ArrayList<Song> s) {
         Intent i = new Intent(this, MediaPlayerService.class);
-        Concert concert = c;
+        if (c == null) {
+            Concert concert = new Concert();
+            concert.setEventName("My Songs");
+        }
+        else {
+            Concert concert = c;
+        }
         i.putExtra("concert", Parcels.wrap(c));
         ArrayList<Parcelable> songs = new ArrayList<>();
         for (int j = 0; j < s.size(); j++) {
@@ -289,19 +316,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public String getConcertName() {
-        return mCurrentConcert.getEventName();
+        if(mCurrentConcert != null) {
+            return mCurrentConcert.getEventName();
+        }
+        else {
+            return "";
+        }
     }
 
     /**
      * Override PlayerScreenFragmentListener
-     * Goes to current concert playlist
+     * Goes to current concert playlist or user profile if launched from liked songs
      */
     @Override
     public void onConcertClick() {
-        ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mCurrentConcert));
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
-        ft.addToBackStack("details");
+        if(getConcertName().equals("My Songs")) {
+            UserFragment userFragment = UserFragment.newInstance();
+            ft.replace(R.id.mainFragment, userFragment);
+            ft.addToBackStack("my music");
+        } else if (mCurrentConcert != null && !getConcertName().equals("")){
+            ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mCurrentConcert));
+            ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
+            ft.addToBackStack("details");
+        }
         ft.commit();
     }
 
@@ -322,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void backInStack() {
         super.onBackPressed();
     }
+
 
     /**
      * Override PlayerScreenFragmentListener
@@ -386,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void fetchConcerts() {
         if (fIsReadyToPopulate && fIsApiConnected) {
             // url includes api key and music classification
-            String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+            String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json";
             // the parameter(s)
             RequestParams params = new RequestParams();
             if (queryText != null) {
@@ -399,6 +438,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 latlong = null;
             }
 
+            params.put("apikey", "7elxdku9GGG5k8j0Xm8KWdANDgecHMV0");
+            params.put("classificationName", "Music");
+            params.put("startDateTime", getUtcTime(getCurrentDate()));
+            Log.d("event date", getUtcTime(getCurrentDate()));
             params.put("latlong", latlong); // must be N, E
             params.put("radius", "50");
             params.put("size", "15");
@@ -423,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         Log.d("client calls", "error adding concerts: " + statusCode);
                         if(queryText != null) {
                             SearchFragment.searchAdapter.clear();
-                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + "in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
                         } else {
                             Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
                         }
@@ -447,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void fetchMoreConcerts(int page) {
         // url includes api key and music classification
-        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json?apikey=7elxdku9GGG5k8j0Xm8KWdANDgecHMV0&classificationName=Music";
+        String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json";
         // the parameters
         RequestParams params = new RequestParams();
         if (queryText != null) {
@@ -460,6 +503,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             latlong = null;
         }
 
+        params.put("apikey", "7elxdku9GGG5k8j0Xm8KWdANDgecHMV0");
+        params.put("classificationName", "Music");
+        params.put("startDateTime", getUtcTime(getCurrentDate()));
+        Log.d("event date", getUtcTime(getCurrentDate()));
         params.put("latlong", latlong); // must be N, E
         params.put("radius", "50");
         params.put("size", "15");
@@ -510,14 +557,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         fetchConcerts();
     }
 
-    //TODO figure out what's up
     /**
      * Replaces the search fragment with the concert details fragment when a concert is tapped
      * @param concert the concert that was tapped
      * */
     @Override
     public void onConcertTap(Concert concert) {
-        // open songs fragment --> needs more stuff from songsfrag
+        if(userDataSource.isConcertAlreadyInDb(concert)) {
+           concert = userDataSource.getConcertFromDB(concert);
+        }
         mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
@@ -612,8 +660,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    /** Searches for an artist on Spotify and gets their ID from the first search result */
-    public void searchArtistOnSpotify(final SongsFragment fragment, Concert concert, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists){
+    /**
+     *  Searches for an artist on Spotify and gets their ID from the first search result
+     *  */
+    public void searchArtistOnSpotify(final SongsFragment fragment, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists, final Concert concert){
         String url = "https://api.spotify.com/v1/search";
 
         client = new AsyncHttpClient();
@@ -630,30 +680,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 try {
                     // Search for the artist's top tracks
                     artistJSONResult = response.getJSONObject("artists").getJSONArray("items").getJSONObject(0).getString("id");
-                    searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists, artistIndex);
+                    searchArtistTopTracks(fragment, artistJSONResult, songsPerArtist, artists, artistIndex, concert);
                 } catch (JSONException e){
                     e.printStackTrace();
-                    Log.d("client calls", "could not retrieve artist id: " + statusCode);
-                    // Search for the next artist in the ArrayList, if Spotify doesn't have current artist
-                    if (artistIndex + 1 < artists.size()) {
-                        searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                    }
-                    // Null state: check if no songs have loaded from any artist
-                    else if (artistIndex == artists.size() - 1 && fragment.getSongsCount() == 0){
-                        fragment.noSongsLoaded();
-                    }
+                    Log.d("client calls", "could not retrieve artist id: " + statusCode + artistIndex + ' ' + artists.size());
+                    searchForNextArtist(artistIndex, artists, fragment, songsPerArtist, concert);
                 }
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.d("client calls", "Spotify client GET error: " + statusCode);
+                Log.d("client calls", "Spotify client GET error: " + statusCode + artistIndex + ' ' + artists.size());
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist, concert);
             }
         });
     }
 
-    /** Searches for an artist's top tracks on Spotify and adds them to the SongsFragment */
-    public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists, final int artistIndex){
+    /**
+     * Searches for an artist's top tracks on Spotify and adds them to the SongsFragment
+     * */
+    public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists, final int artistIndex, final Concert concert){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
         RequestParams params = new RequestParams();
@@ -671,18 +717,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     e.printStackTrace();
                     Log.d("client calls", "Spotify client tracks GET error: " + statusCode);
                 }
-                // Search for next artist in ArrayList
-                if (artistIndex + 1 < artists.size()) {
-                    Log.d("DEBUG", artistIndex + " :::index" + artists.size() + " :::arraySize");
-                    searchArtistOnSpotify(fragment, mConcert, artistIndex + 1, songsPerArtist, artists);
-                }
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist, concert);
             }
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
-                Toast.makeText(getApplicationContext(), "Songs failed to load", Toast.LENGTH_SHORT).show();
+                Log.d("client calls", "Songs failed to load");
+                searchForNextArtist(artistIndex, artists, fragment, songsPerArtist, concert);
             }
         });
+    }
+
+    /**
+     * Search for the next artist in the ArrayList or check for null state for playlist
+     * */
+    public void searchForNextArtist(int artistIndex, ArrayList<String> artists, SongsFragment fragment, int songsPerArtist, Concert concert){
+        // Search for next artist in ArrayList
+        if (artistIndex + 1 < artists.size()) {
+            searchArtistOnSpotify(fragment, artistIndex + 1, songsPerArtist, artists, concert);
+        }
+        // Null state: check if no songs have loaded from any artist
+        else if (artistIndex + 1 >= artists.size() && fragment.getSongsCount() == 0){
+            fragment.noSongsLoaded();
+        }
     }
 
     /**
@@ -698,6 +755,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             pSongs.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
         }
         Collections.shuffle(pSongs);
+        if(userDataSource.isSongAlreadyInDb(song)) {
+            song = userDataSource.getSongFromDB(song);
+        }
         pSongs.add(0, song);
         onNewConcert(concert, pSongs);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -710,32 +770,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.commit();
     }
 
-    /**
-     *  "Likes" a concert by calling to the datasource to add it to the database
-     *  @param concert the concert to be liked
-     *  */
-    @Override
-    public void onLikeConcert(Concert concert) {
-        userDataSource.likeConcert(concert);
-    }
 
- /////   /**
- /////     * For now, it deletes all liked concerts
- ////    * */
-    @Override
-    public void onUnlikeConcert(Concert concert) {
-        userDataSource.deleteAllConcerts();
-    }
-
-    public void getLikes(MenuItem item) {
-        Intent intent = new Intent(MainActivity.this, DBTestActivity.class);
-        ArrayList<Concert> likedConcerts = userDataSource.getAllLikedConcerts();
-        intent.putExtra("concerts", Parcels.wrap(likedConcerts));
-        startActivity(intent);
-    }
-
+    // User Profile Methods
     ////////////////////////////////////////////////////
-
 
     /** Switches to user fragment when user menu button is clicked
      * @param item the user button */
@@ -745,6 +782,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         ft.replace(R.id.mainFragment, userFragment, "user");
         ft.addToBackStack("user");
         ft.commit();
+    }
+
+    /**
+     *  "Likes" a concert by calling to the datasource to add it to the database
+     *  @param concert the concert to be liked
+     *  */
+    @Override
+    public Concert likeConcert(Concert concert) {
+        Concert likedConcert = userDataSource.likeConcert(concert); // right here the dbid is still -1L
+        return likedConcert;
+    }
+
+    /**
+     * Returns all the liked concerts in the local SQLite database
+     * @return array list of liked concerts
+     */
+    public static ArrayList<Concert> getLikedConcerts() {
+        return userDataSource.getAllLikedConcerts();
+    }
+
+    /**
+     *  "Likes" a concert by calling to the datasource to add it to the database
+     *  @param song the song to be liked
+     *  */
+    @Override
+    public Song likeSong(Song song) {
+        Song likedSong = userDataSource.likeSong(song);
+        return likedSong;
+
+    }
+
+    /**
+     * Returns all the liked songs in the local SQLite database
+     * @return array list of liked songs
+     */
+    public static ArrayList<Song> getLikedSongs() {
+        return userDataSource.getAllLikedSongs();
+    }
+
+    /**
+     * Gets the local time and date of the phone
+     * @return the current local time and date
+     */
+    public static Date getCurrentDate() {
+        Calendar cal = Calendar.getInstance();
+        Date currDate = cal.getTime();
+        return currDate;
     }
 
     public static Song mediaCursorToSong(Cursor cursor) {
@@ -784,6 +868,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return concert;
     }
 
+    /**
+     * Transforms and formats the local time into Coordinated Universal Time (UTC) for the Ticketmaster API
+     * @param date the current local time and date
+     * @return string of current time in UTC in the acceptable Ticketmaster format
+     */
+    private String getUtcTime(Date date) {
+        TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+        SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        dayFormatter.setTimeZone(utcTimeZone);
+        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+        timeFormatter.setTimeZone(utcTimeZone);
+        String day = dayFormatter.format(date);
+        String time = timeFormatter.format(date);
+        String apiDate = day + "T" + time + "Z";
+        return apiDate;
+    }
+
     @Override
     public void updateObserver() {
         runOnUiThread(new Runnable() {
@@ -796,3 +897,4 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 }
+

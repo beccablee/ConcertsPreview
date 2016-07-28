@@ -11,12 +11,15 @@ import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.database.UserDataSource;
 import com.example.jinjinz.concertprev.models.Song;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -32,15 +35,18 @@ public class PlayerScreenFragment extends Fragment {
     private ImageView mAlbumImg;
     private TextView mConcertTitle;
 
-    private Button mBtnBack;
     private TextView mTvSongTitle;
     private TextView mTvArtistTitle;
     private Button mBtnPlay;
     private View view;
+    private Button mBtnBack;
     private Button mBtnPrev;
     private Button mBtnNext;
+    private Button mBtnLike;
     private ProgressBar mProgressBar;
     Boolean play;
+    private Song currentSong; //TODO: NEED TO IMPLEMENT THIS
+    private UserDataSource mUserDataSource;
     //total time of song
     private final int TOTAL = 30000;
 
@@ -60,6 +66,7 @@ public class PlayerScreenFragment extends Fragment {
         void setUI(); //set UI
         void onPlayerOpen();
         void backInStack(); //go back
+        Song likeSong(Song song); // like the song
     }
 
     /**
@@ -113,11 +120,13 @@ public class PlayerScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_player, container, false);
+        mUserDataSource = MainActivity.userDataSource;
 
         //Initialize values
         mAlbumImg = (ImageView) view.findViewById(R.id.albumImg);
         mConcertTitle = (TextView) view.findViewById(R.id.concertTitle);
         mTvSongTitle = (TextView) view.findViewById(R.id.songTitle);
+        mBtnLike = (Button) view.findViewById(R.id.btnLikeSong);
         mBtnPlay = (Button) view.findViewById(R.id.playBtn);
         mTvArtistTitle = (TextView) view.findViewById(R.id.artistTitle);
         mBtnPrev = (Button) view.findViewById(R.id.prevBtn);
@@ -143,12 +152,38 @@ public class PlayerScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 listener.skipPrev();
+                if(mUserDataSource.isSongAlreadyInDb(currentSong)) {
+                    if (currentSong.getDbID() == -1L) {
+                        mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
+                    } else {
+                        mBtnLike.setBackgroundResource(R.drawable.ic_star);
+                    }
+                }
             }
         });
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.skipNext();
+                if(mUserDataSource.isSongAlreadyInDb(currentSong)) {
+                    if (currentSong.getDbID() == -1L) {
+                        mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
+                    } else {
+                        mBtnLike.setBackgroundResource(R.drawable.ic_star);
+                    }
+                }
+            }
+        });
+        mBtnLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
+                Song likedSong = listener.likeSong(currentSong);
+                if(likedSong.getDbID() == -1L) {
+                    mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
+                } else {
+                    mBtnLike.setBackgroundResource(R.drawable.ic_star);
+                }
             }
         });
         mConcertTitle.setOnClickListener(new View.OnClickListener() {
@@ -166,6 +201,11 @@ public class PlayerScreenFragment extends Fragment {
      */
     public void updateInterface(Song song) {
         if (!mTvSongTitle.getText().equals(song.getName())) {
+            if(mUserDataSource.isSongAlreadyInDb(song)) {
+                currentSong = mUserDataSource.getSongFromDB(song);
+            } else {
+                currentSong = song;
+            }
             //set text
             mConcertTitle.setText(listener.getConcertName());
             mTvSongTitle.setText(song.getName());

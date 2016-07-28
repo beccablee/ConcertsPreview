@@ -1,6 +1,8 @@
 package com.example.jinjinz.concertprev.models;
 
 import android.os.Parcelable;
+import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,13 +12,10 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-/**
- * Created by jinjinz on 7/7/16.
- */
 @Parcel
 public class Song {
 
-    private long dbID;
+    private long dbID = -1L;
     private String name;
     private String spotifyID;
     private ArrayList<String> artists; //names
@@ -87,6 +86,7 @@ public class Song {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.d("song calls", "couldn't get at least one song");
         }
         return tracks;
     }
@@ -118,5 +118,14 @@ public class Song {
             e.printStackTrace();
         }
         return song;
+    }
+
+    public ArrayList<String> artistListToArray(String artistList) {
+        ArrayList<String> artists = new ArrayList<>();
+        String[] artistArray = TextUtils.split(artistList, ", ");
+        for(int i = 0; i < artistArray.length; i++) {
+            artists.add(artistArray[i]);
+        }
+        return artists;
     }
 }

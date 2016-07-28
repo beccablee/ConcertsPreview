@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
@@ -17,13 +18,16 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     private SQLiteDatabase database;
     private UserDatabaseHelper dbHelper;
+    private Context c;
 
     public UserDataSource(Context context) {
+        c = context;
         dbHelper = new UserDatabaseHelper(context);
     }
 
     // all the columns in the song table
-    String[] allSongColumns = {SongsTable.COLUMN_ENTRY_ID,
+    String[] allSongColumns =
+            {SongsTable.COLUMN_ENTRY_ID,
             SongsTable.COLUMN_SPOTIFY_ID,
             SongsTable.COLUMN_SONG_NAME,
             SongsTable.COLUMN_SONG_ARTISTS,
@@ -31,7 +35,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             SongsTable.COLUMN_ALBUM_ART_URL};
 
     // all the columns in the concert table
-    String [] allConcertColumns = {ConcertsTable.COLUMN_ENTRY_ID,
+    String [] allConcertColumns =
+            {ConcertsTable.COLUMN_ENTRY_ID,
             ConcertsTable.COLUMN_CONCERT_NAME,
             ConcertsTable.COLUMN_CONCERT_CITY,
             ConcertsTable.COLUMN_CONCERT_STATE,
@@ -56,7 +61,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @return the liked concert*/
     public Concert likeConcert(Concert concert) { //gets concert from like button click
 
-        // set key-value pairs for columns of concert table
+        //ConcertsTable.onUpgrade(database, 1, 2);
+       // set key-value pairs for columns of concert table
         ContentValues values = new ContentValues();
         values.put(ConcertsTable.COLUMN_CONCERT_NAME, concert.getEventName());
         values.put(ConcertsTable.COLUMN_CONCERT_CITY, concert.getCity());
@@ -70,8 +76,9 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
-           // deleteLikedConcert(concert);
-            Log.d("dbCommands", "concert unliked");
+            deleteLikedConcert(concert);
+            Toast.makeText(c, concert.getEventName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
+            return concert;
         } else {
             long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert)
                                                                                                                   // and returns the row id of the inserted concert ( or -1 if an error occurred)
@@ -79,18 +86,16 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
                         ConcertsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
                 cursor.moveToFirst();
-                Concert myConcert = cursorToConcert(cursor); // turn row into concert
+                concert = cursorToConcert(cursor); // turn row into concert
                 cursor.close();
-                Log.d("dbCommands", "liked a concert");
-                return myConcert; // return it for UI
+                Toast.makeText(c, concert.getEventName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Log.d("dbCommands", "inserted liked concert with id " + insertId);
+                return concert; // return it for UI
             } else {
-                Log.d("dbCommands", "error liking concert");
+                Toast.makeText(c, "Error adding " + concert.getEventName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
             }
         }
-
         return null; // return null for error handling
-        // in parent activity: if insertLikedConcert(..) returns null, toast error message
-        // Toast.makeText(MainActivity.this, "Error adding liked concert, try again later", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -98,23 +103,9 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param concert the concert to be deleted
      * */
     public void deleteLikedConcert(Concert concert) {
-        long rowId;
-        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
-                null, null, null, null, null); // query whole table
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
-                rowId = cursor.getPosition();
-                database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + rowId, null);
-                Log.d("dbCommands", "Concert deleted with id: " + rowId);
-                cursor.moveToNext();
-            } else {
-                cursor.moveToNext();
-            }
-        }
-        cursor.close();
-        //Log.d("dbCommands", "No concert deleted");
-
+        database.delete(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_ENTRY_ID + " = " + concert.getDbId(), null);
+        concert.setDbId(-1L);
+        Log.d("dbCommands", "Concert deleted with id " + concert.getDbId());
     }
 
     /**
@@ -136,12 +127,76 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return allConcerts;
     }
 
-    ////////////////////**
-    ///////////////////  * Inserts the liked song into the database after checking for the possibility of duplication
-    ///////////////////  * @param song the song to be liked
-    ///////////////////  * @return the liked song
-    ///////////////////  * */
-    public Song insertLikedSong(Song song) { // gets song from like button click
+    /**
+     * Creates and returns a Concert object from the cursor
+     * @param cursor the cursor of the database query
+     * @return returns the concert */
+    public static Concert cursorToConcert(Cursor cursor) {
+        Concert concert = new Concert();
+        concert.setDbId(cursor.getLong(0));
+        concert.setEventName(cursor.getString(1));
+        concert.setCity(cursor.getString(2));
+        concert.setStateCode(cursor.getString(3)); // null for international concerts
+        concert.setCountryCode(cursor.getString(4));
+        concert.setVenue(cursor.getString(5));
+        concert.setEventTime(cursor.getString(6));
+        concert.setEventDate(cursor.getString(7));
+        concert.setArtistsString(cursor.getString(8));
+        concert.setBackdropImage(cursor.getString(9));
+        concert.setArtists(concert.artistListToArray(concert.getArtistsString()));
+
+        return concert;
+    }
+
+    /**
+     * Checks if a certain concert is already in the database
+     * @param concert the concert to check for
+     * @return true if the concert is already in the database, false otherwise */
+    public boolean isConcertAlreadyInDb(Concert concert) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                concert.setDbId(cursor.getLong(0));
+                cursor.close();
+                return true;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+
+        return false;
+    }
+
+    public Concert getConcertFromDB(Concert concert) {
+        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+                Concert myConcert = cursorToConcert(cursor);
+                cursor.close();
+                return myConcert;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return null;
+    }
+
+    public void deleteAllConcerts() {
+        database.delete(ConcertsTable.TABLE_NAME, null, null);
+    }
+
+    /**
+    * Inserts the liked song into the database after checking for the possibility of duplication
+    * @param song the song to be liked
+    * @return the liked song
+    * */
+    public Song likeSong(Song song) { // gets song from like button click
 
         // set key-value pairs for columns of song table
         ContentValues values = new ContentValues();
@@ -151,30 +206,38 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         values.put(SongsTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
         values.put(SongsTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
 
-        // insert and return the song
-        long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
-        Log.d("dbCommands", "inserted liked song at row: " + insertId);
-        if (insertId != -1) { // if an error did not occur
-            Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
-                    SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null); // get the whole liked song
-            cursor.moveToFirst(); // move to the beginning of the query (in this case just the one row)
-            Song mySong = cursorToSong(cursor); // turn the row into a song
-            cursor.close(); // close the cursor
-            return mySong; // return the song
+        if (isSongAlreadyInDb(song)) {
+            deleteLikedSong(song);
+            Toast.makeText(c, song.getName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
+            return song;
+        } else { // insert and return the song
+            long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
+            Log.d("dbCommands", "inserted liked song at row: " + insertId);
+            if (insertId != -1L) {
+                Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
+                        SongsTable.COLUMN_ENTRY_ID + " = " + insertId, null, null, null, null);
+                song.setDbID(insertId);
+                cursor.moveToFirst();
+                song = cursorToSong(cursor);
+                cursor.close();
+                Toast.makeText(c, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Log.d("dbCommands", "inserted liked song with id " + insertId);
+                return song;
+            } else {
+                Toast.makeText(c, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
+            }
         }
         return null; // return null for error handling
-        // in parent activity: if insertLikedSong(..) returns null, toast error message
-        // Toast.makeText(MainActivity.this, "Error adding liked song, try again later", Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Removes liked song from database
      * @param song the song to be deleted
      * */
-    public void deleteLikedSongs(Song song) {
-        long deleteId = song.getDbID();
-        database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + deleteId, null);
-        Log.d("dbCommands", "Song deleted with: " + song.getDbID());
+    public void deleteLikedSong(Song song) {
+        database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + song.getDbID(), null);
+       song.setDbID(-1L);
+        Log.d("dbCommands", "Song deleted with id " + song.getDbID());
     }
 
     /**
@@ -195,12 +258,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         return likedSongs;
     }
 
-    public void deleteAllConcerts() {
-        database.delete(ConcertsTable.TABLE_NAME, null, null);
-
-    }
-
-
     /**
      * Creates and returns a Song object from the cursor
      * @param cursor the cursor of the database query
@@ -208,46 +265,23 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * */
     public static Song cursorToSong(Cursor cursor) {
         Song song = new Song();
-        song.setDbID(cursor.getInt(0));
+        song.setDbID(cursor.getLong(0));
         song.setSpotifyID(cursor.getString(1));
         song.setName(cursor.getString(2));
-        String[] artists = cursor.getString(3).split(" & ");
-        ArrayList<String> artistList = new ArrayList<>(Arrays.asList(artists));
-        song.setArtists(artistList);
+        song.setArtists(song.artistListToArray(song.getArtistsString()));
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
         return song;
     }
 
-    /**
-     * Creates and returns a Concert object from the cursor
-     * @param cursor the cursor of the database query
-     * @return returns the concert */
-    public static Concert cursorToConcert(Cursor cursor) {
-        Concert concert = new Concert();
-        concert.setDbId(cursor.getInt(0));
-        concert.setEventName(cursor.getString(1));
-        concert.setCity(cursor.getString(2));
-        concert.setStateCode(cursor.getString(3)); // null for international concerts
-        concert.setCountryCode(cursor.getString(4));
-        concert.setVenue(cursor.getString(5));
-        concert.setEventTime(cursor.getString(6));
-        concert.setEventDate(cursor.getString(7));
-        concert.setArtistsString(cursor.getString(8));
-        concert.setBackdropImage(cursor.getString(9));
-        return concert;
-    }
 
-    /**
-     * Checks if a certain concert is already in the database
-     * @param concert the concert to check for
-     * @return true if the concert is already in the database, false otherwise */
-    private boolean isConcertAlreadyInDb(Concert concert) {
-        Cursor cursor = database.query(ConcertsTable.TABLE_NAME, allConcertColumns,
-                null, null, null, null, null); // query whole table
+
+    public boolean isSongAlreadyInDb(Song song){
+        Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
+                null, null, null, null, null);
         cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            if(cursor.getString(1).equals(concert.getEventName()) && cursor.getString(7).equals(concert.getEventDate())) {
+        while (!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(song.getSpotifyID())) {
                 cursor.close();
                 return true;
             } else {
@@ -255,9 +289,33 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             }
         }
         cursor.close();
-
         return false;
     }
 
+    /**
+     * Retrieves the input song with the database id from the SQLite database
+     * @param song the song to search for
+     * @return the song in the form it was input into the database
+     */
+    public Song getSongFromDB(Song song) {
+        Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
+                null, null, null, null, null); // query whole table
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            if(cursor.getString(1).equals(song.getSpotifyID())) {
+                Song mySong = cursorToSong(cursor);
+                cursor.close();
+                return mySong;
+            } else {
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return null;
+    }
+
+    public void deleteAllSongs() {
+        database.delete(SongsTable.TABLE_NAME, null, null);
+    }
 
 }

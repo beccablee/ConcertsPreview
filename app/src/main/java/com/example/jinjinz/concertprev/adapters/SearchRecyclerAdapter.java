@@ -21,7 +21,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     public void onClick(View view) {
         ImageView ivBackgroundImage = (ImageView) view.findViewById(R.id.ivBackgroundImage);
         Concert concert = (Concert) ivBackgroundImage.getTag();
-        listener.onConcertTap(concert);
+        mSearchRecyclerAdapterListener.onConcertTap(concert);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -42,11 +42,13 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
 
     }
 
-    SearchRecyclerAdapterListener listener;
+
 
     public interface SearchRecyclerAdapterListener {
         void onConcertTap(Concert concert);
     }
+
+    SearchRecyclerAdapterListener mSearchRecyclerAdapterListener;
 
     private ArrayList<Concert> mConcerts;
     private Context mContext;
@@ -54,7 +56,7 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
     public SearchRecyclerAdapter(Context context, ArrayList<Concert> concerts, SearchRecyclerAdapterListener searchRecyclerAdapterListener) {
         mConcerts = concerts;
         mContext = context;
-        listener = searchRecyclerAdapterListener;
+        mSearchRecyclerAdapterListener = searchRecyclerAdapterListener;
     }
 
     // access to the context object in the recyclerview

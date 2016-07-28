@@ -14,7 +14,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@android:color/darker_gray"
-        android:elevation="20dp"/>
+        android:paddingRight="25dp"
+        android:paddingBottom="25dp"/>
 
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
@@ -86,7 +87,7 @@
         android:background="@drawable/skip_prev"
         android:layout_alignTop="@+id/playBtn"
         android:layout_alignStart="@+id/albumImg"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="12dp" />
 
     <Button
         android:layout_width="50dp"
@@ -95,6 +96,17 @@
         android:id="@+id/nextBtn"
         android:layout_alignTop="@+id/playBtn"
         android:layout_alignEnd="@+id/albumImg"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:id="@+id/btnLikeSong"
+        android:background="@drawable/ic_unstar"
+        android:layout_alignTop="@+id/songTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="12dp"
+        android:clickable="true" />
 
 </RelativeLayout>

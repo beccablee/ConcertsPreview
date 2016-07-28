@@ -26,14 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DBTestActivity" />
 
         <service
             android:name=".MediaPlayerService"
             android:enabled="true"
             android:exported="false"
             android:grantUriPermissions="true"></service>
-
         <provider
             android:name="com.example.jinjinz.concertprev.databases.SongProvider"
             android:authorities="com.example.jinjinz.concertprev.databases"

@@ -10,14 +10,19 @@ public class SongsTable {
     public static final String COLUMN_ENTRY_ID = "_id";
     public static final String COLUMN_SPOTIFY_ID = "spotifyID";
     public static final String COLUMN_SONG_NAME = "name";
-    // public static final String COLUMN_MAIN_ARTIST = "mainArtist"; // if i plan to split for better layout (ex. Chance the Rapper ft. Saba
     public static final String COLUMN_SONG_ARTISTS = "artists";
     public static final String COLUMN_SONG_PREVIEW_URL = "songURL";
     public static final String COLUMN_ALBUM_ART_URL = "albumArt";
 
     // Create table SQL string
-    private static final String createSongsTable = "CREATE TABLE " + TABLE_NAME + "(" + COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SPOTIFY_ID + " TEXT NOT NULL, "
-            + COLUMN_SONG_NAME + " TEXT NOT NULL, " + COLUMN_SONG_ARTISTS + " TEXT NOT NULL, " + COLUMN_SONG_PREVIEW_URL + " TEXT NOT NULL, " + COLUMN_ALBUM_ART_URL + " TEXT NOT NULL" + ")";
+    private static final String createSongsTable = "CREATE TABLE " +
+            TABLE_NAME + "(" +
+            COLUMN_ENTRY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +  // 0
+            COLUMN_SPOTIFY_ID + " TEXT NOT NULL, " +                    // 1
+            COLUMN_SONG_NAME + " TEXT NOT NULL, " +                     // 2
+            COLUMN_SONG_ARTISTS + " TEXT NOT NULL, " +                  // 3
+            COLUMN_SONG_PREVIEW_URL + " TEXT NOT NULL, " +              // 4
+            COLUMN_ALBUM_ART_URL + " TEXT NOT NULL" + ")";              // 5
 
     // Deletes the entire table (if it exists)
     private static final String dropSongsTable = "DROP IF EXISTS " + TABLE_NAME;

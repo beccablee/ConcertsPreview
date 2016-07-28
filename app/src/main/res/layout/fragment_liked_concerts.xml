@@ -1,0 +1,20 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.jinjinz.concertprev.fragments.LikedConcertsFragment">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvLikedConcerts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No favorited concerts"
+        android:id="@+id/tvNoConcerts"
+        android:textColor="#EEEEEE"
+        android:gravity="center" />
+
+</FrameLayout>

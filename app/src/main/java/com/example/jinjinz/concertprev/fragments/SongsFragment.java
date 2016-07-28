@@ -31,14 +31,14 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
     private RecyclerView rvSongs;
     private RelativeLayout llLoading;
     private RelativeLayout rlRecyclerView;
-    SongsFragmentListener listener;
+    private SongsFragmentListener listener;
 
     public static SongArrayAdapter adapter;
 
     /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
-        void searchArtistOnSpotify(SongsFragment fragment, Concert concert, int artistIndex, int songsPerArtist, ArrayList<String> artists);
         void launchSongPlayer(Song song, ArrayList<Parcelable> songs, Concert concert);
+        void searchArtistOnSpotify(SongsFragment fragment, int artistIndex, int songsPerArtist, ArrayList<String> artists, Concert concert);
     }
 
     /** Required empty public constructor */
@@ -74,7 +74,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
         // Search for the artists in the ArrayList, starting with the first artist
-        listener.searchArtistOnSpotify(this, concert, 0, songsPerArtist, concert.getArtists());
+        listener.searchArtistOnSpotify(this, 0, songsPerArtist, concert.getArtists(), concert);
 
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
@@ -150,11 +150,15 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /** Tells the user that no songs can load for the artists */
     public void noSongsLoaded(){
-        TextView tvLoading = (TextView) getView().findViewById(R.id.tvLoading);
-        if (concert.getArtists().size() <= 1){
-            tvLoading.setText("No songs available for artist");
-        } else {
-            tvLoading.setText("No songs available for artists");
+        try {
+            TextView tvLoading = (TextView) getView().findViewById(R.id.tvLoading);
+            if (concert.getArtists().size() <= 1) {
+                tvLoading.setText("No songs available for artist");
+            } else {
+                tvLoading.setText("No songs available for artists");
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
         }
     }
 

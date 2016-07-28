@@ -6,11 +6,16 @@ import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.jinjinz.concertprev.R;
@@ -19,9 +24,6 @@ import com.squareup.picasso.Picasso;
 
 import org.parceler.Parcels;
 
-/**
- * Created by beccalee on 7/18/16.
- */
 public class ConcertDetailsFragment extends SongsFragment {
     private Concert concert;
     private String artists;
@@ -35,7 +37,10 @@ public class ConcertDetailsFragment extends SongsFragment {
     private TextView tvVenue;
     private TextView tvArtists;
     private Button btnLikeConcert;
-    private Button btnUnlikeConcert;
+    private Button btnPurchaseTickets;
+    private Button btnLeaveWebView;
+    private WebView webView;
+    private RelativeLayout webLayout;
 
     ConcertDetailsFragmentListener concertDetailsFragmentListener;
     SongsFragment songsFragment;
@@ -46,8 +51,7 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     /** Communicates between ConcertDetailsFragment and MainActivity */
     public interface ConcertDetailsFragmentListener {
-        void onLikeConcert(Concert concert);
-        void onUnlikeConcert(Concert concert);
+        Concert likeConcert(Concert concert);
     }
 
     /** Creates a new instance of the ConcertDetailsFragment and gets concert Object (Parcelable) */
@@ -97,7 +101,17 @@ public class ConcertDetailsFragment extends SongsFragment {
         tvVenue = (TextView) view.findViewById(R.id.tvVenue);
         tvArtists = (TextView) view.findViewById(R.id.tvArtists);
         btnLikeConcert = (Button) view.findViewById(R.id.btnLikeConcert);
-        btnUnlikeConcert = (Button) view.findViewById(R.id.btnUnlikeConcert);
+        btnPurchaseTickets = (Button) view.findViewById(R.id.btnPurchaseTickets);
+        btnLeaveWebView = (Button) view.findViewById(R.id.btnLeaveWebView);
+        webView = (WebView) view.findViewById(R.id.webView);
+        webLayout = (RelativeLayout) view.findViewById(R.id.webLayout);
+        webLayout.setVisibility(View.GONE);
+        if(concert.getDbId() == -1L) { // not in db
+            btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);
+        } else {
+            btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
+        }
+
         setUpListeners();
 
         artists = concert.getArtistsString();
@@ -114,25 +128,50 @@ public class ConcertDetailsFragment extends SongsFragment {
 
     }
 
-    /** Sets up 'like' button and makes title appear in the AppBar when collapsed */
-    public void setUpListeners(){
+    /** Sets up and opens WebView for ticket purchasing */
+    public void openWebView(){
+        if (webView != null) {
+            webView.getSettings().setLoadsImagesAutomatically(true);
+            webView.getSettings().setSupportZoom(true);
+            webView.getSettings().setBuiltInZoomControls(true);
+            webView.getSettings().setDisplayZoomControls(false);
+            webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    return true;
+                }
+            });
+            webView.loadUrl(concert.getEventUrl());
+            webLayout.setVisibility(View.VISIBLE);
+        }
+    }
 
+    /** Sets up button and AppBar listeners for details view*/
+    public void setUpListeners(){
+        // Allows user to 'like' a concert
         btnLikeConcert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Concert concertToLike = concert;
-                concertDetailsFragmentListener.onLikeConcert(concertToLike);
+                view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
+                Concert likedConcert = concertDetailsFragmentListener.likeConcert(concert);
+                if(likedConcert.getDbId() == -1L) {
+                    btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);
+                } else {
+                    btnLikeConcert.setBackgroundResource(R.drawable.ic_star);
+                }
+
             }
         });
-
-        btnUnlikeConcert.setOnClickListener(new View.OnClickListener() {
+        // Takes user to WebView of Ticketmaster event details
+        btnPurchaseTickets.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Concert concertToUnlike = concert;
-                concertDetailsFragmentListener.onUnlikeConcert(concertToUnlike);
+                openWebView();
             }
         });
-
+        // Makes title appear in the AppBar when collapsed
         appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = false;
             int scrollRange = -1;
@@ -154,18 +193,32 @@ public class ConcertDetailsFragment extends SongsFragment {
                 }
             }
         });
+        // Sets up back button functionality for WebView when launched
+        webView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(keyEvent.getAction() == KeyEvent.ACTION_DOWN && webView.getVisibility() == View.VISIBLE){
+                    switch(i) {
+                        case KeyEvent.KEYCODE_BACK:
+                            if (webView.canGoBack()) {
+                                webView.goBack();
+                                return true;
+                            } else {
+                                webLayout.setVisibility(View.GONE);
+                            }
+                            return true;
+                    }
+                }
+                return false;
+            }
+        });
+        // Allows user to exit WebView at any time
+        btnLeaveWebView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                webLayout.setVisibility(View.GONE);
+            }
+        });
     }
-
-
-    /** Destroys fragment on close, to allow all songs to load when opened again */
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        Fragment fragment = getFragmentManager().findFragmentById(R.id.mainFragment);
-//        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-//        ft.remove(fragment);
-//        ft.commit();
-//    }
-
 
 }

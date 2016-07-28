@@ -1,5 +1,6 @@
 package com.example.jinjinz.concertprev.models;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -19,17 +20,18 @@ public class Concert {
     //root url: https://app.ticketmaster.com/discovery/v2/
     // events url: https://app.ticketmaster.com/discovery/v2/events
 
-    private long dbId;
+    private long dbId = -1L;
     private String backdropImage;
     private String headliner;
-    private String venue; // may be null (tba)
+    private String venue;
     private String artistsString;
     private String eventName;
-    private String eventTime; // may be null (tba)
-    private String eventDate; // may be null (tba)
+    private String eventTime;
+    private String eventDate;
     private String city;
     private String stateCode;
     private String countryCode;
+    private String eventUrl;
     private ArrayList<String> artists;
 
 
@@ -39,86 +41,67 @@ public class Concert {
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
-
     public void setBackdropImage(String backdropImage) {
         this.backdropImage = backdropImage;
     }
-
     public void setArtists(ArrayList<String> artists) {
         this.artists = artists;
     }
-
     public void setVenue(String venue) {
         this.venue = venue;
     }
-
     public void setEventTime(String eventTime) {
         this.eventTime = eventTime;
     }
-
     public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
-
     public void setCity(String city) {
         this.city = city;
     }
-
     public void setStateCode(String stateCode) {
         this.stateCode = stateCode;
     }
-    public void setHeadliner(String headliner) {
-        this.headliner = headliner;
-    }
-
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
     }
+
     public String getArtistsString() {
         return artistsString;
     }
-
     public long getDbId() {
         return dbId;
     }
     public String getCountryCode() {
         return countryCode;
     }
-
     public String getStateCode() {
         return stateCode;
     }
-    public String getHeadliner() {
-        return headliner;
-    }
-
     public String getCity() {
         return city;
     }
-
     public String getEventDate() {
         return eventDate;
     }
-
     public String getEventTime() {
         return eventTime;
     }
-
     public String getEventName() {
         return eventName;
     }
-
     public String getVenue() {
         return venue;
     }
-
+    public String getEventUrl() {
+        return eventUrl;
+    }
     public ArrayList<String> getArtists() {
         return artists;
     }
-
     public String getBackdropImage() {
         return backdropImage;
     }
@@ -217,26 +200,13 @@ public class Concert {
 
     }
 
-    /** Formats given date from the Ticketmaster API into a clean, easily readable format */
-    public static String formatDate(String originalDate){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date newDate = null;
-        try {
-            newDate = format.parse(originalDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        format = new SimpleDateFormat("MMM dd, yyyy");
-        String date = format.format(newDate);
-        return date;
-    }
-
-    /** Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API */
+    /**
+     * Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API
+     * */
     public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
         // extract the values from the json, store them
         try {
-            //concert.backdropImage = ratioImg(event.getJSONArray("images"));
             concert.backdropImage = ratioImg(event);
             concert.eventName = event.getString("name");
             // because I love Chance
@@ -259,8 +229,14 @@ public class Concert {
                     .getJSONObject(0).getJSONObject("city").getString("name");
             concert.venue = event.getJSONObject("_embedded").getJSONArray("venues")
                     .getJSONObject(0).getString("name");
-            concert.stateCode = event.getJSONObject("_embedded").getJSONArray("venues")
-                    .getJSONObject(0).optJSONObject("state").optString("stateCode"); // changed to optJSONObject and optString to avoid catch issues
+            String state = event.getJSONObject("_embedded").getJSONArray("venues")
+                    .getJSONObject(0).optJSONObject("state").optString("stateCode");
+            if (state.equals("")) {
+                concert.stateCode = null;
+            } else {
+                concert.stateCode = state;
+            }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -277,10 +253,42 @@ public class Concert {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        try {
+            concert.eventUrl = event.getString("url");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         return concert;
     }
 
+    /**
+     * Turns the list of artists into an array list of artists for use by the Spotify API
+     * @param artistList list of artists joined by commas
+     * @return array list of artists
+     */
+    public ArrayList<String> artistListToArray(String artistList) {
+        ArrayList<String> artists = new ArrayList<>();
+        String[] artistArray = TextUtils.split(artistList, ", ");
+        for(int i = 0; i < artistArray.length; i++) {
+            artists.add(artistArray[i]);
+        }
+        return artists;
+    }
+
+    /** Formats the date from the Ticketmaster API into a clean, easily readable format */
+    public static String formatDate(String originalDate){
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = null;
+        try {
+            newDate = sdFormatter.parse(originalDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        sdFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        sdFormatter = new SimpleDateFormat("MMM dd, yyyy");
+        String date = sdFormatter.format(newDate);
+        return date;
+    }
 
 }

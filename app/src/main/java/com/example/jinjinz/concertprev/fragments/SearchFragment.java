@@ -21,9 +21,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-
-import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.R;
+import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
 import com.example.jinjinz.concertprev.models.Concert;
 
@@ -41,7 +40,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public static SwipeRefreshLayout mSwipeRefreshLayout;
     public static SearchRecyclerAdapter searchAdapter;
 
-    private String queryText;
     private ArrayList<Concert> concerts;
     private SearchFragmentListener searchFragmentListener;
 
@@ -78,7 +76,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
-        searchFragmentListener.populateConcerts(queryText);
+        searchFragmentListener.populateConcerts(null);
     }
 
     @Override
@@ -135,7 +133,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                queryText = query;
                 searchFragmentListener.populateConcerts(query);
                 return false;
             }
@@ -155,6 +152,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         concerts.addAll(concertArrayList);
         searchAdapter.notifyDataSetChanged();
     }
+
+
 
     /**
      * Refreshes search fragment screen
