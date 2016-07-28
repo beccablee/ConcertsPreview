@@ -42,6 +42,7 @@ public final class MediaContract {
         public static final String COLUMN_CONCERT_VENUE = "venue";
         public static final String COLUMN_CONCERT_ARTISTS = "artists";
         public static final String COLUMN_CONCERT_IMAGE_URL = "imageURL";
+        public static final String COLUNM_CONCERT_LIKED = "dbID";
         // Define a function to build a URI to find a specific movie by it's identifier
         public static Uri buildCurrConcertUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
@@ -50,7 +51,7 @@ public final class MediaContract {
         private static final String createCurrentConcertsTable = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_CONCERT_NAME + " TEXT, "
                 + COLUMN_CONCERT_CITY + " TEXT, " + COLUMN_CONCERT_STATE + " TEXT, " + COLUMN_CONCERT_COUNTRY + " TEXT, "
                 + COLUMN_CONCERT_VENUE + " TEXT, "  + COLUMN_CONCERT_TIME + " TEXT, " + COLUMN_CONCERT_DATE + " TEXT, "
-                + COLUMN_CONCERT_ARTISTS + " TEXT, " + COLUMN_CONCERT_IMAGE_URL + " TEXT" + ");";
+                + COLUMN_CONCERT_ARTISTS + " TEXT, " + COLUMN_CONCERT_IMAGE_URL + " TEXT, " + COLUNM_CONCERT_LIKED +  " INTEGER" + ");";
         // Deletes the entire table (if it exists)
         private static final String dropCurrentConcertsTable = "DROP IF EXISTS " + TABLE_NAME;
         /** Creates the concerts table in the SQLite database
@@ -124,13 +125,14 @@ public final class MediaContract {
         public static final String COLUMN_SONG_ARTIST = "artist"; //only need first artist right now
         public static final String COLUMN_SONG_PREVIEW_URL = "songURL";
         public static final String COLUMN_ALBUM_ART_URL = "albumArt";
+        public static final String COLUMN_LIKED = "liked";
         // Define a function to build a URI to find a specific song by it's identifier
         public static Uri buildPlaylistUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
         // Create table SQL string
         private static final String CREATE_PLAYLIST_TABLE = "CREATE TABLE " + TABLE_NAME + " (" + _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_SPOTIFY_ID + " TEXT, "
-                + COLUMN_SONG_NAME + " TEXT, " + COLUMN_SONG_ARTIST + " TEXT, " + COLUMN_SONG_PREVIEW_URL + " TEXT NOT NULL, " + COLUMN_ALBUM_ART_URL + " TEXT" + ");";
+                + COLUMN_SONG_NAME + " TEXT, " + COLUMN_SONG_ARTIST + " TEXT, " + COLUMN_SONG_PREVIEW_URL + " TEXT NOT NULL, " + COLUMN_ALBUM_ART_URL + " TEXT, " + COLUMN_LIKED + " INTEGER"+ ");";
         // Deletes the entire table (if it exists)
         private static final String DROP_PLAYLIST_TABLE = "DROP IF EXISTS " + TABLE_NAME;
         /** Creates the songs table in the SQLite database

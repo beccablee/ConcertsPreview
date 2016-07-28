@@ -22,6 +22,12 @@ public class Song {
     private String previewUrl;
     private String albumArtUrl;
     private int songsPerArtist;
+    private boolean liked;
+    private String artistsString; // formatted for details view and db
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
 
     public void setDbID(int dbID) {
         this.dbID = dbID;
@@ -47,9 +53,16 @@ public class Song {
     public void setDbID(long dbID) {
         this.dbID = dbID;
     }
+    public void setArtistsString(String artistsString) {
+        this.artistsString = artistsString;
+    }
+
+    public boolean isLiked() {
+        return liked;
+    }
 
     public String getArtistsString() {
-        return android.text.TextUtils.join(" & ", artists);
+        return artistsString;
     }
     public long getDbID() {
         return dbID;
@@ -114,9 +127,11 @@ public class Song {
             for (int i = 0; i < artist_list.length(); i++) {
                 song.artists.add(artist_list.getJSONObject(i).getString("name"));
             }
+            song.artistsString = android.text.TextUtils.join(" & ", song.artists);
         } catch (JSONException e){
             e.printStackTrace();
         }
+        song.setLiked(false);
         return song;
     }
 

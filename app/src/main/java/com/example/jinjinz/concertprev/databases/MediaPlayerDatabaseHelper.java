@@ -74,6 +74,7 @@ public class MediaPlayerDatabaseHelper extends SQLiteOpenHelper {
             songValues.put(MediaContract.PlaylistTable.COLUMN_SONG_ARTIST, dummy_ss.getArtists().get(0));
             songValues.put(MediaContract.PlaylistTable.COLUMN_SONG_PREVIEW_URL, dummy_ss.getPreviewUrl());
             songValues.put(MediaContract.PlaylistTable.COLUMN_ALBUM_ART_URL, dummy_ss.getAlbumArtUrl());
+            songValues.put(MediaContract.PlaylistTable.COLUMN_LIKED, 0);
             db.insert(MediaContract.PlaylistTable.TABLE_NAME, null, songValues);
         }
 

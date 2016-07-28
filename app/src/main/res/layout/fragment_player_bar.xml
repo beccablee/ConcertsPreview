@@ -6,15 +6,19 @@
     tools:context="com.example.jinjinz.concertprev.fragments.PlayerBarFragment">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:id="@+id/songTitle2"
         android:textStyle="bold"
         android:textColor="@android:color/white"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:id="@+id/artistTitle2"
         android:layout_below="@id/songTitle2"
         android:layout_alignParentStart="true"

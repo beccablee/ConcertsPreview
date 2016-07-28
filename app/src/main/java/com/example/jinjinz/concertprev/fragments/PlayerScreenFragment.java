@@ -45,7 +45,7 @@ public class PlayerScreenFragment extends Fragment {
     private Button mBtnLike;
     private ProgressBar mProgressBar;
     Boolean play;
-    private Song currentSong; //TODO: NEED TO IMPLEMENT THIS
+    //private Song currentSong; //TODO: NEED TO IMPLEMENT THIS
     private UserDataSource mUserDataSource;
     //total time of song
     private final int TOTAL = 30000;
@@ -66,7 +66,7 @@ public class PlayerScreenFragment extends Fragment {
         void setUI(); //set UI
         void onPlayerOpen();
         void backInStack(); //go back
-        Song likeSong(Song song); // like the song
+        void likeSong(); // like the song
     }
 
     /**
@@ -152,38 +152,19 @@ public class PlayerScreenFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 listener.skipPrev();
-                if(mUserDataSource.isSongAlreadyInDb(currentSong)) {
-                    if (currentSong.getDbID() == -1L) {
-                        mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
-                    } else {
-                        mBtnLike.setBackgroundResource(R.drawable.ic_star);
-                    }
-                }
             }
         });
         mBtnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.skipNext();
-                if(mUserDataSource.isSongAlreadyInDb(currentSong)) {
-                    if (currentSong.getDbID() == -1L) {
-                        mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
-                    } else {
-                        mBtnLike.setBackgroundResource(R.drawable.ic_star);
-                    }
-                }
             }
         });
         mBtnLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
-                Song likedSong = listener.likeSong(currentSong);
-                if(likedSong.getDbID() == -1L) {
-                    mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
-                } else {
-                    mBtnLike.setBackgroundResource(R.drawable.ic_star);
-                }
+                listener.likeSong();
             }
         });
         mConcertTitle.setOnClickListener(new View.OnClickListener() {
@@ -201,11 +182,6 @@ public class PlayerScreenFragment extends Fragment {
      */
     public void updateInterface(Song song) {
         if (!mTvSongTitle.getText().equals(song.getName())) {
-            if(mUserDataSource.isSongAlreadyInDb(song)) {
-                currentSong = mUserDataSource.getSongFromDB(song);
-            } else {
-                currentSong = song;
-            }
             //set text
             mConcertTitle.setText(listener.getConcertName());
             mTvSongTitle.setText(song.getName());
@@ -272,6 +248,19 @@ public class PlayerScreenFragment extends Fragment {
      */
     public void setProgressBar(int time) {
         mProgressBar.setProgress(time);
+    }
+
+    /**
+     * Update the like btn
+     */
+    public void setLikeBtn(Song song) {
+        if (song.isLiked()) {
+            mBtnLike.setBackgroundResource(R.drawable.ic_star);
+        }
+
+        else {
+            mBtnLike.setBackgroundResource(R.drawable.ic_unstar);
+        }
     }
 
     /**

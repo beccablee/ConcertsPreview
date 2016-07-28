@@ -3,9 +3,9 @@ package com.example.jinjinz.concertprev;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
-
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -51,12 +51,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
@@ -64,7 +62,7 @@ import java.util.TimeZone;
 import cz.msebera.android.httpclient.Header;
 
 /**
- * TODO: Fix like buttons
+ * TODO: Fix concert
  */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
@@ -116,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             MediaContract.PlaylistTable.COLUMN_SONG_NAME,
             MediaContract.PlaylistTable.COLUMN_SONG_ARTIST,
             MediaContract.PlaylistTable.COLUMN_SONG_PREVIEW_URL,
-            MediaContract.PlaylistTable.COLUMN_ALBUM_ART_URL
+            MediaContract.PlaylistTable.COLUMN_ALBUM_ART_URL,
+            MediaContract.PlaylistTable.COLUMN_LIKED
     };
     String[] mConcertProjection = {
             MediaContract.CurrentConcertTable._ID,
@@ -128,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             MediaContract.CurrentConcertTable.COLUMN_CONCERT_DATE,
             MediaContract.CurrentConcertTable.COLUMN_CONCERT_VENUE,
             MediaContract.CurrentConcertTable.COLUMN_CONCERT_ARTISTS,
-            MediaContract.CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL,
+            MediaContract.CurrentConcertTable.COLUNM_CONCERT_LIKED
     };
 
     String[] mCurrentProjection = {
@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     Cursor mCurrentCursor;
     Cursor mConcertCursor;
     MediaObserver mMediaObserver;
+    private int songID;
 
     public static int getWherePlayerLaunched() {
         return wherePlayerLaunched;
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void setMediaVariables() {
         mCurrentCursor = getContentResolver().query(MediaContract.CurrentSongTable.CONTENT_URI, mCurrentProjection, null, null, null);
         mCurrentCursor.moveToFirst();
-        int songID = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUMN_CURRENT_SONG_ID));
+        songID = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUMN_CURRENT_SONG_ID));
         int play = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUMN_IS_PLAYING));
         if (play == 0) {
             isPlaying = false;
@@ -294,14 +295,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     private void onNewConcert(Concert c, ArrayList<Song> s) {
         Intent i = new Intent(this, MediaPlayerService.class);
+        Concert concert;
         if (c == null) {
-            Concert concert = new Concert();
+            concert = new Concert();
             concert.setEventName("My Songs");
         }
         else {
-            Concert concert = c;
+            concert = c;
         }
-        i.putExtra("concert", Parcels.wrap(c));
+        i.putExtra("concert", Parcels.wrap(concert));
         ArrayList<Parcelable> songs = new ArrayList<>();
         for (int j = 0; j < s.size(); j++) {
             songs.add(Parcels.wrap(s.get(j)));
@@ -400,6 +402,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mPlayerFragment.updateInterface(mCurrentSong);
             mPlayerFragment.setPlayBtn(isPlaying);
             mPlayerFragment.setProgressBar(progress);
+            mPlayerFragment.setLikeBtn(mCurrentSong);
         }
     }
     /**
@@ -752,11 +755,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         ArrayList<Song> pSongs = new ArrayList<>();
         for (int i = 0; i < tempSongs.size(); i++) {
-            pSongs.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
+            Song songTemp = (Song) Parcels.unwrap(tempSongs.get(i));
+            if (userDataSource.isSongAlreadyInDb(songTemp)) {
+                songTemp.setLiked(true);
+            }
+            else {
+                songTemp.setLiked(false);
+            }
+            pSongs.add(i, songTemp);
         }
         Collections.shuffle(pSongs);
         if(userDataSource.isSongAlreadyInDb(song)) {
-            song = userDataSource.getSongFromDB(song);
+            song.setLiked(true);
         }
         pSongs.add(0, song);
         onNewConcert(concert, pSongs);
@@ -804,13 +814,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     /**
      *  "Likes" a concert by calling to the datasource to add it to the database
-     *  @param song the song to be liked
      *  */
     @Override
-    public Song likeSong(Song song) {
-        Song likedSong = userDataSource.likeSong(song);
-        return likedSong;
+    public void likeSong() {
+        Log.i("songCheck", mCurrentSong.getArtistsString());
+        Boolean likedSong = userDataSource.likeSong(mCurrentSong);
 
+        // Defines selection criteria for the rows you want to update
+        String mSelectionClause = MediaContract.PlaylistTable.COLUMN_SPOTIFY_ID +  " LIKE ?";
+        String[] mSelectionArgs = {mCurrentSong.getSpotifyID()};
+
+        if (likedSong == null) {
+            return;
+        }
+        else if (likedSong) {
+            ContentValues likedValue = new ContentValues();
+            likedValue.put(MediaContract.PlaylistTable.COLUMN_LIKED, 1);
+            getContentResolver().update(MediaContract.PlaylistTable.CONTENT_URI, likedValue, mSelectionClause, mSelectionArgs);
+            mCurrentSong = mediaCursorToSong(mSongCursor);
+        }
+        else {
+            ContentValues likedValue = new ContentValues();
+            likedValue.put(MediaContract.PlaylistTable.COLUMN_LIKED, 0);
+            getContentResolver().update(MediaContract.PlaylistTable.CONTENT_URI, likedValue, mSelectionClause, mSelectionArgs);
+            mCurrentSong = mediaCursorToSong(mSongCursor);
+        }
     }
 
     /**
@@ -836,11 +864,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         song.setDbID(-1L);
         song.setSpotifyID(cursor.getString(1));
         song.setName(cursor.getString(2));
-        String[] artists = cursor.getString(3).split(" & ");
-        ArrayList<String> artistList = new ArrayList<>(Arrays.asList(artists));
-        song.setArtists(artistList);
+        song.setArtistsString(cursor.getString(cursor.getColumnIndex(MediaContract.PlaylistTable.COLUMN_SONG_ARTIST)));
+        song.setArtists(song.artistListToArray(song.getArtistsString()));
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
+        int liked = cursor.getInt(cursor.getColumnIndex(MediaContract.PlaylistTable.COLUMN_LIKED));
+        if (liked == 1) {
+            song.setLiked(true);
+        }
+        else {
+            song.setLiked(false);
+        }
         return song;
     }
 
@@ -850,7 +884,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @return returns the concert */
     public static Concert mediaCursorToConcert(Cursor cursor) {
         Concert concert = new Concert();
-        concert.setDbId(-1L);
+        concert.setDbId(cursor.getInt(cursor.getColumnIndex(MediaContract.CurrentConcertTable.COLUNM_CONCERT_LIKED)));
         concert.setEventName(cursor.getString(1));
         concert.setCity(cursor.getString(2));
         concert.setStateCode(cursor.getString(3)); // null for international concerts

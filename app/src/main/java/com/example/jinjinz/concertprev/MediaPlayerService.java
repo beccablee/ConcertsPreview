@@ -23,8 +23,6 @@ import java.util.ArrayList;
 
 public class MediaPlayerService extends Service {
     MediaPlayer mMediaPlayer;
-    //Concert mConcert;
-    //ArrayList<Song> mSongs;
     int iSize;
     int lastProgress = 0;
     private IBinder mBinder = new LocalBinder();
@@ -34,7 +32,9 @@ public class MediaPlayerService extends Service {
             PlaylistTable.COLUMN_SONG_NAME,
             PlaylistTable.COLUMN_SONG_ARTIST,
             PlaylistTable.COLUMN_SONG_PREVIEW_URL,
-            PlaylistTable.COLUMN_ALBUM_ART_URL
+            PlaylistTable.COLUMN_ALBUM_ART_URL,
+            PlaylistTable.COLUMN_LIKED
+
     };
     String[] mConcertProjection = {
             CurrentConcertTable._ID,
@@ -46,7 +46,8 @@ public class MediaPlayerService extends Service {
             CurrentConcertTable.COLUMN_CONCERT_DATE,
             CurrentConcertTable.COLUMN_CONCERT_VENUE,
             CurrentConcertTable.COLUMN_CONCERT_ARTISTS,
-            CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL
+            CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL,
+            CurrentConcertTable.COLUNM_CONCERT_LIKED
     };
 
     String[] mCurrentProjection = {
@@ -149,15 +150,21 @@ public class MediaPlayerService extends Service {
 
         Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
         ContentValues concertValues = new ContentValues();
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_CITY, concert.getCity());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_STATE, concert.getStateCode());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_COUNTRY, concert.getCountryCode());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_TIME, concert.getEventTime());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_DATE, concert.getEventDate());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
-        concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
+        if (concert.getEventName().equals("My Songs")) {
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
+        }
+        else {
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_CITY, concert.getCity());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_STATE, concert.getStateCode());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_COUNTRY, concert.getCountryCode());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_TIME, concert.getEventTime());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_DATE, concert.getEventDate());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
+            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
+            concertValues.put(CurrentConcertTable.COLUNM_CONCERT_LIKED, concert.getDbId());
+        }
         mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI,concertValues);
         //Update Songs
         getContentResolver().delete(PlaylistTable.CONTENT_URI, null, null);
@@ -168,9 +175,15 @@ public class MediaPlayerService extends Service {
             ContentValues songValues = new ContentValues();
             songValues.put(PlaylistTable.COLUMN_SPOTIFY_ID, song.getSpotifyID());
             songValues.put(PlaylistTable.COLUMN_SONG_NAME, song.getName());
-            songValues.put(PlaylistTable.COLUMN_SONG_ARTIST, song.getArtists().get(0));
+            songValues.put(PlaylistTable.COLUMN_SONG_ARTIST, song.getArtistsString());
             songValues.put(PlaylistTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
             songValues.put(PlaylistTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
+            if (!song.isLiked()) {
+                songValues.put(PlaylistTable.COLUMN_LIKED, 0);
+            }
+            else {
+                songValues.put(PlaylistTable.COLUMN_LIKED, 1);
+            }
             getContentResolver().insert(PlaylistTable.CONTENT_URI, songValues);
         }
         //Initialize Cursor

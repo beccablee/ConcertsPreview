@@ -33,6 +33,7 @@ public class Concert {
     private String countryCode;
     private String eventUrl;
     private ArrayList<String> artists;
+    private boolean liked;
 
 
     public void setDbId(long dbId) {
@@ -68,6 +69,7 @@ public class Concert {
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
     }
+    public void setLiked(boolean liked) { this.liked = liked; }
 
     public String getArtistsString() {
         return artistsString;
@@ -105,6 +107,8 @@ public class Concert {
     public String getBackdropImage() {
         return backdropImage;
     }
+    public boolean isLiked() { return liked;}
+
 
 
     public Concert() {
