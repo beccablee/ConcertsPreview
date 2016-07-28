@@ -27,22 +27,25 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
     private LikedSongArrayAdapter mLikedSongArrayAdapter;
     private LikedSongsFragmentListener mLikedSongsFragmentListener;
 
-    /* Communicates between SongsFragment and Main Activity */
+    /**
+     *  Communicates between LikedSongsFragment and Main Activity
+     *  */
     public interface LikedSongsFragmentListener {
         void launchSongPlayer(Song song, ArrayList<Parcelable> songs);
     }
 
-    /** Required empty public constructor */
+    /**
+     * Required empty public constructor
+     * */
     public LikedSongsFragment() {
     }
 
-    /** Creates a new instance of the SongsFragment and gets concert Object (Parcelable) */
     public static LikedSongsFragment newInstance() {
         LikedSongsFragment fragment = new LikedSongsFragment();
         return fragment;
     }
 
-    /** Gets the concert data passed into the fragment */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +54,6 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
 
     }
 
-    /** Sets up views and listeners for the fragment */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_liked_songs, container, false);
@@ -73,7 +75,9 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
         return view;
     }
 
-    /** Gets mLikedSongsFragmentListener from context */
+    /**
+     * Gets mLikedSongsFragmentListener from context
+     * */
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
@@ -84,11 +88,19 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
     }
 
 
-    /** Launches the player starting with the selected song */
+    /**
+     * Launches the player starting with the selected song
+     * @param song the song to be played
+     * */
     public void onSongClicked(Song song){
         mLikedSongsFragmentListener.launchSongPlayer(song, songsToParcelable(mySongs));
     }
 
+    /**
+     * Turns an arraylist of Song objects into an arraylist of Parcelable objects for the media player's use
+     * @param songs array list of Song objects
+     * @return array list of Parcelabel objects
+     */
     private ArrayList<Parcelable> songsToParcelable(ArrayList<Song> songs) {
         ArrayList<Parcelable> parcelables = new ArrayList<>();
         for(int i = 0; i < songs.size(); i++) {

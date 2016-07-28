@@ -34,6 +34,10 @@ public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAd
         listener = songClickListener;
     }
 
+    /**
+     * Triggers listener to open madia player
+     * @param view the view clicked
+     */
     @Override
     public void onClick(View view) {
         TextView tvSongName = (TextView) view.findViewById(R.id.tvSongName);
@@ -42,12 +46,13 @@ public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAd
         listener.onSongClicked(song);
     }
 
-    /* Communicates between SongArrayAdapter and SongsFragment */
+    /**
+     *  Communicates between LikedSongArrayAdapter and SongsFragment
+     *  */
     public interface OnSongClickListener {
         void onSongClicked(Song song);
     }
 
-    /* Inflates layout and returns new ViewHolder instance */
     @Override
     public LikedSongArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
@@ -58,7 +63,6 @@ public class LikedSongArrayAdapter extends RecyclerView.Adapter<LikedSongArrayAd
         return viewHolder;
     }
 
-    /* Populates data into each item through the ViewHolder */
     @Override
     public void onBindViewHolder(LikedSongArrayAdapter.ViewHolder viewHolder, int position) {
         // Gets the data model based on position

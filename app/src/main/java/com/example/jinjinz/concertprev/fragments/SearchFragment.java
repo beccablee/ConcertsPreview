@@ -40,7 +40,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public static SwipeRefreshLayout mSwipeRefreshLayout;
     public static SearchRecyclerAdapter searchAdapter;
 
-    private String queryText;
     private ArrayList<Concert> concerts;
     private SearchFragmentListener searchFragmentListener;
 
@@ -77,7 +76,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
-        searchFragmentListener.populateConcerts(queryText);
+        searchFragmentListener.populateConcerts(null);
     }
 
     @Override
@@ -134,7 +133,6 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                queryText = query;
                 searchFragmentListener.populateConcerts(query);
                 return false;
             }

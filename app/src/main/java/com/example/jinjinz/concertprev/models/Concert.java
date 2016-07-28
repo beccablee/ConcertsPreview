@@ -23,11 +23,11 @@ public class Concert {
     private long dbId = -1L;
     private String backdropImage;
     private String headliner;
-    private String venue; // may be null (tba)
+    private String venue;
     private String artistsString;
     private String eventName;
-    private String eventTime; // may be null (tba)
-    private String eventDate; // may be null (tba)
+    private String eventTime;
+    private String eventDate;
     private String city;
     private String stateCode;
     private String countryCode;
@@ -61,9 +61,6 @@ public class Concert {
     }
     public void setStateCode(String stateCode) {
         this.stateCode = stateCode;
-    }
-    public void setHeadliner(String headliner) {
-        this.headliner = headliner;
     }
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
@@ -203,7 +200,9 @@ public class Concert {
 
     }
 
-    /** Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API */
+    /**
+     * Builds and returns a concert from the event JSONObject retrieved from the Ticketmaster API
+     * */
     public static Concert fromJsonObject(JSONObject event){ // will give the concert each obj from the "events" json array (each index) // then will form each obj from the fromJsonArray method
         Concert concert = new Concert();
         // extract the values from the json, store them
@@ -263,6 +262,11 @@ public class Concert {
         return concert;
     }
 
+    /**
+     * Turns the list of artists into an array list of artists for use by the Spotify API
+     * @param artistList list of artists joined by commas
+     * @return array list of artists
+     */
     public ArrayList<String> artistListToArray(String artistList) {
         ArrayList<String> artists = new ArrayList<>();
         String[] artistArray = TextUtils.split(artistList, ", ");

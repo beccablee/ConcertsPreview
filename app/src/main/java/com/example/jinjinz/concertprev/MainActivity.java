@@ -88,12 +88,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String[] mLocationPermissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET};
 
     // database variables
-    private static ArrayList<Concert> likedConcerts;
-    private static ArrayList<Song> likedSongs;
     private static int wherePlayerLaunched = 0;
     public static int fromLikedSongs = 1;
     public static int fromConcert = 2;
-    private LikedConcertsFragment mLikedConcertsFragment;
     public static UserDataSource userDataSource;
     public static int getWherePlayerLaunched() {
         return wherePlayerLaunched;
@@ -252,13 +249,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         } else if (wherePlayerLaunched == fromLikedSongs){
             return "My Songs";
         } else {
-            return "";// need to make sure that title always says My Songs when going back to profile
+            return "";
         }
     }
 
     /**
      * Override PlayerScreenFragmentListener
-     * Goes to current concert playlist
+     * Goes to current concert playlist or user profile if launched from liked songs
      */
     @Override
     public void onConcertClick() {
@@ -663,7 +660,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     // Concert + Songs Fragment
     ////////////////////////////////////////////////////
 
-    /** Searches for an artist on Spotify and gets their ID from the first search result */
+    /**
+     *  Searches for an artist on Spotify and gets their ID from the first search result
+     *  */
     public void searchArtistOnSpotify(final SongsFragment fragment, final int artistIndex, final int songsPerArtist, final ArrayList<String> artists, final Concert concert){
         String url = "https://api.spotify.com/v1/search";
 
@@ -697,7 +696,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /** Searches for an artist's top tracks on Spotify and adds them to the SongsFragment */
+    /**
+     * Searches for an artist's top tracks on Spotify and adds them to the SongsFragment
+     * */
     public void searchArtistTopTracks(final SongsFragment fragment, final String artistId, final int songsPerArtist, final ArrayList<String> artists, final int artistIndex, final Concert concert){
         String ISOCountryCode = "US";
         String url = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks";
@@ -727,7 +728,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    /** Search for the next artist in the ArrayList or check for null state for playlist */
+    /**
+     * Search for the next artist in the ArrayList or check for null state for playlist
+     * */
     public void searchForNextArtist(int artistIndex, ArrayList<String> artists, SongsFragment fragment, int songsPerArtist, Concert concert){
         // Search for next artist in ArrayList
         if (artistIndex + 1 < artists.size()) {
@@ -791,11 +794,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return likedConcert;
     }
 
+    /**
+     * Returns all the liked concerts in the local SQLite database
+     * @return array list of liked concerts
+     */
     public static ArrayList<Concert> getLikedConcerts() {
         return userDataSource.getAllLikedConcerts();
     }
 
-
+    /**
+     *  "Likes" a concert by calling to the datasource to add it to the database
+     *  @param song the song to be liked
+     *  */
     @Override
     public Song likeSong(Song song) {
         Song likedSong = userDataSource.likeSong(song);
@@ -803,16 +813,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     }
 
+    /**
+     * Returns all the liked songs in the local SQLite database
+     * @return array list of liked songs
+     */
     public static ArrayList<Song> getLikedSongs() {
         return userDataSource.getAllLikedSongs();
     }
 
+    /**
+     * Gets the local time and date of the phone
+     * @return the current local time and date
+     */
     public static Date getCurrentDate() {
         Calendar cal = Calendar.getInstance();
         Date currDate = cal.getTime();
         return currDate;
     }
 
+    /**
+     * Transforms and formats the local time into Coordinated Universal Time (UTC) for the Ticketmaster API
+     * @param date the current local time and date
+     * @return string of current time in UTC in the acceptable Ticketmaster format
+     */
     private String getUtcTime(Date date) {
         TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
         SimpleDateFormat dayFormatter = new SimpleDateFormat("yyyy-MM-dd");

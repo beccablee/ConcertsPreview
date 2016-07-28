@@ -292,6 +292,11 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
     }
 
+    /**
+     * Retrieves the input song with the database id from the SQLite database
+     * @param song the song to search for
+     * @return the song in the form it was input into the database
+     */
     public Song getSongFromDB(Song song) {
         Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
                 null, null, null, null, null); // query whole table
