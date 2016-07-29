@@ -178,7 +178,7 @@
             android:id="@+id/btnLeaveWebView"
             android:layout_width="match_parent"
             android:layout_height="32dp"
-            android:text="Return to Working Title"
+            android:text="Return to Vibe"
             android:gravity="center"
             android:textSize="11sp"
             android:textColor="@color/lightGrey"
