@@ -284,6 +284,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
             }
         }
+        if (mediaPlayerService != null && mediaPlayerService.isPlaying()) {
+            mBarFragmentHolder.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -733,9 +736,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void setBarUI() {
-        if (mBarFragmentHolder != null && mPlayerFragment != null && !mPlayerFragment.isVisible()) {
-            mBarFragmentHolder.setVisibility(View.VISIBLE);
-        }
         if (mBarFragmentHolder != null && mBarFragmentHolder.getVisibility() == View.VISIBLE) {
             mBarFragment.setInterface(mCurrentSong);
             mBarFragment.setPlay(isPlaying);
