@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.database;
+package com.example.jinjinz.concertprev.databases;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;

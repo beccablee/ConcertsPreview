@@ -1,4 +1,4 @@
-package com.example.jinjinz.concertprev.database;
+package com.example.jinjinz.concertprev.databases;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -76,7 +76,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
             deleteLikedConcert(concert);
-            Toast.makeText(c, concert.getEventName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(c, "Removed from Favorites", Toast.LENGTH_SHORT).show();
             return concert;
         } else {
             long insertId = database.insert(ConcertsTable.TABLE_NAME, ConcertsTable.COLUMN_CONCERT_STATE, values); // inserts values in every column for the new row (liked concert)
@@ -87,11 +87,11 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 cursor.moveToFirst();
                 concert = cursorToConcert(cursor); // turn row into concert
                 cursor.close();
-                Toast.makeText(c, concert.getEventName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, "Added to Favorites", Toast.LENGTH_SHORT).show();
                 Log.d("dbCommands", "inserted liked concert with id " + insertId);
                 return concert; // return it for UI
             } else {
-                Toast.makeText(c, "Error adding " + concert.getEventName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, "Error adding concert. Please try again later", Toast.LENGTH_SHORT).show();
             }
         }
         return null; // return null for error handling
