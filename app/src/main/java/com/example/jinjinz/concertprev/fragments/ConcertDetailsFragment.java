@@ -15,6 +15,7 @@ import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -167,6 +168,9 @@ public class ConcertDetailsFragment extends SongsFragment {
             @Override
             public void onClick(View view) {
                 view.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.tapped));
+                if (concert == null) {
+                    Log.i("Check", "concert is null");
+                }
                 Concert likedConcert = concertDetailsFragmentListener.likeConcert(concert);
                 if(likedConcert.getDbId() == -1L) {
                     btnLikeConcert.setBackgroundResource(R.drawable.ic_unstar);

@@ -44,8 +44,8 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /* Communicates between SongsFragment and Main Activity */
     public interface SongsFragmentListener {
+        void launchSongPlayer(Song song, ArrayList<Parcelable> songs, Concert concert);
         void searchArtistOnSpotify(SongsFragment fragment, int artistIndex, int songsPerArtist, ArrayList<String> artists, Concert concert);
-        void launchSongPlayer(Song song, ArrayList<Parcelable> songs);
     }
 
     /** Required empty public constructor */
@@ -134,7 +134,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
     /** Launches the player starting with the selected song */
     public void onSongClicked(Song song){
-        listener.launchSongPlayer(song, songs);
+        listener.launchSongPlayer(song, songs, concert);
     }
 
     /** Returns the number of songs each artist will have in the playlist */

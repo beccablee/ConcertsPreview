@@ -1,12 +1,18 @@
 package com.example.jinjinz.concertprev;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -21,6 +27,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.database.UserDataSource;
+import com.example.jinjinz.concertprev.databases.MediaContract;
+import com.example.jinjinz.concertprev.databases.MediaObserver;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
 import com.example.jinjinz.concertprev.fragments.LikedConcertsFragment;
 import com.example.jinjinz.concertprev.fragments.LikedSongsFragment;
@@ -43,9 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -56,22 +64,26 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
-        ConcertDetailsFragment.ConcertDetailsFragmentListener, UserFragment.UserFragmentListener,
-        LikedSongsFragment.LikedSongsFragmentListener, LikedConcertsFragment.LikedConcertsFragmentListener {
+        ConcertDetailsFragment.ConcertDetailsFragmentListener, MediaObserver.ContentObserverCallback, UserFragment.UserFragmentListener,
+        LikedSongsFragment.LikedSongsFragmentListener, LikedConcertsFragment.LikedConcertsFragmentListener{
 
     private AsyncHttpClient client;
 
     // Media player variables
-    private ArrayList<Song> mSongs;
-    private Concert mMediaPlayerConcert;
     private Concert mConcert;
-    private MediaPlayer mediaPlayer;
-    private int iCurrentSongIndex;
+    private Song mCurrentSong;
+    private Concert mCurrentConcert;
+    private boolean isPlaying;
+    private int progress;
     private PlayerBarFragment mBarFragment;
     private PlayerScreenFragment mPlayerFragment;
     private View mBarFragmentHolder;
     private Handler mHandler;
     private View mActivityRoot;
+
+    //Media Service
+    MediaPlayerService mediaPlayerService;
+    boolean mBounded;
 
     // Search Fragment variables
     private SearchFragment mSearchFragment;
@@ -93,12 +105,49 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static int fromLikedSongs = 1;
     public static int fromConcert = 2;
     public static UserDataSource userDataSource;
+
+    String[] mSongProjection = {
+            MediaContract.PlaylistTable._ID,
+            MediaContract.PlaylistTable.COLUMN_SPOTIFY_ID,
+            MediaContract.PlaylistTable.COLUMN_SONG_NAME,
+            MediaContract.PlaylistTable.COLUMN_SONG_ARTIST,
+            MediaContract.PlaylistTable.COLUMN_SONG_PREVIEW_URL,
+            MediaContract.PlaylistTable.COLUMN_ALBUM_ART_URL,
+            MediaContract.PlaylistTable.COLUMN_LIKED
+    };
+    String[] mConcertProjection = {
+            MediaContract.CurrentConcertTable._ID,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_NAME,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_CITY,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_STATE,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_COUNTRY,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_TIME,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_DATE,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_VENUE,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_ARTISTS,
+            MediaContract.CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL,
+            MediaContract.CurrentConcertTable.COLUNM_CONCERT_LIKED
+    };
+
+    String[] mCurrentProjection = {
+            MediaContract.CurrentSongTable._ID,
+            MediaContract.CurrentSongTable.COLUMN_CURRENT_SONG_ID,
+            MediaContract.CurrentSongTable.COLUMN_IS_PLAYING,
+            MediaContract.CurrentSongTable.COLUNM_CURRENT_PROGRESS
+    };
+    Cursor mSongCursor;
+    Cursor mCurrentCursor;
+    Cursor mConcertCursor;
+    MediaObserver mMediaObserver;
+    private int songID;
+
     public static int getWherePlayerLaunched() {
         return wherePlayerLaunched;
     }
     public static void setWherePlayerLaunched(int wherePlayerLaunched) {
         MainActivity.wherePlayerLaunched = wherePlayerLaunched;
     }
+
     /**
      * Overides super variable
      * Show search fragment first and creates an instance of GoogleApiClient
@@ -147,6 +196,89 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         userDataSource.openDB();
     }
 
+    /**
+     * Synce up the activity member variables with the database
+     */
+    public void setMediaVariables() {
+        mCurrentCursor = getContentResolver().query(MediaContract.CurrentSongTable.CONTENT_URI, mCurrentProjection, null, null, null);
+        mCurrentCursor.moveToFirst();
+        songID = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUMN_CURRENT_SONG_ID));
+        int play = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUMN_IS_PLAYING));
+        if (play == 0) {
+            isPlaying = false;
+        }
+        else {
+            isPlaying = true;
+        }
+        progress = mCurrentCursor.getInt(mCurrentCursor.getColumnIndex(MediaContract.CurrentSongTable.COLUNM_CURRENT_PROGRESS));
+        mConcertCursor = getContentResolver().query(MediaContract.CurrentConcertTable.CONTENT_URI, mConcertProjection, null, null, null);
+        mConcertCursor.moveToFirst();
+        mCurrentConcert = mediaCursorToConcert(mConcertCursor);
+        Uri singleUri = ContentUris.withAppendedId(MediaContract.PlaylistTable.CONTENT_URI, songID);
+        mSongCursor = getContentResolver().query(singleUri, mSongProjection, null, null, null);
+        mSongCursor.moveToFirst();
+        mCurrentSong = mediaCursorToSong(mSongCursor);
+    }
+
+    /**
+     * connect GoogleAPIClient
+     */
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        Intent i = new Intent(this, MediaPlayerService.class);
+        bindService(i, mConnection, BIND_AUTO_CREATE);
+        super.onStart();
+    }
+
+    /**
+     * unconnect GoogleAPICLient
+     */
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        if(mBounded) {
+            unbindService(mConnection);
+            mBounded = false;
+        }
+        super.onStop();
+    }
+
+    /**
+     * register MediaObserver (subclass of ContentObserver)
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mMediaObserver == null) {
+            mMediaObserver = new MediaObserver(this);
+        }
+        getContentResolver().registerContentObserver(MediaContract.BASE_CONTENT_URI, true, mMediaObserver);
+    }
+
+    /**
+     * unregister MediaObserver (subclass of ContentObserver)
+     */
+    @Override
+    protected void onPause() {
+        getContentResolver().unregisterContentObserver(mMediaObserver);
+        super.onPause();
+    }
+
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            mBounded = true;
+            MediaPlayerService.LocalBinder mLocalBinder = (MediaPlayerService.LocalBinder)iBinder;
+            mediaPlayerService = mLocalBinder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBounded = false;
+            mediaPlayerService = null;
+        }
+    };
+
 
     //Player + MediaPlayer methods
     ////////////////////////////////////////////////////
@@ -156,87 +288,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @param s current ArrayList of songs in playlist
      */
     private void onNewConcert(Concert c, ArrayList<Song> s) {
-        if (mediaPlayer == null) {
-            iCurrentSongIndex = 0;
-            mMediaPlayerConcert = c;
-            mSongs = s;
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            updateProgressBar();
-
-            //on prepared listener --> what happens when it is ready to play
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    if (mPlayerFragment != null && mPlayerFragment.isVisible()) {
-                        mPlayerFragment.updateInterface(mSongs.get(iCurrentSongIndex));
-                        mPlayerFragment.updatePlay(true);
-                    }
-                    if (mBarFragment != null && mBarFragmentHolder.getVisibility() == View.VISIBLE) {
-                        mBarFragment.updatePlay(true);
-                        mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
-                    }
-                    mediaPlayer.start();
-                }
-            });
-
-            //switch between songs on completion
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mediaPlayer.reset();
-                    iCurrentSongIndex++;
-                    if(mSongs != null && iCurrentSongIndex == mSongs.size()) {
-                        iCurrentSongIndex = 0;
-                    }
-                    try {
-                        mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
-                        mediaPlayer.prepareAsync();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.d("music player", "unknown error");
-
-                    }
-                }
-            });
-
-            //error check
-            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-                @Override
-                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-                    Toast.makeText(MainActivity.this, "Music still loading...please wait", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-            });
-
-            //start with first song
-            try {
-                mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d("music player", "unknown error");
-
-            }
+        Intent i = new Intent(this, MediaPlayerService.class);
+        Concert concert;
+        if (c == null) {
+            concert = new Concert();
+            concert.setEventName("My Songs");
         }
         else {
-            //change variable
-            iCurrentSongIndex = 0;
-            mMediaPlayerConcert = c;
-            mSongs = s;
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-
-            //start with first song
-            try {
-                mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
-                mediaPlayer.prepareAsync();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d("music player", "unknown error");
-
-            }
+            concert = c;
         }
+        i.putExtra("concert", Parcels.wrap(concert));
+        ArrayList<Parcelable> songs = new ArrayList<>();
+        for (int j = 0; j < s.size(); j++) {
+            songs.add(Parcels.wrap(s.get(j)));
+        }
+        i.putExtra("songs", songs);
+        startService(i);
     }
 
     /**
@@ -245,11 +312,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public String getConcertName() {
-        if(wherePlayerLaunched == fromConcert) {
-            return mMediaPlayerConcert.getEventName();
-        } else if (wherePlayerLaunched == fromLikedSongs){
-            return "My Songs";
-        } else {
+        if(mCurrentConcert != null) {
+            return mCurrentConcert.getEventName();
+        }
+        else {
             return "";
         }
     }
@@ -265,8 +331,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             UserFragment userFragment = UserFragment.newInstance();
             ft.replace(R.id.mainFragment, userFragment);
             ft.addToBackStack("my music");
-        } else {
-            ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mMediaPlayerConcert));
+        } else if (mCurrentConcert != null && !getConcertName().equals("")){
+            ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mCurrentConcert));
             ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
             ft.addToBackStack("details");
         }
@@ -279,15 +345,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void playPauseSong() {
-        PlayerScreenFragment fragment = (PlayerScreenFragment) getSupportFragmentManager().findFragmentById(R.id.mainFragment);
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            fragment.updatePlay(false);
-        }
-        else {
-            mediaPlayer.start();
-            fragment.updatePlay(true);
-        }
+        mediaPlayerService.playPauseSong();
     }
 
     /**
@@ -306,42 +364,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void skipNext() {
-        mediaPlayer.stop();
-        mediaPlayer.reset();
-        try {
-            iCurrentSongIndex++;
-            if(iCurrentSongIndex == mSongs.size()) {
-                iCurrentSongIndex = 0;
-            }
-            mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("music player", "unknown error: skipNext");
-
-        }
+        mediaPlayerService.skipNext();
     }
+
     /**
      * Override PlayerScreenFragmentListener
      * Go back to previous song
      */
     @Override
     public void skipPrev() {
-            mediaPlayer.stop();
-            mediaPlayer.reset();
-        if (iCurrentSongIndex >= 1) {
-            iCurrentSongIndex = iCurrentSongIndex - 1;
-        }
-        else if (iCurrentSongIndex == 0) {
-            iCurrentSongIndex = mSongs.size() - 1;
-        }
-        try {
-            mediaPlayer.setDataSource(mSongs.get(iCurrentSongIndex).getPreviewUrl());
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("music player", "unknown error: skipPrev");
-        }
+        mediaPlayerService.skipPrev();
     }
 
     /**
@@ -351,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onClosePlayer() {
         mBarFragmentHolder.setVisibility(View.VISIBLE);
-        onOpenBar();
+        setBarUI();
     }
 
     /**
@@ -359,38 +391,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * update playerScreen UI
      */
     @Override
-    public void onOpenPlayer() {
-        mPlayerFragment.updateInterface(mSongs.get(iCurrentSongIndex));
-        mPlayerFragment.updatePlay(mediaPlayer.isPlaying());
+    public void setUI() {
+        if (mPlayerFragment.isVisible() && mCurrentSong != null) {
+            mPlayerFragment.updateInterface(mCurrentSong);
+            mPlayerFragment.setPlayBtn(isPlaying);
+            mPlayerFragment.setProgressBar(progress);
+            mPlayerFragment.setLikeBtn(mCurrentSong);
+        }
     }
-
     /**
-     * Initialize a thread to update the progress bar in media play
+     * Override PlayerScreenFragmentListener
+     * close bar
      */
-    public void updateProgressBar() {
-        //attempt at progressbar
-        new Thread(new Runnable() {
-            public void run() {
-                int currentPosition = 0;
-                while (true) {
-                    try {
-                        Thread.sleep(100);
-                        currentPosition = mediaPlayer.getCurrentPosition();
-                    } catch (InterruptedException e) {
-                        Log.d("progress bar", "error: Interrupted");
-                        return;
-                    } catch (Exception e) {
-                        Log.d("progress bar", "unknown error concerning progress bar");
-                        return;
-                    }
-                    if (mPlayerFragment != null && mPlayerFragment.isVisible()) {
-                        mPlayerFragment.setProgressBar(currentPosition);
-                    }
-                }
-            }
-        }).start();
+    @Override
+    public void onPlayerOpen() {
+        if (mBarFragment != null) {
+            mBarFragmentHolder.setVisibility(View.GONE);
+        }
+        setUI();
     }
-
 
     // Search Fragment methods
     ////////////////////////////////////////////////////
@@ -618,15 +637,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-    @Override
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
 
     /**
      * Override PlayerBarFragmentListener
@@ -637,7 +647,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
         if (mBarFragment != null) {
-//            ft.hide(getSupportFragmentManager().findFragmentByTag("bar"));
             mBarFragmentHolder.setVisibility(View.GONE);
         }
         ft.addToBackStack("player");
@@ -650,15 +659,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void playPauseBarBtn() {
-        PlayerBarFragment fragment = (PlayerBarFragment) getSupportFragmentManager().findFragmentById(R.id.playerFragment);
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            fragment.updatePlay(false);
-        }
-        else {
-            mediaPlayer.start();
-            fragment.updatePlay(true);
-        }
+       mediaPlayerService.playPauseSong();
     }
 
     /**
@@ -666,14 +667,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * update player bar UI
      */
     @Override
-    public void onOpenBar() {
+    public void setBarUI() {
         if (mBarFragmentHolder.getVisibility() == View.VISIBLE) {
-            mBarFragment.updateInterface(mSongs.get(iCurrentSongIndex));
-            if (mediaPlayer.isPlaying()) {
-                mBarFragment.updatePlay(true);
-            } else {
-                mBarFragment.updatePlay(false);
-            }
+            mBarFragment.setInterface(mCurrentSong);
+            mBarFragment.setPlay(isPlaying);
         }
     }
 
@@ -766,20 +763,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * Launches song player with a specific song in a playlist
      * */
     @Override
-    public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs){
+    public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs, Concert concert){
         if (mPlayerFragment == null) {
             mPlayerFragment = PlayerScreenFragment.newInstance();
         }
         ArrayList<Song> pSongs = new ArrayList<>();
         for (int i = 0; i < tempSongs.size(); i++) {
-            pSongs.add(i, (Song) Parcels.unwrap(tempSongs.get(i)));
+            Song songTemp = (Song) Parcels.unwrap(tempSongs.get(i));
+            if (userDataSource.isSongAlreadyInDb(songTemp)) {
+                songTemp.setLiked(true);
+            }
+            else {
+                songTemp.setLiked(false);
+            }
+            pSongs.add(i, songTemp);
         }
         Collections.shuffle(pSongs);
         if(userDataSource.isSongAlreadyInDb(song)) {
-            song = userDataSource.getSongFromDB(song);
+            song.setLiked(true);
         }
         pSongs.add(0, song);
-        onNewConcert(mConcert, pSongs);
+        onNewConcert(concert, pSongs);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
         if (mBarFragment != null) {
@@ -824,13 +828,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     /**
      *  "Likes" a concert by calling to the datasource to add it to the database
-     *  @param song the song to be liked
      *  */
     @Override
-    public Song likeSong(Song song) {
-        Song likedSong = userDataSource.likeSong(song);
-        return likedSong;
+    public void likeSong() {
+        Log.i("songCheck", mCurrentSong.getArtistsString());
+        Boolean likedSong = userDataSource.likeSong(mCurrentSong);
 
+        // Defines selection criteria for the rows you want to update
+        String mSelectionClause = MediaContract.PlaylistTable.COLUMN_SPOTIFY_ID +  " LIKE ?";
+        String[] mSelectionArgs = {mCurrentSong.getSpotifyID()};
+
+        if (likedSong == null) {
+            return;
+        }
+        else if (likedSong) {
+            ContentValues likedValue = new ContentValues();
+            likedValue.put(MediaContract.PlaylistTable.COLUMN_LIKED, 1);
+            getContentResolver().update(MediaContract.PlaylistTable.CONTENT_URI, likedValue, mSelectionClause, mSelectionArgs);
+            mCurrentSong = mediaCursorToSong(mSongCursor);
+        }
+        else {
+            ContentValues likedValue = new ContentValues();
+            likedValue.put(MediaContract.PlaylistTable.COLUMN_LIKED, 0);
+            getContentResolver().update(MediaContract.PlaylistTable.CONTENT_URI, likedValue, mSelectionClause, mSelectionArgs);
+            mCurrentSong = mediaCursorToSong(mSongCursor);
+        }
     }
 
     /**
@@ -852,6 +874,54 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     /**
+     * converts result from PlaylistTable to Song object
+     *  @param cursor the cursor of the database query
+     * @return new Song object
+     */
+    public static Song mediaCursorToSong(Cursor cursor) {
+        Song song = new Song();
+        song.setDbID(-1L);
+        song.setSpotifyID(cursor.getString(1));
+        song.setName(cursor.getString(2));
+        song.setArtistsString(cursor.getString(cursor.getColumnIndex(MediaContract.PlaylistTable.COLUMN_SONG_ARTIST)));
+        song.setArtists(song.artistListToArray(song.getArtistsString()));
+        song.setPreviewUrl(cursor.getString(4));
+        song.setAlbumArtUrl(cursor.getString(5));
+        int liked = cursor.getInt(cursor.getColumnIndex(MediaContract.PlaylistTable.COLUMN_LIKED));
+        if (liked == 1) {
+            song.setLiked(true);
+        }
+        else {
+            song.setLiked(false);
+        }
+        return song;
+    }
+
+    /**
+     * converts result from ConcertTable to Concert object
+     * @param cursor the cursor of the database query
+     * @return returns the concert */
+    public static Concert mediaCursorToConcert(Cursor cursor) {
+        Concert concert = new Concert();
+        concert.setDbId(cursor.getInt(cursor.getColumnIndex(MediaContract.CurrentConcertTable.COLUNM_CONCERT_LIKED)));
+        concert.setEventName(cursor.getString(1));
+        concert.setCity(cursor.getString(2));
+        concert.setStateCode(cursor.getString(3)); // null for international concerts
+        concert.setCountryCode(cursor.getString(4));
+        concert.setVenue(cursor.getString(5));
+        concert.setEventTime(cursor.getString(6));
+        concert.setEventDate(cursor.getString(7));
+        concert.setArtistsString(cursor.getString(8));
+        if (cursor.getString(8) != null) {
+            String[] artists = cursor.getString(8).split(", ");
+            ArrayList<String> artistList = new ArrayList<>(Arrays.asList(artists));
+            concert.setArtists(artistList);
+        }
+        concert.setBackdropImage(cursor.getString(9));
+        return concert;
+    }
+
+    /**
      * Transforms and formats the local time into Coordinated Universal Time (UTC) for the Ticketmaster API
      * @param date the current local time and date
      * @return string of current time in UTC in the acceptable Ticketmaster format
@@ -868,4 +938,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return apiDate;
     }
 
+    /**
+     * updates UI of everything visible when called
+     */
+    @Override
+    public void updateObserver() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setMediaVariables();
+                setUI();
+                setBarUI();
+            }
+        });
+    }
 }
+

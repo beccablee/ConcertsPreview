@@ -19,10 +19,15 @@ public class Song {
     private String name;
     private String spotifyID;
     private ArrayList<String> artists; //names
-    private String artistsString; // formatted for details view and db
     private String previewUrl;
     private String albumArtUrl;
     private int songsPerArtist;
+    private boolean liked;
+    private String artistsString; // formatted for details view and db
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
 
     public void setDbID(int dbID) {
         this.dbID = dbID;
@@ -39,9 +44,6 @@ public class Song {
     public void setAlbumArtUrl(String albumArtUrl) {
         this.albumArtUrl = albumArtUrl;
     }
-    public void setArtistsString(String artistsString) {
-        this.artistsString = artistsString;
-    }
     public void setSongsPerArtist(int songsPerArtist) {
         this.songsPerArtist = songsPerArtist;
     }
@@ -50,6 +52,13 @@ public class Song {
     }
     public void setDbID(long dbID) {
         this.dbID = dbID;
+    }
+    public void setArtistsString(String artistsString) {
+        this.artistsString = artistsString;
+    }
+
+    public boolean isLiked() {
+        return liked;
     }
 
     public String getArtistsString() {
@@ -122,6 +131,7 @@ public class Song {
         } catch (JSONException e){
             e.printStackTrace();
         }
+        song.setLiked(false);
         return song;
     }
 

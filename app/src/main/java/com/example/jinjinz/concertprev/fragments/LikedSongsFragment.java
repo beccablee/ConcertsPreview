@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.adapters.LikedSongArrayAdapter;
+import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
 import org.parceler.Parcels;
@@ -31,7 +32,7 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
      *  Communicates between LikedSongsFragment and Main Activity
      *  */
     public interface LikedSongsFragmentListener {
-        void launchSongPlayer(Song song, ArrayList<Parcelable> songs);
+        void launchSongPlayer(Song song, ArrayList<Parcelable> songs, Concert concert);
     }
 
     /**
@@ -93,7 +94,7 @@ public class LikedSongsFragment extends Fragment implements LikedSongArrayAdapte
      * @param song the song to be played
      * */
     public void onSongClicked(Song song){
-        mLikedSongsFragmentListener.launchSongPlayer(song, songsToParcelable(mySongs));
+        mLikedSongsFragmentListener.launchSongPlayer(song, songsToParcelable(mySongs), null);
     }
 
     /**

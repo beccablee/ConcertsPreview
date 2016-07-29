@@ -17,13 +17,27 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MediaPlayerService"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true"></service>
+        <provider
+            android:name="com.example.jinjinz.concertprev.databases.SongProvider"
+            android:authorities="com.example.jinjinz.concertprev.databases"
+            android:grantUriPermissions="true"
+            android:exported="true">
+        </provider>
     </application>
 
 </manifest>

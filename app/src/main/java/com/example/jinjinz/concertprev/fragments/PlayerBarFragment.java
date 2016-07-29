@@ -20,12 +20,18 @@ import com.example.jinjinz.concertprev.models.Song;
  * create an instance of this fragment.
  * The bottom playerbar of a music player
  */
+
+/**
+ * set UI to link with database
+ * set UI to update when database changes
+ * figure out how to integrate with like button
+ */
 public class PlayerBarFragment extends Fragment {
     //UI variables
     private TextView mTvSongTitle;
     private TextView mTvArtistTitle;
     private Button mBtnPlay;
-
+    Boolean play;
     //listener
     private PlayerBarFragmentListener listener;
     /**
@@ -34,7 +40,7 @@ public class PlayerBarFragment extends Fragment {
     public interface PlayerBarFragmentListener {
         void showPlayer();
         void playPauseBarBtn();
-        void onOpenBar();
+        void setBarUI();
     }
 
     /**
@@ -58,7 +64,6 @@ public class PlayerBarFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        listener.onOpenBar();
     }
 
     /**
@@ -90,7 +95,7 @@ public class PlayerBarFragment extends Fragment {
         mTvSongTitle = (TextView) v.findViewById(R.id.songTitle2);
         mTvArtistTitle = (TextView) v.findViewById(R.id.artistTitle2);
         mBtnPlay = (Button) v.findViewById(R.id.playBtn2);
-        listener.onOpenBar();
+        listener.setBarUI();
         mBtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,19 +116,28 @@ public class PlayerBarFragment extends Fragment {
      * update the play button
      * @param isPlaying whether the MediaPlayer is playing
      */
-    public void updatePlay(boolean isPlaying) {
-        if (getContext() != null) {
+
+    public void setPlay(boolean isPlaying) {
+        if (play == null || play != (Boolean) isPlaying) {
             if (isPlaying) {
                 mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
             } else {
                 mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
             }
+
+            play = (Boolean) isPlaying;
         }
     }
 
-    public void updateInterface(Song song) {
-        mTvSongTitle.setText(song.getName());
-        mTvArtistTitle.setText(song.getArtists().get(0));
+    /**
+     * update the bar UI
+     * @param song current song
+     */
+    public void setInterface(Song song) {
+        if (!song.getName().equals(mTvArtistTitle.getText().toString())) {
+            mTvSongTitle.setText(song.getName());
+            mTvArtistTitle.setText(song.getArtists().get(0));
+        }
     }
 
 }

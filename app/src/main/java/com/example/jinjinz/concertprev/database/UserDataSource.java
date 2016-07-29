@@ -195,11 +195,12 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
     * @param song the song to be liked
     * @return the liked song
     * */
-    public Song likeSong(Song song) { // gets song from like button click
+    public Boolean likeSong(Song song) { // gets song from like button click
 
         // set key-value pairs for columns of song table
         ContentValues values = new ContentValues();
-        values.put(SongsTable.COLUMN_SPOTIFY_ID, song.getId());
+        values.put(SongsTable.COLUMN_SPOTIFY_ID, song.getSpotifyID());
+        Log.i("songID", song.getSpotifyID());
         values.put(SongsTable.COLUMN_SONG_NAME, song.getName());
         values.put(SongsTable.COLUMN_SONG_ARTISTS, song.getArtistsString());
         values.put(SongsTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
@@ -208,7 +209,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         if (isSongAlreadyInDb(song)) {
             deleteLikedSong(song);
             Toast.makeText(c, song.getName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
-            return song;
+            return false;
         } else { // insert and return the song
             long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
             Log.d("dbCommands", "inserted liked song at row: " + insertId);
@@ -221,12 +222,12 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 cursor.close();
                 Toast.makeText(c, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
                 Log.d("dbCommands", "inserted liked song with id " + insertId);
-                return song;
+                return true;
             } else {
                 Toast.makeText(c, "Error adding " + song.getName() + ". " + "Please try again later", Toast.LENGTH_SHORT).show();
+                return null;
             }
         }
-        return null; // return null for error handling
     }
 
     /**
@@ -234,7 +235,10 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @param song the song to be deleted
      * */
     public void deleteLikedSong(Song song) {
-        database.delete(SongsTable.TABLE_NAME, SongsTable.COLUMN_ENTRY_ID + " = " + song.getDbID(), null);
+        String mSelectionClause =  SongsTable.COLUMN_SPOTIFY_ID  + " LIKE ?";
+        String[] mSelectionArgs = {song.getSpotifyID()};
+
+        database.delete(SongsTable.TABLE_NAME, mSelectionClause, mSelectionArgs);
        song.setDbID(-1L);
         Log.d("dbCommands", "Song deleted with id " + song.getDbID());
     }
@@ -268,12 +272,13 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         song.setSpotifyID(cursor.getString(1));
         song.setName(cursor.getString(2));
         song.setArtistsString(cursor.getString(3));
+        song.setArtists(song.artistListToArray(song.getArtistsString()));
         song.setPreviewUrl(cursor.getString(4));
         song.setAlbumArtUrl(cursor.getString(5));
-        song.setArtists(song.artistListToArray(song.getArtistsString()));
-
         return song;
     }
+
+
 
     public boolean isSongAlreadyInDb(Song song){
         Cursor cursor = database.query(SongsTable.TABLE_NAME, allSongColumns,
@@ -289,7 +294,6 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         }
         cursor.close();
         return false;
-
     }
 
     /**
