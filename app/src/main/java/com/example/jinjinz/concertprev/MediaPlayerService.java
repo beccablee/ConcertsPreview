@@ -109,6 +109,8 @@ public class MediaPlayerService extends Service {
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    } catch (IllegalStateException e) {
+                        e.printStackTrace();
                     }
 
                 }
