@@ -93,7 +93,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SearchFragment mSearchFragment;
     private boolean fIsReadyToPopulate = false;
     private boolean fIsApiConnected = false;
-    private boolean MI_LOCATION_FLAG = true;
+
+    public static boolean isMI_LOCATION_FLAG() {
+        return MI_LOCATION_FLAG;
+    }
+
+    public static void setMI_LOCATION_FLAG(boolean b) {
+        MI_LOCATION_FLAG = b;
+    }
+
+    private static boolean MI_LOCATION_FLAG;
+    public static MenuItem miLocation;
 
     // Concerts details variables
     protected ConcertDetailsFragment mConcertDetailsFragment;
@@ -550,6 +560,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
 
+
+
     /**
      * Flags that the search fragment is ready to be populated and calls the fetch concerts method
      * @param query passes the query value to the fetch method. Null until user searches in toolbar
@@ -564,17 +576,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void toggleLocationUse(MenuItem item) {
+        miLocation = item;
         if (MI_LOCATION_FLAG) {
             MI_LOCATION_FLAG = false;
-            item.setIcon(getDrawable(R.drawable.ic_location_deactivated));
+            miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
             Toast.makeText(this, "Location off", Toast.LENGTH_SHORT).show();
             fetchConcerts();
         } else {
             MI_LOCATION_FLAG = true;
-            item.setIcon(getDrawable(R.drawable.ic_location_activated));
+            miLocation.setIcon(getDrawable(R.drawable.ic_location_activated));
             Toast.makeText(this, "Location on", Toast.LENGTH_SHORT).show();
             fetchConcerts();
         }
+    }
+
+    @Override
+    public void toggleColor() {
+
     }
 
     /**

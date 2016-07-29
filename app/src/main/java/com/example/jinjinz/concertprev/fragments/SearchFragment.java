@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.example.jinjinz.concertprev.MainActivity;
 import com.example.jinjinz.concertprev.R;
 import com.example.jinjinz.concertprev.adapters.EndlessRecyclerViewScrollListener;
 import com.example.jinjinz.concertprev.adapters.SearchRecyclerAdapter;
@@ -35,10 +36,12 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         void populateConcerts(String query);
         void onConcertTap(Concert concert);
         void fetchMoreConcerts(int page);
+        void toggleColor();
     }
 
     public static SwipeRefreshLayout mSwipeRefreshLayout;
     public static SearchRecyclerAdapter searchAdapter;
+    public static Toolbar tbSearch;
 
     private ArrayList<Concert> concerts;
     private SearchFragmentListener searchFragmentListener;
@@ -97,9 +100,10 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // Find the toolbar view inside the activity layout
         setHasOptionsMenu(true);
 
-        Toolbar tbSearch = (Toolbar) view.findViewById(R.id.tbSearch);
+        tbSearch = (Toolbar) view.findViewById(R.id.tbSearch);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         ((AppCompatActivity) getActivity()).setSupportActionBar(tbSearch);
+
         // swipe refresh
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -130,6 +134,16 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         ((EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text)).setTextColor(Color.WHITE);
         ((ImageView)searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn)).setImageResource(R.drawable.ic_close);
 
+        if(MainActivity.miLocation != null) {
+            if (MainActivity.isMI_LOCATION_FLAG()) {
+                menu.findItem(R.id.action_location).setIcon(R.drawable.ic_location_activated);
+                MainActivity.setMI_LOCATION_FLAG(true);
+            } else {
+                menu.findItem(R.id.action_location).setIcon(R.drawable.ic_location_deactivated);
+                MainActivity.setMI_LOCATION_FLAG(false);
+            }
+        }
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -142,6 +156,11 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -163,4 +182,5 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public void onRefresh() {
         searchFragmentListener.populateConcerts(null);
     }
+    
 }
