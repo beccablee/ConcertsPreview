@@ -639,7 +639,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 } else {
                     Log.d("requestlocation", "Permissions Denied");
-                    //Toast.makeText(MainActivity.this, "Location is necessary to find concerts in your area", Toast.LENGTH_LONG).show();
                     //Snackbar to ask to allow location and launches app settings
                     Snackbar sbLocation = Snackbar.make( mActivityRoot, R.string.location_request_snackbar, Snackbar.LENGTH_INDEFINITE).setAction("Turn on location permission", new View.OnClickListener() {
                         @Override
