@@ -209,7 +209,6 @@ public class PlayerScreenFragment extends Fragment {
                 // Fires if bitmap fails to load
                 @Override
                 public void onBitmapFailed(Drawable errorDrawable) {
-                    view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.grey));
                 }
 
                 @Override
