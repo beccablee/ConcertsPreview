@@ -663,12 +663,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onConnectionSuspended(int i) {
-        //TODO
+        // api will automatically attempt to reconnect
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        //TODO
+        Log.d("location", "Connecttion failed: " + connectionResult.toString());
     }
 
     @Override
