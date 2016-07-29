@@ -1,7 +1,9 @@
 package com.example.jinjinz.concertprev;
 
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.AudioManager;
@@ -12,7 +14,9 @@ import android.os.IBinder;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.example.jinjinz.concertprev.databases.MediaContract.*;
+import com.example.jinjinz.concertprev.databases.MediaContract.CurrentConcertTable;
+import com.example.jinjinz.concertprev.databases.MediaContract.CurrentSongTable;
+import com.example.jinjinz.concertprev.databases.MediaContract.PlaylistTable;
 import com.example.jinjinz.concertprev.models.Concert;
 import com.example.jinjinz.concertprev.models.Song;
 
@@ -96,7 +100,7 @@ public class MediaPlayerService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (isMyServiceRunning(MediaPlayerService.class)) {
                     try {
                         Thread.sleep(100);
                         if (mMediaPlayer.isPlaying()) {
@@ -110,7 +114,7 @@ public class MediaPlayerService extends Service {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (IllegalStateException e) {
-                        e.printStackTrace();
+                        Log.d("not started", "mediaplayer");
                     }
 
                 }
@@ -283,5 +287,15 @@ public class MediaPlayerService extends Service {
         MediaPlayerService getService() {
             return MediaPlayerService.this;
         }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
