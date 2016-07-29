@@ -207,6 +207,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             });
         }
 
+        if(miLocation != null) {
+            if (isMI_LOCATION_FLAG()) {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_activated));
+            } else {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
+            }
+        }
+
         // open data source
         userDataSource = new UserDataSource(MainActivity.this);
         userDataSource.openDB();
@@ -268,6 +276,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mMediaObserver = new MediaObserver(this);
         }
         getContentResolver().registerContentObserver(MediaContract.BASE_CONTENT_URI, true, mMediaObserver);
+
+        if(miLocation != null) {
+            if (isMI_LOCATION_FLAG()) {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_activated));
+            } else {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
+            }
+        }
     }
 
     /**
@@ -512,8 +528,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             params.put("keyword", queryText);
         }
         String latlong;
-        if (lastLocation != null) {
+        if (lastLocation != null && isMI_LOCATION_FLAG()) {
             latlong = lastLocation.getLatitude() + "," + lastLocation.getLongitude();
+        } else if (lastLocation == null && !isMI_LOCATION_FLAG()) {
+            latlong = null;
         } else {
             latlong = null;
         }
@@ -589,6 +607,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             fetchConcerts();
         }
     }
+
 
     @Override
     public void toggleColor() {

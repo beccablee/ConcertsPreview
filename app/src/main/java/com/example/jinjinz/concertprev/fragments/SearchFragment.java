@@ -137,10 +137,8 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         if(MainActivity.miLocation != null) {
             if (MainActivity.isMI_LOCATION_FLAG()) {
                 menu.findItem(R.id.action_location).setIcon(R.drawable.ic_location_activated);
-                MainActivity.setMI_LOCATION_FLAG(true);
             } else {
                 menu.findItem(R.id.action_location).setIcon(R.drawable.ic_location_deactivated);
-                MainActivity.setMI_LOCATION_FLAG(false);
             }
         }
 
