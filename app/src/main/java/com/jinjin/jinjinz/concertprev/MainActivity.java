@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
             }
         }
+
     }
 
     /**
@@ -507,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         if (queryText != null) {
                             SearchFragment.searchAdapter.clear();
                             if(isMI_LOCATION_FLAG()) {
-                                    Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(MainActivity.this, "There are no concerts for " + queryText, Toast.LENGTH_SHORT).show();
                             }
@@ -745,7 +746,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void playPauseBarBtn() {
-       mediaPlayerService.playPauseSong();
+        mediaPlayerService.playPauseSong();
     }
 
     /**
