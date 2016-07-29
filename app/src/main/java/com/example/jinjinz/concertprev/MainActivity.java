@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         MI_LOCATION_FLAG = b;
     }
 
-    private static boolean MI_LOCATION_FLAG;
+    private static boolean MI_LOCATION_FLAG = true;
     public static MenuItem miLocation;
 
     // Concerts details variables
