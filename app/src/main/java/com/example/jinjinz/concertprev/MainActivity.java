@@ -287,6 +287,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (mediaPlayerService != null && mediaPlayerService.isPlaying()) {
             mBarFragmentHolder.setVisibility(View.VISIBLE);
         }
+
+        if(miLocation != null) {
+            if (isMI_LOCATION_FLAG()) {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_activated));
+            } else {
+                miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
+            }
+        }
     }
 
     /**
