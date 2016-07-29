@@ -17,13 +17,22 @@ import java.util.ArrayList;
  * Created by jinjinz on 7/25/16.
  */
 public class MediaPlayerDatabaseHelper extends SQLiteOpenHelper {
+    //information
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "mediaInfo.db";
 
+    /**
+     * constructor
+     * @param context context of helper
+     */
     public MediaPlayerDatabaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    /**
+     * Override onCreate: creates tables
+     * @param db the database where we want the tables
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         MediaContract.CurrentConcertTable.onCreate(db);
@@ -32,13 +41,18 @@ public class MediaPlayerDatabaseHelper extends SQLiteOpenHelper {
         intialize(db);
     }
 
+    /**
+     * not implemented
+     *
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        MediaContract.CurrentConcertTable.onUpgrade(db, oldVersion, newVersion);
-        MediaContract.CurrentSongTable.onUpgrade(db, oldVersion, newVersion);
-        MediaContract.PlaylistTable.onUpgrade(db, oldVersion, newVersion);
     }
 
+    /**
+     * intialize database so with default information
+     * @param db this database
+     */
     private void intialize(SQLiteDatabase db) {
         //testing code
         //create dummy songs and concerts

@@ -61,9 +61,6 @@ import java.util.TimeZone;
 
 import cz.msebera.android.httpclient.Header;
 
-/**
- * TODO: Fix concert
- */
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         SearchFragment.SearchFragmentListener, PlayerScreenFragment.PlayerScreenFragmentListener,
         PlayerBarFragment.PlayerBarFragmentListener, ConcertDetailsFragment.SongsFragmentListener,
@@ -198,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         userDataSource.openDB();
     }
 
+    /**
+     * Synce up the activity member variables with the database
+     */
     public void setMediaVariables() {
         mCurrentCursor = getContentResolver().query(MediaContract.CurrentSongTable.CONTENT_URI, mCurrentProjection, null, null, null);
         mCurrentCursor.moveToFirst();
@@ -219,12 +219,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mCurrentSong = mediaCursorToSong(mSongCursor);
     }
 
+    /**
+     * connect GoogleAPIClient
+     */
     protected void onStart() {
         mGoogleApiClient.connect();
         Intent i = new Intent(this, MediaPlayerService.class);
         bindService(i, mConnection, BIND_AUTO_CREATE);
         super.onStart();
     }
+
+    /**
+     * unconnect GoogleAPICLient
+     */
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
@@ -235,6 +242,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onStop();
     }
 
+    /**
+     * register MediaObserver (subclass of ContentObserver)
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -244,6 +254,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         getContentResolver().registerContentObserver(MediaContract.BASE_CONTENT_URI, true, mMediaObserver);
     }
 
+    /**
+     * unregister MediaObserver (subclass of ContentObserver)
+     */
     @Override
     protected void onPause() {
         getContentResolver().unregisterContentObserver(mMediaObserver);
@@ -264,26 +277,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             mediaPlayerService = null;
         }
     };
-    private void testPlayer() {
-        //testing code
-        //create dummy songs and concerts
-        Concert dummy_c = new Concert();
-        Song dummy_ss = new Song();
-        dummy_c.setEventName("TESTING");
-        dummy_ss.setAlbumArtUrl("https://i.scdn.co/image/6324fe377dcedf110025527873dafc9b7ee0bb34");
-        ArrayList<String> artist = new ArrayList<>();
-        artist.add("Elvis Presley");
-        dummy_ss.setArtists(artist);
-        dummy_ss.setName("Suspicious Minds");
-        dummy_ss.setPreviewUrl("https://p.scdn.co/mp3-preview/3742af306537513a4f446d7c8f9cdb1cea6e36d1");
-        ArrayList<Parcelable> dummy_s = new ArrayList<>();
-        dummy_s.add(Parcels.wrap(dummy_ss));
-
-        Intent i = new Intent(this, MediaPlayerService.class);
-        i.putExtra("concert", Parcels.wrap(dummy_c));
-        i.putExtra("songs", dummy_s);
-        startService(i);
-    }
 
 
     //Player + MediaPlayer methods
@@ -398,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void setUI() {
-        if (mPlayerFragment.isVisible()) {
+        if (mPlayerFragment.isVisible() && mCurrentSong != null) {
             mPlayerFragment.updateInterface(mCurrentSong);
             mPlayerFragment.setPlayBtn(isPlaying);
             mPlayerFragment.setProgressBar(progress);
@@ -414,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (mBarFragment != null) {
             mBarFragmentHolder.setVisibility(View.GONE);
         }
+        setUI();
     }
 
     // Search Fragment methods
@@ -859,6 +853,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return currDate;
     }
 
+    /**
+     * converts result from PlaylistTable to Song object
+     *  @param cursor the cursor of the database query
+     * @return new Song object
+     */
     public static Song mediaCursorToSong(Cursor cursor) {
         Song song = new Song();
         song.setDbID(-1L);
@@ -879,7 +878,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     /**
-     * Creates and returns a Concert object from the cursor
+     * converts result from ConcertTable to Concert object
      * @param cursor the cursor of the database query
      * @return returns the concert */
     public static Concert mediaCursorToConcert(Cursor cursor) {
@@ -919,6 +918,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         return apiDate;
     }
 
+    /**
+     * updates UI of everything visible when called
+     */
     @Override
     public void updateObserver() {
         runOnUiThread(new Runnable() {

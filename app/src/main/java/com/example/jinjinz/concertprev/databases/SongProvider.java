@@ -47,6 +47,11 @@ public class SongProvider extends ContentProvider {
         return matcher;
     }
 
+    /**
+     * type
+     * @param uri finding uri
+     * @return type
+     */
     @Override
     public String getType(Uri uri) {
         switch(sUriMatcher.match(uri)){
@@ -67,6 +72,10 @@ public class SongProvider extends ContentProvider {
         }
     }
 
+    /**
+     * query
+     * @return cursor with query
+     */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -153,6 +162,11 @@ public class SongProvider extends ContentProvider {
         return retCursor;
     }
 
+
+    /**
+     * insert
+     * @return Uri of inserted item
+     */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -193,6 +207,10 @@ public class SongProvider extends ContentProvider {
         return returnUri;
     }
 
+    /**
+     * insert
+     * @return Uri of deleted item
+     */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -219,6 +237,10 @@ public class SongProvider extends ContentProvider {
         return rows;
     }
 
+    /**
+     * update
+     * @return number of updated rows
+     */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();

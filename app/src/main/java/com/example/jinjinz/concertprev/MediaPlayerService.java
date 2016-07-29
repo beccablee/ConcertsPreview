@@ -22,9 +22,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class MediaPlayerService extends Service {
+    //Mediaplayer
     MediaPlayer mMediaPlayer;
     int iSize;
     int lastProgress = 0;
+    Uri mConcertUri;
+
+    //database
     private IBinder mBinder = new LocalBinder();
     String[] mSongProjection = {
             PlaylistTable._ID,
@@ -36,31 +40,10 @@ public class MediaPlayerService extends Service {
             PlaylistTable.COLUMN_LIKED
 
     };
-    String[] mConcertProjection = {
-            CurrentConcertTable._ID,
-            CurrentConcertTable.COLUMN_CONCERT_NAME,
-            CurrentConcertTable.COLUMN_CONCERT_CITY,
-            CurrentConcertTable.COLUMN_CONCERT_STATE,
-            CurrentConcertTable.COLUMN_CONCERT_COUNTRY,
-            CurrentConcertTable.COLUMN_CONCERT_TIME,
-            CurrentConcertTable.COLUMN_CONCERT_DATE,
-            CurrentConcertTable.COLUMN_CONCERT_VENUE,
-            CurrentConcertTable.COLUMN_CONCERT_ARTISTS,
-            CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL,
-            CurrentConcertTable.COLUNM_CONCERT_LIKED
-    };
-
-    String[] mCurrentProjection = {
-            CurrentSongTable._ID,
-            CurrentSongTable.COLUMN_CURRENT_SONG_ID,
-            CurrentSongTable.COLUMN_IS_PLAYING,
-            CurrentSongTable.COLUNM_CURRENT_PROGRESS
-    };
     Cursor mCursor;
-    //TODO: stopForground when application is exited
-    //TODO: implement database to update ui
+
     /**
-     *
+     * Constructor: initialize media player and thead to update progress in database
      */
     public MediaPlayerService() {
         mMediaPlayer = new MediaPlayer();
@@ -133,16 +116,23 @@ public class MediaPlayerService extends Service {
         }).start();
     }
 
+    /**
+     * bind to other classes
+     * @param intent recieved intent
+     * @return iBinder of this service
+     */
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
     }
 
     /**
-     *
+     * when called by activity to start: starts playlist and updates tables
+     * @param intent same as super
+     * @param flags same as super
+     * @param startId same as super
+     * @return same as super
      */
-
-    Uri mConcertUri;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //Update Concert
@@ -232,6 +222,9 @@ public class MediaPlayerService extends Service {
 
     }
 
+    /**
+     * skip to next song
+     */
     public void skipNext() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -250,6 +243,9 @@ public class MediaPlayerService extends Service {
         }
     }
 
+    /**
+     * skip to previous song
+     */
     public void skipPrev() {
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -268,6 +264,9 @@ public class MediaPlayerService extends Service {
         }
     }
 
+    /**
+     * destroy mediaPlayer
+     */
     @Override
     public void onDestroy() {
         mMediaPlayer.stop();
@@ -275,6 +274,9 @@ public class MediaPlayerService extends Service {
         super.onDestroy();
     }
 
+    /**
+     * create this Binder
+     */
     public class LocalBinder extends Binder {
         MediaPlayerService getService() {
             return MediaPlayerService.this;
