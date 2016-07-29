@@ -21,11 +21,6 @@ import com.example.jinjinz.concertprev.models.Song;
  * The bottom playerbar of a music player
  */
 
-/**
- * set UI to link with database
- * set UI to update when database changes
- * figure out how to integrate with like button
- */
 public class PlayerBarFragment extends Fragment {
     //UI variables
     private TextView mTvSongTitle;

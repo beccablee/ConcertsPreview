@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jinjinz on 7/25/16.
+ * SQLiteOpenHelper subclass that creates the mediaInfo database
  */
 public class MediaPlayerDatabaseHelper extends SQLiteOpenHelper {
     //information

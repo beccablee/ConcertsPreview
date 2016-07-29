@@ -25,12 +25,16 @@ import org.parceler.Parcels;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Service subclass that controls the mediaPlayer and links it to the mediaInfo database
+ */
 public class MediaPlayerService extends Service {
     //Mediaplayer
     MediaPlayer mMediaPlayer;
     int iSize;
     int lastProgress = 0;
     Uri mConcertUri;
+    boolean play;
 
     //database
     private IBinder mBinder = new LocalBinder();
@@ -49,7 +53,9 @@ public class MediaPlayerService extends Service {
     /**
      * Constructor: initialize media player and thead to update progress in database
      */
+
     public MediaPlayerService() {
+        play = false;
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -204,6 +210,7 @@ public class MediaPlayerService extends Service {
             currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 0);
             currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
             getContentResolver().insert(CurrentSongTable.CONTENT_URI, currentValues);
+            play = true;
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -269,11 +276,15 @@ public class MediaPlayerService extends Service {
         }
     }
 
+    public boolean isPlaying() {
+       return play;
+    }
     /**
      * destroy mediaPlayer
      */
     @Override
     public void onDestroy() {
+        play = false;
         mMediaPlayer.stop();
         mMediaPlayer.release();
         super.onDestroy();

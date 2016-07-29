@@ -5,6 +5,7 @@ import android.net.Uri;
 
 /**
  * Created by jinjinz on 7/28/16.
+ * ContentObserver subclass that observes change in the media database and calls back to MainActivity
  */
 public class MediaObserver extends ContentObserver {
     /**

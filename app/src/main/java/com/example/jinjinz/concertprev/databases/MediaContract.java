@@ -8,6 +8,7 @@ import android.util.Log;
 
 /**
  * Created by jinjinz on 7/25/16.
+ * Contract class that outlines the media database
  */
 public final class MediaContract {
     // The Content Authority is a name for the entire content provider
