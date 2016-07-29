@@ -141,71 +141,70 @@ public class MediaPlayerService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //Update Concert
-        getContentResolver().delete(CurrentConcertTable.CONTENT_URI, null, null);
-
-        Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
-        ContentValues concertValues = new ContentValues();
-        if (concert.getEventName().equals("My Songs")) {
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
-        }
-        else {
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_CITY, concert.getCity());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_STATE, concert.getStateCode());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_COUNTRY, concert.getCountryCode());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_TIME, concert.getEventTime());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_DATE, concert.getEventDate());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
-            concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
-            concertValues.put(CurrentConcertTable.COLUNM_CONCERT_LIKED, concert.getDbId());
-        }
-        mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI,concertValues);
-        //Update Songs
-        getContentResolver().delete(PlaylistTable.CONTENT_URI, null, null);
-        ArrayList<Parcelable> parcelables = intent.getParcelableArrayListExtra("songs");
-        iSize = parcelables.size();
-        for (int i = 0; i < iSize; i++) {
-            Song song = Parcels.unwrap(parcelables.get(i));
-            ContentValues songValues = new ContentValues();
-            songValues.put(PlaylistTable.COLUMN_SPOTIFY_ID, song.getSpotifyID());
-            songValues.put(PlaylistTable.COLUMN_SONG_NAME, song.getName());
-            songValues.put(PlaylistTable.COLUMN_SONG_ARTIST, song.getArtistsString());
-            songValues.put(PlaylistTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
-            songValues.put(PlaylistTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
-            if (!song.isLiked()) {
-                songValues.put(PlaylistTable.COLUMN_LIKED, 0);
+        if (intent != null) {
+            //Update Concert
+            getContentResolver().delete(CurrentConcertTable.CONTENT_URI, null, null);
+            Concert concert = Parcels.unwrap(intent.getParcelableExtra("concert"));
+            ContentValues concertValues = new ContentValues();
+            if (concert.getEventName().equals("My Songs")) {
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
+            } else {
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_NAME, concert.getEventName());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_CITY, concert.getCity());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_STATE, concert.getStateCode());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_COUNTRY, concert.getCountryCode());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_TIME, concert.getEventTime());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_DATE, concert.getEventDate());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_VENUE, concert.getVenue());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
+                concertValues.put(CurrentConcertTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
+                concertValues.put(CurrentConcertTable.COLUNM_CONCERT_LIKED, concert.getDbId());
             }
-            else {
-                songValues.put(PlaylistTable.COLUMN_LIKED, 1);
+            mConcertUri = getContentResolver().insert(CurrentConcertTable.CONTENT_URI, concertValues);
+            //Update Songs
+            getContentResolver().delete(PlaylistTable.CONTENT_URI, null, null);
+            ArrayList<Parcelable> parcelables = intent.getParcelableArrayListExtra("songs");
+            iSize = parcelables.size();
+            for (int i = 0; i < iSize; i++) {
+                Song song = Parcels.unwrap(parcelables.get(i));
+                ContentValues songValues = new ContentValues();
+                songValues.put(PlaylistTable.COLUMN_SPOTIFY_ID, song.getSpotifyID());
+                songValues.put(PlaylistTable.COLUMN_SONG_NAME, song.getName());
+                songValues.put(PlaylistTable.COLUMN_SONG_ARTIST, song.getArtistsString());
+                songValues.put(PlaylistTable.COLUMN_SONG_PREVIEW_URL, song.getPreviewUrl());
+                songValues.put(PlaylistTable.COLUMN_ALBUM_ART_URL, song.getAlbumArtUrl());
+                if (!song.isLiked()) {
+                    songValues.put(PlaylistTable.COLUMN_LIKED, 0);
+                } else {
+                    songValues.put(PlaylistTable.COLUMN_LIKED, 1);
+                }
+                getContentResolver().insert(PlaylistTable.CONTENT_URI, songValues);
             }
-            getContentResolver().insert(PlaylistTable.CONTENT_URI, songValues);
-        }
-        //Initialize Cursor
-        mCursor = getContentResolver().query(PlaylistTable.CONTENT_URI, mSongProjection, null, null, null);
-        assert mCursor != null;
-        mCursor.moveToFirst();
-        //Initialize Media player
-        if (mMediaPlayer.isPlaying()) {
-            mMediaPlayer.stop();
-        }
-        mMediaPlayer.reset();
+            //Initialize Cursor
+            mCursor = getContentResolver().query(PlaylistTable.CONTENT_URI, mSongProjection, null, null, null);
+            assert mCursor != null;
+            mCursor.moveToFirst();
+            //Initialize Media player
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.stop();
+            }
+            mMediaPlayer.reset();
 
-        //set first song
-        try {
-            mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
-            mMediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
+            //set first song
+            try {
+                mMediaPlayer.setDataSource(mCursor.getString(mCursor.getColumnIndex(PlaylistTable.COLUMN_SONG_PREVIEW_URL)));
+                mMediaPlayer.prepareAsync();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            getContentResolver().delete(CurrentSongTable.CONTENT_URI, null, null);
+            ContentValues currentValues = new ContentValues();
+            Log.i("position", String.valueOf(mCursor.getPosition()));
+            currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getInt(mCursor.getColumnIndex(PlaylistTable._ID)));
+            currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 0);
+            currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
+            getContentResolver().insert(CurrentSongTable.CONTENT_URI, currentValues);
         }
-        getContentResolver().delete(CurrentSongTable.CONTENT_URI, null, null);
-        ContentValues currentValues = new ContentValues();
-        Log.i("position", String.valueOf(mCursor.getPosition()));
-        currentValues.put(CurrentSongTable.COLUMN_CURRENT_SONG_ID, mCursor.getInt(mCursor.getColumnIndex(PlaylistTable._ID)));
-        currentValues.put(CurrentSongTable.COLUMN_IS_PLAYING, 0);
-        currentValues.put(CurrentSongTable.COLUNM_CURRENT_PROGRESS, 0);
-        getContentResolver().insert(CurrentSongTable.CONTENT_URI, currentValues);
         return super.onStartCommand(intent, flags, startId);
     }
 
