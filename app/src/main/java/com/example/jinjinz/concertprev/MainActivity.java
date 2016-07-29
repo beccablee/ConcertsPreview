@@ -182,7 +182,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // Search fragment should always show first
         if (savedInstanceState == null) {
             mBarFragmentHolder = findViewById(R.id.playerFragment);
-            mBarFragmentHolder.setVisibility(View.GONE);
+            if (mediaPlayerService == null || !mediaPlayerService.isPlaying()) {
+                mBarFragmentHolder.setVisibility(View.GONE);
+            }
+            else {
+                mBarFragmentHolder.setVisibility(View.VISIBLE);
+            }
             mSearchFragment = SearchFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.mainFragment, mSearchFragment);
@@ -744,6 +749,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void setBarUI() {
+        if (mBarFragmentHolder != null && mBarFragmentHolder.getVisibility() == View.GONE) {
+            if (mediaPlayerService != null && mediaPlayerService.isPlaying() ) {
+                if (mPlayerFragment == null) {
+                    mBarFragmentHolder.setVisibility(View.VISIBLE);
+                }
+                else if (mPlayerFragment != null && !mPlayerFragment.isVisible()) {
+                    mBarFragmentHolder.setVisibility(View.VISIBLE);
+                }
+            }
+        }
         if (mBarFragmentHolder != null && mBarFragmentHolder.getVisibility() == View.VISIBLE) {
             mBarFragment.setInterface(mCurrentSong);
             mBarFragment.setPlay(isPlaying);
