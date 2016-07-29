@@ -208,7 +208,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
 
         if (isSongAlreadyInDb(song)) {
             deleteLikedSong(song);
-            Toast.makeText(c, song.getName() + " removed from Favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(c, "Removed from Favorites", Toast.LENGTH_SHORT).show();
             return false;
         } else { // insert and return the song
             long insertId = database.insert(SongsTable.TABLE_NAME, null, values); // insert the values for the liked song, and return its entry row id
@@ -220,7 +220,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
                 cursor.moveToFirst();
                 song = cursorToSong(cursor);
                 cursor.close();
-                Toast.makeText(c, song.getName() + " added to Favorites!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(c, "Added to Favorites", Toast.LENGTH_SHORT).show();
                 Log.d("dbCommands", "inserted liked song with id " + insertId);
                 return true;
             } else {

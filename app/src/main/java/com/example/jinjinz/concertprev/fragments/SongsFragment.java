@@ -81,7 +81,11 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
 
         // Search for the artists in the ArrayList, starting with the first artist
-        listener.searchArtistOnSpotify(this, 0, songsPerArtist, concert.getArtists(), concert);
+        if (numberOfArtists != 0) {
+            listener.searchArtistOnSpotify(this, 0, songsPerArtist, concert.getArtists(), concert);
+        } else {
+            noSongsLoaded();
+        }
 
         rvSongs = (RecyclerView) view.findViewById(R.id.rvSongs);
         llLoading = (RelativeLayout) view.findViewById(R.id.llLoading);
