@@ -2,6 +2,7 @@ package com.example.jinjinz.concertprev.fragments;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -81,6 +82,8 @@ public class UserFragment extends Fragment {
         vpUser.setAdapter(new UserPagerAdapter(getChildFragmentManager()));
         tsTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tsTabs);
         tsTabs.setViewPager(vpUser);
+        tsTabs.setIndicatorColor(Color.parseColor("#EEFF4081"));
+        tsTabs.setIndicatorHeight(10);
 
         //toolbar
         setHasOptionsMenu(true);

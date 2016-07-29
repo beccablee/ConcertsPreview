@@ -112,11 +112,12 @@ public class PlayerBarFragment extends Fragment {
      * @param isPlaying whether the MediaPlayer is playing
      */
     public void updatePlay(boolean isPlaying) {
-        if (isPlaying) {
-            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
-        }
-        else {
-            mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+        if (getContext() != null) {
+            if (isPlaying) {
+                mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_pause_circle));
+            } else {
+                mBtnPlay.setBackground(getContext().getDrawable(R.drawable.ic_play_circle));
+            }
         }
     }
 
