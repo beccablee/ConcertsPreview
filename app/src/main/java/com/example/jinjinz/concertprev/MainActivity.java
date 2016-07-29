@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -15,8 +16,10 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,9 +29,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.jinjinz.concertprev.databases.UserDataSource;
 import com.example.jinjinz.concertprev.databases.MediaContract;
 import com.example.jinjinz.concertprev.databases.MediaObserver;
+import com.example.jinjinz.concertprev.databases.UserDataSource;
 import com.example.jinjinz.concertprev.fragments.ConcertDetailsFragment;
 import com.example.jinjinz.concertprev.fragments.LikedConcertsFragment;
 import com.example.jinjinz.concertprev.fragments.LikedSongsFragment;
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         LikedSongsFragment.LikedSongsFragmentListener, LikedConcertsFragment.LikedConcertsFragmentListener {
 
     private AsyncHttpClient client;
+    private Context mContext;
 
     // Media player variables
     private Concert mConcert;
@@ -157,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = (Context) MainActivity.this;
         setContentView(R.layout.activity_main);
         // Create an instance of GoogleApiClient
         if (mGoogleApiClient == null) {
@@ -634,8 +639,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
                 } else {
                     Log.d("requestlocation", "Permissions Denied");
-                    Toast.makeText(MainActivity.this, "Location is necessary to find concerts in your area", Toast.LENGTH_LONG).show();
-                    //TODO: add snackbar or dialogue box to ask them to allow location
+                    //Toast.makeText(MainActivity.this, "Location is necessary to find concerts in your area", Toast.LENGTH_LONG).show();
+                    //Snackbar to ask to allow location and launches app settings
+                    Snackbar sbLocation = Snackbar.make( mActivityRoot, R.string.location_request_snackbar, Snackbar.LENGTH_INDEFINITE).setAction("Turn on location permission", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mContext == null) {
+                                Log.d("location", "null view");
+                                return;
+                            }
+                            final Intent i = new Intent();
+                            i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            i.addCategory(Intent.CATEGORY_DEFAULT);
+                            i.setData(Uri.parse("package:" + mContext.getPackageName()));
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            mContext.startActivity(i);
+                        }
+                    });
+
+                    sbLocation.show();
                 }
 
             }
