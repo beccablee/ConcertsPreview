@@ -1,3 +1,4 @@
+
 package com.jinjin.jinjinz.concertprev;
 
 import android.app.ActivityManager;
@@ -279,7 +280,7 @@ public class MediaPlayerService extends Service {
     }
 
     public boolean isPlaying() {
-       return play;
+        return play;
     }
     /**
      * destroy mediaPlayer
