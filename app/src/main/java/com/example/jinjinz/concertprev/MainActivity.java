@@ -282,14 +282,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         getContentResolver().registerContentObserver(MediaContract.BASE_CONTENT_URI, true, mMediaObserver);
 
-        if(miLocation != null) {
-            if (isMI_LOCATION_FLAG()) {
-                miLocation.setIcon(getDrawable(R.drawable.ic_location_activated));
-            } else {
-                miLocation.setIcon(getDrawable(R.drawable.ic_location_deactivated));
-            }
-        }
-        if (mediaPlayerService != null && mediaPlayerService.isPlaying() && !mPlayerFragment.isVisible()) {
+        if (mediaPlayerService != null && mediaPlayerService.isPlaying()
+                && mPlayerFragment != null && !mPlayerFragment.isVisible()) {
             mBarFragmentHolder.setVisibility(View.VISIBLE);
         }
 
