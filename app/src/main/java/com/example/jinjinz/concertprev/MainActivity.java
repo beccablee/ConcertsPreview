@@ -24,9 +24,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.databases.MediaContract;
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static int fromLikedSongs = 1;
     public static int fromConcert = 2;
     public static UserDataSource userDataSource;
+    private LikedConcertsFragment mLikedConcertsFragment;
 
     String[] mSongProjection = {
             MediaContract.PlaylistTable._ID,
@@ -493,9 +497,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             client.get(eventsURL, params, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject jsonObject) { // on success I will get back the large json obj: { _embedded: { events: [ {0, 1, 2, ..} ] } }
-                    // DESERIALIZE JSON
-                    // CREATE MODELS AND ADD TO ADAPTER
-                    // LOAD MODEL INTO LIST VIEW
                     JSONArray eventsArray = null;
                     try {
                         eventsArray = jsonObject.getJSONObject("_embedded").getJSONArray("events");
@@ -507,7 +508,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         Log.d("client calls", "error adding concerts: " + statusCode);
                         if (queryText != null) {
                             SearchFragment.searchAdapter.clear();
-                            Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
+                            if(isMI_LOCATION_FLAG()) {
+                                if(eventsArray.length() < 0) {
+                                    Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(MainActivity.this, "There are no concerts for " + queryText, Toast.LENGTH_SHORT).show();
+
+                            }
                         } else {
                             Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
                         }
@@ -633,10 +641,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (userDataSource.isConcertAlreadyInDb(concert)) {
             concert = userDataSource.getConcertFromDB(concert);
         }
-        mConcertDetailsFragment = mConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
+        //Transition changeTransformation = TransitionInflater.from(this).inflateTransition(R.transition.image_transformation);
+        Transition slideLTransformtion = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_left);
+        Transition slideRTransformation = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_right);
+        mSearchFragment.setReturnTransition(slideLTransformtion);
+        mSearchFragment.setExitTransition(slideLTransformtion);
+        mLikedConcertsFragment = LikedConcertsFragment.newInstance();
+        mLikedConcertsFragment.setReturnTransition(slideLTransformtion);
+        mLikedConcertsFragment.setExitTransition(slideLTransformtion);
+        //mLikedConcertsFragment.setEnterTransition(slideRTransformation);
+        mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
+        mConcertDetailsFragment.setEnterTransition(slideRTransformation);
+        ImageView ivConcertImg = (ImageView) findViewById(R.id.ivBackgroundImage);
+        //mConcertDetailsFragment.setEnterTransition(slideLTransformtion);
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
+       // ft.addSharedElement(ivConcertImg, "concert image");
         ft.commit();
     }
 
@@ -719,6 +741,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void showPlayer() {
+        Transition playerBarFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
+        Transition playerSlideBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
+        Transition playerSlideTop = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_top);
+
+        mPlayerFragment = PlayerScreenFragment.newInstance();
+        mPlayerFragment.setEnterTransition(playerSlideBottom);
+        mPlayerFragment.setExitTransition(playerSlideBottom);
+        mBarFragment.setEnterTransition(playerBarFade);
+        mBarFragment.setExitTransition(playerBarFade);
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
         if (mBarFragment != null) {
@@ -849,6 +881,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * */
     @Override
     public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs, Concert concert){
+
+        Transition playerSlideBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
+        Transition songsFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
+        mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
+
         if (mPlayerFragment == null) {
             mPlayerFragment = PlayerScreenFragment.newInstance();
         }
@@ -863,6 +900,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
             pSongs.add(i, songTemp);
         }
+        mPlayerFragment.setEnterTransition(playerSlideBottom);
+        mPlayerFragment.setExitTransition(playerSlideBottom);
+        mConcertDetailsFragment.setEnterTransition(songsFade);
+        mConcertDetailsFragment.setExitTransition(songsFade);
         Collections.shuffle(pSongs);
         if(userDataSource.isSongAlreadyInDb(song)) {
             song.setLiked(true);

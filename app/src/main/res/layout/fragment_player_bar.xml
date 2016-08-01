@@ -11,8 +11,9 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:id="@+id/songTitle2"
+        android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:textColor="@android:color/white"/>
+        android:textSize="18sp" />
 
     <TextView
         android:layout_width="300dp"
@@ -22,7 +23,8 @@
         android:id="@+id/artistTitle2"
         android:layout_below="@id/songTitle2"
         android:layout_alignParentStart="true"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        android:textStyle="italic" />
 
     <Button
         android:layout_width="40dp"

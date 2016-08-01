@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:singleLine="true"
         android:ellipsize="end"
         android:text="Song Name"
@@ -29,7 +29,8 @@
         android:layout_alignParentStart="true"
         android:textColor="@color/lightGrey"
         android:ellipsize="end"
-        android:lines="1"/>
+        android:lines="1"
+        android:textStyle="italic" />
 
     <View
         android:layout_width="match_parent"

@@ -7,6 +7,10 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="homeAsUpIndicator">@drawable/ic_arrow_back</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <item name="android:windowSharedElementEnterTransition">@transition/image_transformation</item>
+        <item name="android:windowSharedElementExitTransition">@transition/image_transformation</item>
     </style>
 
 </resources>
