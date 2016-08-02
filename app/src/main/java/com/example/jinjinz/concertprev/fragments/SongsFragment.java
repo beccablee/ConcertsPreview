@@ -79,6 +79,7 @@ public class SongsFragment extends Fragment implements SongArrayAdapter.OnSongCl
 
         int numberOfArtists = concert.getArtists().size();
         int songsPerArtist = computeSongsPerArtist(numberOfArtists);
+        songs.clear();
 
         // Search for the artists in the ArrayList, starting with the first artist
         if (numberOfArtists != 0) {
