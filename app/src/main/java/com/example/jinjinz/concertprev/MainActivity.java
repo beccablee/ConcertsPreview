@@ -509,12 +509,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         if (queryText != null) {
                             SearchFragment.searchAdapter.clear();
                             if(isMI_LOCATION_FLAG()) {
-                                if(eventsArray.length() < 0) {
                                     Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_SHORT).show();
-                                }
                             } else {
                                 Toast.makeText(MainActivity.this, "There are no concerts for " + queryText, Toast.LENGTH_SHORT).show();
-
                             }
                         } else {
                             Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
@@ -537,7 +534,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /** Calls the next page of concerts from Ticketmaster to allow for endless scrolling
      * @param page the page number to fetch from  */
     @Override
-    public void fetchMoreConcerts(int page) {
+    public void fetchMoreConcerts(final int page) {
         // url includes api key and music classification
         String eventsURL = "https://app.ticketmaster.com/discovery/v2/events.json";
         // the parameters
@@ -577,12 +574,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     mSearchFragment.addConcerts(Concert.concertsFromJsonArray(eventsArray)); //
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("client calls", "error adding concerts: " + statusCode);
-                    if (queryText != null) {
-                        Toast.makeText(MainActivity.this, "There are no concerts for " + queryText + " in your area", Toast.LENGTH_LONG).show(); // maybe make a snack bar to go back to main page, filter, or search again
-                    } else {
-                        Toast.makeText(MainActivity.this, "Could not load page", Toast.LENGTH_SHORT).show();
-                    }
+                    Log.d("client calls", "error adding concerts: " + statusCode + " " + e.toString());
                 }
 
             }
@@ -641,7 +633,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (userDataSource.isConcertAlreadyInDb(concert)) {
             concert = userDataSource.getConcertFromDB(concert);
         }
-        //Transition changeTransformation = TransitionInflater.from(this).inflateTransition(R.transition.image_transformation);
         Transition slideLTransformtion = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_left);
         Transition slideRTransformation = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_right);
         mSearchFragment.setReturnTransition(slideLTransformtion);
@@ -649,16 +640,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mLikedConcertsFragment = LikedConcertsFragment.newInstance();
         mLikedConcertsFragment.setReturnTransition(slideLTransformtion);
         mLikedConcertsFragment.setExitTransition(slideLTransformtion);
-        //mLikedConcertsFragment.setEnterTransition(slideRTransformation);
         mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
         mConcertDetailsFragment.setEnterTransition(slideRTransformation);
         ImageView ivConcertImg = (ImageView) findViewById(R.id.ivBackgroundImage);
-        //mConcertDetailsFragment.setEnterTransition(slideLTransformtion);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
-       // ft.addSharedElement(ivConcertImg, "concert image");
         ft.commit();
     }
 
@@ -743,13 +731,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void showPlayer() {
         Transition playerBarFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
         Transition playerSlideBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
-        Transition playerSlideTop = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_top);
+        Transition noTransition = TransitionInflater.from(this).inflateTransition(android.R.transition.no_transition);
 
         mPlayerFragment = PlayerScreenFragment.newInstance();
+        if(mConcertDetailsFragment != null) {
+            mConcertDetailsFragment.setAllowEnterTransitionOverlap(true);
+            mConcertDetailsFragment.setAllowReturnTransitionOverlap(true);
+        }
+        if (mSearchFragment != null){
+            mSearchFragment.setExitTransition(noTransition);
+        }
         mPlayerFragment.setEnterTransition(playerSlideBottom);
         mPlayerFragment.setExitTransition(playerSlideBottom);
-        mBarFragment.setEnterTransition(playerBarFade);
-        mBarFragment.setExitTransition(playerBarFade);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mPlayerFragment, "player");
@@ -882,7 +875,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs, Concert concert){
 
-        Transition playerSlideBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
+        Transition playerSlideFromBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
+        Transition playerSlideToTop = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_top);
         Transition songsFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
         mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
 
@@ -900,8 +894,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
             pSongs.add(i, songTemp);
         }
-        mPlayerFragment.setEnterTransition(playerSlideBottom);
-        mPlayerFragment.setExitTransition(playerSlideBottom);
+        mPlayerFragment.setEnterTransition(playerSlideFromBottom);
+        mPlayerFragment.setExitTransition(playerSlideToTop);
         mConcertDetailsFragment.setEnterTransition(songsFade);
         mConcertDetailsFragment.setExitTransition(songsFade);
         Collections.shuffle(pSongs);

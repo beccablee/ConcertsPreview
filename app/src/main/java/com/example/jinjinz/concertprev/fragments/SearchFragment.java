@@ -43,6 +43,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
     public static SearchRecyclerAdapter searchAdapter;
     public static Toolbar tbSearch;
 
+    private String queryText;
     private ArrayList<Concert> concerts;
     private SearchFragmentListener searchFragmentListener;
 
@@ -145,6 +146,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                queryText = query;
                 searchFragmentListener.populateConcerts(query);
                 return false;
             }

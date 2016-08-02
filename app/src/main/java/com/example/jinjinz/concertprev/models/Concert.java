@@ -69,6 +69,9 @@ public class Concert {
     public void setArtistsString(String artistsString) {
         this.artistsString = artistsString;
     }
+    public void setEventUrl(String eventUrl) {
+        this.eventUrl = eventUrl;
+    }
     public void setLiked(boolean liked) { this.liked = liked; }
 
     public String getArtistsString() {

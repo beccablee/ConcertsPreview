@@ -44,7 +44,8 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
             ConcertsTable.COLUMN_CONCERT_TIME,
             ConcertsTable.COLUMN_CONCERT_DATE,
             ConcertsTable.COLUMN_CONCERT_ARTISTS,
-            ConcertsTable.COLUMN_CONCERT_IMAGE_URL};
+            ConcertsTable.COLUMN_CONCERT_IMAGE_URL,
+            ConcertsTable.COLUMN_CONCERT_TICKET_LINK};
 
     /**
      *  Creates and/or opens a database that will be used for reading and writing
@@ -60,7 +61,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
      * @return the liked concert*/
     public Concert likeConcert(Concert concert) { //gets concert from like button click
 
-        //ConcertsTable.onUpgrade(database, 1, 2);
+
        // set key-value pairs for columns of concert table
         ContentValues values = new ContentValues();
         values.put(ConcertsTable.COLUMN_CONCERT_NAME, concert.getEventName());
@@ -72,6 +73,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         values.put(ConcertsTable.COLUMN_CONCERT_VENUE, concert.getVenue());
         values.put(ConcertsTable.COLUMN_CONCERT_ARTISTS, concert.getArtistsString());
         values.put(ConcertsTable.COLUMN_CONCERT_IMAGE_URL, concert.getBackdropImage());
+        values.put(ConcertsTable.COLUMN_CONCERT_TICKET_LINK, concert.getEventUrl());
 
         // check if it exists already
         if(isConcertAlreadyInDb(concert)) { // if the concert is already in the db
@@ -142,6 +144,7 @@ public class UserDataSource { // Our DAO (data access object) that is responsibl
         concert.setEventDate(cursor.getString(7));
         concert.setArtistsString(cursor.getString(8));
         concert.setBackdropImage(cursor.getString(9));
+        concert.setEventUrl(cursor.getString(10));
         concert.setArtists(concert.artistListToArray(concert.getArtistsString()));
 
         return concert;
