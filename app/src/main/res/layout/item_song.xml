@@ -4,12 +4,12 @@
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
     android:paddingTop="2dp"
-    android:paddingBottom="3dp">
+    android:paddingBottom="2dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="19sp"
         android:textStyle="normal"
         android:singleLine="true"
         android:ellipsize="end"
@@ -23,7 +23,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="16sp"
         android:text="Song Artist"
         android:id="@+id/tvSongArtist"
         android:layout_below="@+id/tvSongName"

@@ -17,11 +17,13 @@
             android:id="@+id/tvSongPlaylist"
             android:text="@string/playlist"
             android:textColor="@color/colorAccent"
-            android:paddingLeft="5dp"/>
+            android:paddingLeft="5dp"
+            android:paddingBottom="2dp"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginBottom="2dp"
             android:background="@color/midDarkGrey"
             android:id="@+id/view"
             android:layout_below="@+id/tvSongPlaylist"/>
