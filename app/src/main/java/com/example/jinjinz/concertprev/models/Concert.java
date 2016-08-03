@@ -220,6 +220,12 @@ public class Concert {
             if(concert.getEventName().contains("Chance The Rapper")) {
                 concert.backdropImage = "https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-372461.png";
             }
+            if(concert.getEventName().contains("Drake: Summer Sixteen Tour")) {
+                concert.backdropImage = "https://i1.wp.com/hypebeast.com/image/2016/08/drake-ovo-finals-unreleased-air-jordans-01.jpg?w=516";
+            }
+            if(concert.getEventName().contains("Flume")) {
+                concert.backdropImage = "http://static.standard.co.uk/s3fs-public/styles/article_large/public/thumbnails/image/2016/05/27/10/flume.jpg";
+            }
             concert.artists = artistsFromJsonArray(event.getJSONObject("_embedded").getJSONArray("attractions"));
             concert.artistsString = android.text.TextUtils.join(", ", concert.artists);
             if (concert.artists.size() != 0) {
