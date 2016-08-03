@@ -80,6 +80,7 @@ public class SearchFragment extends Fragment implements SearchRecyclerAdapter.Se
         // Create adapter passing in activity context and concerts list
         searchAdapter = new SearchRecyclerAdapter(getActivity(), concerts, this);
         // populate view
+        // populate view
         searchFragmentListener.populateConcerts(null);
     }
 

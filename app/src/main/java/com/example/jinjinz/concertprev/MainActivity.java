@@ -29,7 +29,6 @@ import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.jinjinz.concertprev.databases.MediaContract;
@@ -123,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static int fromConcert = 2;
     public static UserDataSource userDataSource;
     private LikedConcertsFragment mLikedConcertsFragment;
+    private UserFragment userFragment;
 
     String[] mSongProjection = {
             MediaContract.PlaylistTable._ID,
@@ -375,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             UserFragment userFragment = UserFragment.newInstance();
             ft.replace(R.id.mainFragment, userFragment);
             ft.addToBackStack("my music");
+            UserFragment.setFlagMySongsClick(true);
         } else if (mCurrentConcert != null && !getConcertName().equals("")) {
             ConcertDetailsFragment concertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(mCurrentConcert));
             ft.replace(R.id.mainFragment, concertDetailsFragment, "details");
@@ -634,16 +635,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             concert = userDataSource.getConcertFromDB(concert);
         }
         Transition slideLTransformtion = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_left);
-        Transition slideRTransformation = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_right);
         mSearchFragment.setReturnTransition(slideLTransformtion);
         mSearchFragment.setExitTransition(slideLTransformtion);
-        mLikedConcertsFragment = LikedConcertsFragment.newInstance();
-        mLikedConcertsFragment.setReturnTransition(slideLTransformtion);
-        mLikedConcertsFragment.setExitTransition(slideLTransformtion);
+        if(userFragment != null) {
+            userFragment.setReturnTransition(slideLTransformtion);
+            userFragment.setExitTransition(slideLTransformtion);
+        }
         mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
-        mConcertDetailsFragment.setEnterTransition(slideRTransformation);
-        ImageView ivConcertImg = (ImageView) findViewById(R.id.ivBackgroundImage);
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, mConcertDetailsFragment);
         ft.addToBackStack("concerts");
@@ -729,7 +727,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      */
     @Override
     public void showPlayer() {
-        Transition playerBarFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
         Transition playerSlideBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
         Transition noTransition = TransitionInflater.from(this).inflateTransition(android.R.transition.no_transition);
 
@@ -740,6 +737,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
         if (mSearchFragment != null){
             mSearchFragment.setExitTransition(noTransition);
+            mSearchFragment.setAllowEnterTransitionOverlap(true);
+            mSearchFragment.setAllowReturnTransitionOverlap(true);
         }
         mPlayerFragment.setEnterTransition(playerSlideBottom);
         mPlayerFragment.setExitTransition(playerSlideBottom);
@@ -876,7 +875,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void launchSongPlayer(Song song, ArrayList<Parcelable> tempSongs, Concert concert){
 
         Transition playerSlideFromBottom = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom);
-        Transition playerSlideToTop = TransitionInflater.from(this).inflateTransition(android.R.transition.slide_top);
         Transition songsFade = TransitionInflater.from(this).inflateTransition(android.R.transition.fade);
         mConcertDetailsFragment = ConcertDetailsFragment.newInstance(Parcels.wrap(concert)); // add params if needed
 
@@ -895,7 +893,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             pSongs.add(i, songTemp);
         }
         mPlayerFragment.setEnterTransition(playerSlideFromBottom);
-        mPlayerFragment.setExitTransition(playerSlideToTop);
         mConcertDetailsFragment.setEnterTransition(songsFade);
         mConcertDetailsFragment.setExitTransition(songsFade);
         Collections.shuffle(pSongs);
@@ -921,10 +918,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     /** Switches to user fragment when user menu button is clicked
      * @param item the user button */
     public void getProfile(MenuItem item) {
-        UserFragment userFragment = UserFragment.newInstance();
+        userFragment = UserFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.mainFragment, userFragment, "user");
         ft.addToBackStack("user");
+        UserFragment.setFlagMySongsClick(false);
         ft.commit();
     }
 

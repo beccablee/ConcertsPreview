@@ -2,9 +2,9 @@ package com.example.jinjinz.concertprev.fragments;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +26,16 @@ public class UserFragment extends Fragment {
     private ViewPager vpUser;
     private PagerSlidingTabStrip tsTabs;
     private UserFragmentListener userFragmentListener;
+    public static boolean FLAG_MY_SONGS_CLICK = false;
     private static LikedConcertsFragment mLikedConcertsFragment;
     private static LikedSongsFragment mLikedSongsFragment;
+    public static boolean isFlagMySongsClick() {
+        return FLAG_MY_SONGS_CLICK;
+    }
+
+    public static void setFlagMySongsClick(boolean flagMySongsClick) {
+        FLAG_MY_SONGS_CLICK = flagMySongsClick;
+    }
 
     public static LikedConcertsFragment getLikedConcertsFragment() {
         return mLikedConcertsFragment;
@@ -80,9 +88,15 @@ public class UserFragment extends Fragment {
 
         vpUser = (ViewPager) view.findViewById(R.id.vpUser);
         vpUser.setAdapter(new UserPagerAdapter(getChildFragmentManager()));
+        if(isFlagMySongsClick()) {
+            vpUser.setCurrentItem(1, true);
+        } else {
+            vpUser.setCurrentItem(0, true);
+        }
+
         tsTabs = (PagerSlidingTabStrip) view.findViewById(R.id.tsTabs);
         tsTabs.setViewPager(vpUser);
-        tsTabs.setIndicatorColor(Color.parseColor("#EEFF4081"));
+        tsTabs.setIndicatorColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         tsTabs.setIndicatorHeight(10);
 
         //toolbar

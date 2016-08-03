@@ -23,7 +23,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:text="Song Artist"
         android:id="@+id/tvSongArtist"
         android:layout_below="@+id/tvSongName"
@@ -36,7 +36,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5px"
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:background="@color/midDarkGrey"
