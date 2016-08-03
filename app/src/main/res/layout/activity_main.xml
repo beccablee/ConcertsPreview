@@ -19,7 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/playerFragment"
-        >
+        android:id="@+id/playerFragment">
     </FrameLayout>
 </RelativeLayout>

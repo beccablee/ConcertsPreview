@@ -8,4 +8,5 @@
     <color name="lightGrey">#eeeeee</color>
     <color name="transparentWhite">#deffffff</color>
     <color name="midDarkGrey">#666666</color>
+    <color name="midGrey">#CCCCCC</color>
 </resources>
