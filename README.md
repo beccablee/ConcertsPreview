@@ -12,9 +12,9 @@ The following **features** were implemented:
 
 - User can search through concerts in their area using the Ticketmaster API.
 - For each concert displayed, the user can see the following details:
-  - Details include: event name, location, backdrop image
+- Details include: event name, location, backdrop image
 - When the user clicks on a concert, the concert details and playlist are shown
-  - Details include: event name, artists, location, backdrop image, date
+- Details include: event name, artists, location, backdrop image, date
 - Each concert's playlist contains 30-second song previews of every artist's top tracks from the Spotify API.
 - The user can purchase concert tickets from the concert details page.
 - When the user taps on a song, the app's media player opens up, including navigation controls.
@@ -53,12 +53,12 @@ Video Version: http://recordit.co/tGD1RVmEGC
 
 ## License
 
-    Copyright [2016] [Vibe]
+Copyright [2016] [Vibe]
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
+Unless required by applicable law or agreed to in writing, software
