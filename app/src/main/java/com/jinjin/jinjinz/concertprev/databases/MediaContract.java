@@ -11,7 +11,7 @@ import android.provider.BaseColumns;
  */
 public final class MediaContract {
     // The Content Authority is a name for the entire content provider
-    public static final String CONTENT_AUTHORITY = "com.example.jinjinz.concertprev.databases";
+    public static final String CONTENT_AUTHORITY = "com.jinjin.jinjinz.concertprev.databases";
     // the base of all URIs which apps will use to contact this content provider.
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     //A list of possible paths that will be appended to the base URI
