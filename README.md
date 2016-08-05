@@ -25,9 +25,11 @@ The following **features** were implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/ZHcjdQK.gif' title='Vertical' width='' alt='Vertical' />
+<img src='http://g.recordit.co/tGD1RVmEGC.gif' title='Vertical' width='' alt='Vertical' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+GIF created with [Recordit](http://recordit.co/).
+
+Video Version: http://recordit.co/tGD1RVmEGC
 
 ## Notes
 
