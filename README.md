@@ -6,7 +6,7 @@ Time spent: **5** weeks in total
 
 Team members: Rebecca Lee, Nneoma Oradiegwu, Jinjin Zhao
 
-## User Stories
+## Features
 
 The following **features** were implemented:
 
@@ -25,14 +25,15 @@ The following **features** were implemented:
 
 Here's a walkthrough of implemented user stories:
 
-[temp]
-<img src='http://i.imgur.com/ZHcjdQK.gif' title='Vertical' width='' alt='Vertical' />
+<img src='http://g.recordit.co/tGD1RVmEGC.gif' title='Vertical' width='' alt='Vertical' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+GIF created with [Recordit](http://recordit.co/).
+
+Video Version: http://recordit.co/tGD1RVmEGC
 
 ## Notes
 
-Main challenges faced:
+[Download from Google Play Store] (https://play.google.com/store/apps/details?id=com.jinjin.jinjinz.concertprev)
 
 ## Open-source libraries used
 
