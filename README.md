@@ -47,7 +47,7 @@ Main challenges faced:
 ## Sources
 
 - [Concert Loading Image] http://www.paperhi.com/Toplist_Best_23527/download_2560x1440
-- [Ticketmaster API] https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed
+- [Ticketmaster API] http://developer.ticketmaster.com/products-and-docs/apis/discovery/v2/
 - [Spotify API] https://developer.spotify.com/web-api/endpoint-reference/
 - [Spotify Android SDK] https://developer.spotify.com/technologies/spotify-android-sdk/
 
