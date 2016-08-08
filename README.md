@@ -33,7 +33,7 @@ Video Version: http://recordit.co/tGD1RVmEGC
 
 ## Notes
 
-Main challenges faced:
+[Google Play Store] (https://play.google.com/store/apps/details?id=com.jinjin.jinjinz.concertprev)
 
 ## Open-source libraries used
 
