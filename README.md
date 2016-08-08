@@ -1,4 +1,4 @@
-# *Vibe* - feel the vibe of the concert
+# **Vibe** - *feel the vibe of the concert*
 
 **Vibe** helps users make the most of their concert experience by exposing them to all the artists in a concert. Vibe auto-populates playlists with 30-second song previews of the concert's artists and makes it easy to purchase concert tickets.
 
@@ -6,11 +6,11 @@ Time spent: **5** weeks in total
 
 Team members: Rebecca Lee, Nneoma Oradiegwu, Jinjin Zhao
 
-## User Stories
+## Features
 
 The following **features** were implemented:
 
-- User can search through concerts in their area using the Ticketmaster Database API.
+- User can search through concerts in their area using the Ticketmaster API.
 - For each concert displayed, the user can see the following details:
   - Details include: event name, location, backdrop image
 - When the user clicks on a concert, the concert details and playlist are shown
@@ -25,24 +25,31 @@ The following **features** were implemented:
 
 Here's a walkthrough of implemented user stories:
 
-[temp]
-<img src='http://i.imgur.com/ZHcjdQK.gif' title='Vertical' width='' alt='Vertical' />
+<img src='http://g.recordit.co/tGD1RVmEGC.gif' title='Vertical' width='' alt='Vertical' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+GIF created with [Recordit](http://recordit.co/).
+
+Video Version: http://recordit.co/tGD1RVmEGC
 
 ## Notes
 
-Main challenges faced:
+[Download from Google Play Store] (https://play.google.com/store/apps/details?id=com.jinjin.jinjinz.concertprev)
 
 ## Open-source libraries used
 
 - [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
 - [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
+- [PermissionsDispatcher] (https://github.com/hotchemi/PermissionsDispatcher) - Simple annotation-based API to handle runtime permissions
+- [Parceler] (https://parceler.org/) - Library that generates the Android Parcelable boilerplate source code
+- [Google Location and Activity Recognition] (https://developers.google.com/android/guides/setup) - User location and current activity location services from Google Play
+- [PagerSlidingTabStrip] (https://github.com/astuetz/PagerSlidingTabStrip) - Interactive indicator to navigate between the different pages of a ViewPager
 
 ## Sources
 
-- [Loading Image] http://www.everypony.com/threads/help-me-find-my-oc-mes-cutiemark.17415/
-- [Movie Database] https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed
+- [Concert Loading Image] http://www.paperhi.com/Toplist_Best_23527/download_2560x1440
+- [Ticketmaster API] https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed
+- [Spotify API] https://developer.spotify.com/web-api/endpoint-reference/
+- [Spotify Android SDK] https://developer.spotify.com/technologies/spotify-android-sdk/
 
 ## License
 
