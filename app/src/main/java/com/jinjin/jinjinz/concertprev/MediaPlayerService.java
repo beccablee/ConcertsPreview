@@ -280,11 +280,7 @@ public class MediaPlayerService extends Service {
     }
 
     public boolean isPlaying() {
-<<<<<<< 73eb9ecbabe9bf686261f7fdc1b359246e663f9d:app/src/main/java/com/jinjin/jinjinz/concertprev/MediaPlayerService.java
         return play;
-=======
-       return play;
->>>>>>> debug:app/src/main/java/com/example/jinjinz/concertprev/MediaPlayerService.java
     }
     /**
      * destroy mediaPlayer

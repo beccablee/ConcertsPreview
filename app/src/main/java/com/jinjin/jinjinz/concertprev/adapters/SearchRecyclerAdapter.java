@@ -90,11 +90,14 @@ public class SearchRecyclerAdapter extends RecyclerView.Adapter<SearchRecyclerAd
         TextView eventName = viewHolder.tvEventName;
         eventName.setText(concert.getEventName());
         TextView eventLoc = viewHolder.tvEventLocation;
-        if (concert.getStateCode() != null) {
-            eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getStateCode()));
-        } else {
+        if (concert.getCity() != null && concert.getStateCode() != null) {
+            eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getStateCode(), concert.getStateCode()));
+        } else if (concert.getStateCode() == null && concert.getCity() != null && concert.getCountryCode() != null){
             eventLoc.setText(MessageFormat.format("{0}, {1}", concert.getCity(), concert.getCountryCode()));
-
+        } else if (concert.getCity() != null && concert.getStateCode() == null && concert.getCountryCode() == null){
+            eventLoc.setText(concert.getCity());
+        } else {
+            eventLoc.setText("");
         }
         ImageView backgroundImg = viewHolder.ivBackgroundImage;
         Picasso.with(getContext()).load(concert.getBackdropImage()).placeholder(R.drawable.concert_placeholder).into(backgroundImg);

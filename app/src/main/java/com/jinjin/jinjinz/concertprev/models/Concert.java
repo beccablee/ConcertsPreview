@@ -187,9 +187,9 @@ public class Concert {
         if (images != null) { // if the images jsonarray exists
             for (int i = 0; i < images.length(); i++) { // step through array
                 try {                                                               // get ratio of the image obj
-                    if(images.getJSONObject(i).getString("ratio").equals("16_9")) { // if the ratio is 16_9
-                        if(images.getJSONObject(i).getInt("width") >= 400) {
-                            return images.getJSONObject(i).getString("url"); // return the url of that img obj
+                    if(images.optJSONObject(i).getString("ratio").equals("16_9")) { // if the ratio is 16_9
+                        if(images.optJSONObject(i).getInt("width") >= 400) {
+                            return images.optJSONObject(i).getString("url"); // return the url of that img obj
                         }
                     }
                 } catch (JSONException e) {
@@ -197,7 +197,7 @@ public class Concert {
                 }
             }
             try { // if none are 16_9, go get the first one
-                return event.getJSONArray("images").getJSONObject(0).getString("url");
+                return event.getJSONArray("images").optJSONObject(0).optString("url");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -234,35 +234,58 @@ public class Concert {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         try {
-            concert.countryCode = event.getJSONObject("_embedded").getJSONArray("venues").getJSONObject(0)
-                    .getJSONObject("country").getString("countryCode"); // if country != "US", use country code in place of stateCode
-            concert.city = event.getJSONObject("_embedded").getJSONArray("venues")
+            concert.countryCode = event.getJSONObject("_embedded").optJSONArray("venues").optJSONObject(0)
+                    .optJSONObject("country").optString("countryCode"); // if country != "US", use country code in place of stateCode
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            concert.city = event.getJSONObject("_embedded").optJSONArray("venues")
                     .getJSONObject(0).getJSONObject("city").getString("name");
-            concert.venue = event.getJSONObject("_embedded").getJSONArray("venues")
-                    .getJSONObject(0).getString("name");
-            String state = event.getJSONObject("_embedded").getJSONArray("venues")
-                    .getJSONObject(0).optJSONObject("state").optString("stateCode");
-            if (state.equals("")) {
-                concert.stateCode = null;
-            } else {
-                concert.stateCode = state;
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+        String venue;
+        try {
+            venue = event.getJSONObject("_embedded").optJSONArray("venues")
+                    .optJSONObject(0).getString("name");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            venue = "";
+        } catch (JSONException e) {
+            e.printStackTrace();
+            venue = "";
+        }
+        if (venue.equals("")) {
+            concert.venue = null;
+        } else {
+            concert.venue = venue;
+        }
 
+        String state;
+        try {
+            state = event.optJSONObject("_embedded").optJSONArray("venues")
+                    .optJSONObject(0).optJSONObject("state").optString("stateCode");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            state = "";
+        }
+        if (state.equals("")) {
+            concert.stateCode = null;
+        } else {
+            concert.stateCode = state;
+        }
+
+        try {
+            concert.eventDate = formatDate(event.getJSONObject("dates").optJSONObject("start").optString("localDate"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         try {
-            concert.eventDate = formatDate(event.getJSONObject("dates").getJSONObject("start").getString("localDate"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            concert.eventTime = event.getJSONObject("dates").getJSONObject("start").getString("localTime");
+            concert.eventTime = event.getJSONObject("dates").optJSONObject("start").optString("localTime");
         } catch (JSONException e) {
             e.printStackTrace();
         }
